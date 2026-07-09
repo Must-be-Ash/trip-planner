@@ -1,0 +1,252 @@
+[
+  {
+    "id": "stableenrich-news",
+    "name": "StableEnrich News",
+    "provider": "StableEnrich",
+    "kind": "model",
+    "category": "data-intelligence",
+    "subcategory": "news-media",
+    "description": "StableEnrich news search — query recent news articles by topic for agents and enrichment pipelines. Pay-per-call x402.",
+    "pricing": {
+      "headline": "$0.040",
+      "amount": 0.04,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://stableenrich.dev/api/serper/news with JSON body {q, num?, gl?, hl?, location?}",
+      "inputExample": {
+        "q": "openai",
+        "num": 3
+      },
+      "outputShape": "body.news[] (each: .title, .link, .date, .source, .imageUrl, .snippet?); body.searchParameters echoes the query; body.credits",
+      "quirks": [
+        "Service ignores the requested 'num' value and returns ~10 news results regardless (asked num=3, got 10).",
+        "Only the first/featured news item reliably includes a 'snippet' field; most items have title/link/date/source/imageUrl only."
+      ],
+      "guide": "Send a POST to https://stableenrich.dev/api/serper/news with a JSON body containing at least {\"q\": \"<search query>\"}. Optional fields: num (result count, but the service returns ~10 regardless), gl (2-letter country), hl (language), location. Payment is x402 USDC (~$0.04 on Base or Solana), settled automatically. Read results from body.news[] — each item has title, link, date (relative, e.g. \"3 hours ago\"), source, and imageUrl. Plain synchronous call; no auth, polling, or sign-in needed.",
+      "costObservedUsd": 0.04,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stableenrich",
+        "url": "https://stableenrich.dev/api/serper/news",
+        "method": "POST",
+        "priceDisplay": "$0.040",
+        "priceUsd": 0.04,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "40000",
+            "payTo": "0x325bdF6F7efAB24a2210c48c1b64cAb2eAe1d430"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "40000",
+            "payTo": "8EgACpZ16XWEt7YjJPsh1ZheVRZUGmmwQ8nJdmA1o5w4"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "serper-news",
+    "name": "Serper News",
+    "provider": "Orthogonal",
+    "kind": "api",
+    "category": "search",
+    "subcategory": "serp-seo-apis",
+    "description": "Google News search via Serper. Returns recent news articles with title, link, snippet, date, source, and imageUrl.",
+    "pricing": {
+      "headline": "$0.0020",
+      "amount": 0.002,
+      "currency": "USD",
+      "unit": "per search"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST {origin}/serper/news (orth.sh) or /api/serper/news (stableenrich) with JSON body {q (required), num?, gl?, hl?, location?}. Both gateways identical I/O; Orthogonal is 20x cheaper. x402 payment on Base.",
+      "inputExample": {
+        "q": "openai news",
+        "num": 5,
+        "gl": "us",
+        "hl": "en"
+      },
+      "outputShape": "searchParameters.{q,gl,hl,type,num,page?,engine}; news[].{title,link,snippet?,date,source,imageUrl,position?}; credits",
+      "quirks": [
+        "Same operation on two gateways: Orthogonal $0.002 (default) vs StableEnrich $0.04. Prefer Orthogonal.",
+        "Body field is `q` (required). num/gl/hl/location optional.",
+        "Orthogonal news imageUrls are clean http gstatic thumbnails (no base64 bloat).",
+        "Orthogonal schema only via x402 402-challenge probe; StableEnrich has OpenAPI spec."
+      ],
+      "guide": "Google News search via Serper. Returns recent news articles with title, link, snippet, date, source, and imageUrl. POST {origin}/serper/news (orth.sh) or /api/serper/news (stableenrich) with JSON body {q (required), num?, gl?, hl?, location?}. Both gateways identical I/O; Orthogonal is 20x cheaper. x402 payment on Base. Output: searchParameters.{q,gl,hl,type,num,page?,engine}; news[].{title,link,snippet?,date,source,imageUrl,position?}; credits",
+      "costObservedUsd": 0.002,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "Orthogonal",
+        "url": "https://x402.orth.sh/serper/news",
+        "method": "POST",
+        "priceDisplay": "$0.0020",
+        "priceUsd": 0.002,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "base",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "2000",
+            "payTo": "0x1563CdE0042d17F53b23d91Fd9B73ACE9Da26a09"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "stableenrich",
+        "url": "https://stableenrich.dev/api/serper/news",
+        "method": "POST",
+        "priceDisplay": "$0.040",
+        "priceUsd": 0.04,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "40000",
+            "payTo": "0x325bdF6F7efAB24a2210c48c1b64cAb2eAe1d430"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "40000",
+            "payTo": "8EgACpZ16XWEt7YjJPsh1ZheVRZUGmmwQ8nJdmA1o5w4"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "httpay-news-headlines",
+    "name": "httpay News Headlines",
+    "provider": "httpay",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "news-media",
+    "description": "httpay native news aggregator. Returns ~20 fresh headlines (title, url, pubDate, source, snippet, categories) for a chosen topic, aggregated from a handful of reputable tech/news RSS sources. Keyless, pay-per-call via x402 (~$0.005 USDC on Base).",
+    "pricing": {
+      "headline": "$0.0050",
+      "amount": 0.005,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://httpay.xyz/api/news?topic=tech (x402 v1, ~$0.005 USDC on Base). Topic is a URL QUERY param, NOT a JSON body. No body. Method is GET — POST 404s.",
+      "inputExample": {
+        "topic": "tech"
+      },
+      "outputShape": "topic (string), availableTopics (string[]), count (number), headlines[] (each: title, url, pubDate, source, snippet, categories[]), sources (number), updatedAt (ISO string), meta.poweredBy, meta.x402",
+      "quirks": [
+        "GET-only. POST https://httpay.xyz/api/news returns 404 'Cannot POST /api/news' despite the well-known/x402 discovery index listing it as POST.",
+        "Topic is passed as a URL query param (?topic=tech), NOT a JSON body.",
+        "Valid topics: tech, ai, world, science, business, crypto, health, sports. Defaults to tech if omitted.",
+        "Returns 20 headlines per call (count field).",
+        "Uses x402 v1 challenge format (no `accepts` array) — agentcash/x402-v2 clients cannot complete the payment flow; must use an x402-v1 client or qa-pay. Verified paid via qa-pay (tx 0x1ca19f...).",
+        "There is a sibling native endpoint POST /api/news/crypto (separate op) and a separate paid /api/news POST in the index that 404s — only the GET form works.",
+        "?demo=true exists (10 free calls/IP/hr) but still routed through the x402 challenge for this GET endpoint."
+      ],
+      "guide": "httpay native news aggregator. Returns ~20 fresh headlines (title, url, pubDate, source, snippet, categories) for a chosen topic, aggregated from a handful of reputable tech/news RSS sources. Keyless, pay-per-call via x402 (~$0.005 USDC on Base). GET https://httpay.xyz/api/news?topic=tech (x402 v1, ~$0.005 USDC on Base). Topic is a URL QUERY param, NOT a JSON body. No body. Method is GET — POST 404s. Output: topic (string), availableTopics (string[]), count (number), headlines[] (each: title, url, pubDate, source, snippet, categories[]), sources (number), updatedAt (ISO string), meta.poweredBy, meta.x402",
+      "costObservedUsd": 0.005,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "httpay",
+        "url": "https://httpay.xyz/api/news",
+        "method": "GET",
+        "priceDisplay": "$0.0050",
+        "priceUsd": 0.005,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "base",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "5000",
+            "payTo": "0x5f5d6FcB315871c26F720dc6fEf17052dD984359"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  }
+]

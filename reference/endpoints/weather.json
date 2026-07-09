@@ -1,0 +1,603 @@
+[
+  {
+    "id": "hugen-weather-forecast",
+    "name": "Hugen Weather Forecast",
+    "provider": "weather.hugen",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "weather",
+    "description": "Get a daily weather forecast (1-7 days) for any city worldwide. Returns per-day max/min temperature, condition, precipitation amount + probability, and max wind. No API keys.",
+    "pricing": {
+      "headline": "$0.010",
+      "amount": 0.01,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://weather.hugen.tokyo/weather/forecast?city=Tokyo&days=3  (alternatively ?lat=..&lon=..; days defaults to 3, range 1-7)",
+      "inputExample": {
+        "city": "Tokyo",
+        "days": 3
+      },
+      "outputShape": "city, country, latitude, longitude, days[].{date, condition, weather_code, temp_max_c, temp_min_c, precipitation_mm, precipitation_probability_pct, wind_max_kmh}",
+      "quirks": [
+        "Query params only (GET); no request body.",
+        "Provide either `city` OR `lat`+`lon`.",
+        "`days` is an integer 1-7, default 3; values >7 are rejected by schema (max 7).",
+        "Forecast data lives in a `days[]` array (one object per date), unlike /weather/current which returns a flat snapshot.",
+        "Per-day fields: temp_max_c/temp_min_c (C), precipitation_mm + precipitation_probability_pct, wind_max_kmh, plus condition string and numeric WMO weather_code.",
+        "Keyless x402 on Base, $0.01 flat per call regardless of days requested."
+      ],
+      "guide": "Get a daily weather forecast (1-7 days) for any city worldwide. Returns per-day max/min temperature, condition, precipitation amount + probability, and max wind. No API keys. GET https://weather.hugen.tokyo/weather/forecast?city=Tokyo&days=3  (alternatively ?lat=..&lon=..; days defaults to 3, range 1-7) Output: city, country, latitude, longitude, days[].{date, condition, weather_code, temp_max_c, temp_min_c, precipitation_mm, precipitation_probability_pct, wind_max_kmh}",
+      "costObservedUsd": 0.01,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "weather.hugen",
+        "url": "https://weather.hugen.tokyo/weather/forecast",
+        "method": "GET",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0x29322Ea7EcB34aA6164cb2ddeB9CE650902E4f60"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "10000",
+            "payTo": "4du4AfkjJEwch2zk3shkPJVZfyJHNDnNjEWC6AboaS5Z"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "hugen-weather-current",
+    "name": "Hugen Weather Current",
+    "provider": "weather.hugen",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "weather",
+    "description": "Get current weather conditions for any city worldwide (temperature, feels-like, humidity, wind, precipitation, condition). No API keys, no geocoding setup. Pass a city name or explicit lat/lon.",
+    "pricing": {
+      "headline": "$0.010",
+      "amount": 0.01,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://weather.hugen.tokyo/weather/current?city=Tokyo  (alternatively ?lat=35.6895&lon=139.69 — supply either city OR lat+lon; all params technically optional)",
+      "inputExample": {
+        "city": "Tokyo"
+      },
+      "outputShape": "city, country, latitude, longitude, temperature_c, feels_like_c, humidity_pct, wind_speed_kmh, wind_direction_deg, precipitation_mm, condition, weather_code, observation_time",
+      "quirks": [
+        "Query params only (GET); no request body.",
+        "Provide either `city` OR `lat`+`lon`. Params are nominally optional but a location is needed for useful results.",
+        "Temperatures in Celsius, wind in km/h, precipitation in mm.",
+        "`condition` is a human string (e.g. 'Mainly clear') and `weather_code` is the numeric WMO code (e.g. 1).",
+        "`observation_time` is an ISO local timestamp without timezone offset (e.g. 2026-06-11T01:00).",
+        "Keyless x402 on Base, $0.01 flat per call."
+      ],
+      "guide": "Get current weather conditions for any city worldwide (temperature, feels-like, humidity, wind, precipitation, condition). No API keys, no geocoding setup. Pass a city name or explicit lat/lon. GET https://weather.hugen.tokyo/weather/current?city=Tokyo  (alternatively ?lat=35.6895&lon=139.69 — supply either city OR lat+lon; all params technically optional) Output: city, country, latitude, longitude, temperature_c, feels_like_c, humidity_pct, wind_speed_kmh, wind_direction_deg, precipitation_mm, condition, weather_code, observation_time",
+      "costObservedUsd": 0.01,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "weather.hugen",
+        "url": "https://weather.hugen.tokyo/weather/current",
+        "method": "GET",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0x29322Ea7EcB34aA6164cb2ddeB9CE650902E4f60"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "10000",
+            "payTo": "4du4AfkjJEwch2zk3shkPJVZfyJHNDnNjEWC6AboaS5Z"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "x402-deployer-weather",
+    "name": "x402-deployer Weather",
+    "provider": "x402 Deployer",
+    "kind": "model",
+    "category": "data-intelligence",
+    "subcategory": "weather",
+    "description": "Current weather lookup by location. Pay-per-call x402.",
+    "pricing": {
+      "headline": "$0.0050",
+      "amount": 0.005,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://x402-deployer.x402-deployer.workers.dev/weather with JSON body {latitude:number, longitude:number}",
+      "inputExample": {
+        "latitude": 37.7749,
+        "longitude": -122.4194
+      },
+      "outputShape": "body.current.temperature, body.current.humidity_pct, body.current.wind_speed, body.current.weather_code; body.daily[] (per-day temperature_max/min, precipitation_mm, sunrise, sunset, uv_index_max); body.location.{lat,lon,timezone,elevation_m}; body.units, body.source",
+      "quirks": [
+        "Input MUST be numeric latitude/longitude (e.g. {\"latitude\":37.77,\"longitude\":-122.42}); a {\"location\":\"San Francisco\"} string is rejected with 400 'latitude must be a number in [-90,90]' AND STILL CHARGES $0.005. Geocode any place name to coordinates before calling.",
+        "latitude must be in [-90,90], longitude in [-180,180].",
+        "Output is in metric units (celsius, km/h, mm); data sourced from open-meteo.com.",
+        "weather_code is a WMO code (e.g. 0=clear, 3=overcast, 45=fog) - map it client-side."
+      ],
+      "guide": "Call POST https://x402-deployer.x402-deployer.workers.dev/weather with a JSON body of numeric latitude and longitude (geocode any place name first - a location-name string is rejected with a 400 but still charges you). Pays $0.005 USDC via x402 on Base, no auth/SIWX. The 200 response is synchronous JSON: read current conditions from body.current (temperature, humidity_pct, wind_speed, weather_code in WMO codes) and a 3-day forecast from body.daily[]. Units are metric and data comes from open-meteo.",
+      "costObservedUsd": 0.005,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "x402-deployer.x402-deployer.workers",
+        "url": "https://x402-deployer.x402-deployer.workers.dev/weather",
+        "method": "POST",
+        "priceDisplay": "$0.0050",
+        "priceUsd": 0.005,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "5000",
+            "payTo": "0x6c0752c09e7F6fA6526fCDf40e456a159ebB5621"
+          }
+        ],
+        "status": "needs-review",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "open-meteo-weather",
+    "name": "Open-Meteo Weather",
+    "provider": "Open-Meteo",
+    "kind": "model",
+    "category": "data-intelligence",
+    "subcategory": "weather",
+    "description": "Current weather for a coordinate via Open-Meteo (open-source weather data) — temperature, humidity, wind, precipitation and weather code. Query by ?lat=&lng=. Pay-per-call x402 (Base USDC) served by the x402node gateway.",
+    "pricing": {
+      "headline": "$0.010",
+      "amount": 0.01,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://api.x402node.dev/maps/weather?lat={lat}&lng={lng} (no body; x402 USDC on Base). Registry says POST but the endpoint is actually GET with query params.",
+      "inputExample": {
+        "lat": 40.7128,
+        "lng": -74.006
+      },
+      "outputShape": "body.temperature_c, body.apparent_c, body.humidity_pct, body.precipitation_mm, body.wind_kmh, body.wind_direction_deg, body.weather_code, body.weather_description, body.is_day, body.observation_time, body.timezone, body.elevation_m, body.lat, body.lng",
+      "quirks": [
+        "Registry lists method=POST but the endpoint is actually GET — pass coordinates as URL query params ?lat=&lng=, NO request body.",
+        "Param names are lat and lng (not lon/longitude).",
+        "Response includes a marketing _hint field that should be ignored.",
+        "Times are returned in GMT/UTC (timezone:'GMT')."
+      ],
+      "guide": "Call GET https://api.x402node.dev/maps/weather with query params lat and lng (decimal degrees), e.g. ?lat=40.7128&lng=-74.0060. Send no request body — despite the registry listing POST, this is a GET endpoint. Pay $0.01 USDC on Base via x402. The 200 JSON response gives current conditions directly: read temperature_c, humidity_pct, wind_kmh, precipitation_mm, and weather_description. Times are in GMT; ignore the _hint marketing field.",
+      "costObservedUsd": 0.01,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "x402node",
+        "url": "https://api.x402node.dev/maps/weather",
+        "method": "GET",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "base",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0x4466d4A84b7c49a6A094ec6eef4a0712D6dd125e"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "2s-io-weather",
+    "name": "2s.io Weather",
+    "provider": "2s.io",
+    "kind": "model",
+    "category": "data-intelligence",
+    "subcategory": "weather",
+    "description": "Weather by US ZIP code — current conditions lookup. Pay-per-call x402.",
+    "pricing": {
+      "headline": "$0.0012",
+      "amount": 0.0012,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://2s.io/api/weather/zip?zip=10001",
+      "inputExample": {
+        "zip": "10001"
+      },
+      "outputShape": "body.data.items[0].location {zip,city,state,coords{lat,lon},timezone} and body.data.items[0].current {temperatureF,apparentTemperatureF,humidityPct,windMph,windDirection,windDirectionDeg,precipProbabilityPct,conditions,isDay,observedAt}; body.data.source attributes NOAA; settlement at body.meta.settlement",
+      "quirks": [
+        "Result is nested under body.data.items[] (an array even for a single ZIP) — read items[0]",
+        "zip is a query-string param, not a path segment",
+        "US ZIPs only (NOAA-backed)"
+      ],
+      "guide": "Call GET https://2s.io/api/weather/zip with a query parameter zip set to a 5-digit US ZIP code (e.g. ?zip=10001). It is an x402 paid endpoint at ~$0.0012 USDC on Base (also accepts Solana USDC). The response is synchronous JSON; read current conditions from body.data.items[0].current and location metadata from body.data.items[0].location. Data is sourced from NOAA, so only US ZIPs work.",
+      "costObservedUsd": 0.0012,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "2s",
+        "url": "https://2s.io/api/weather/zip",
+        "method": "GET",
+        "priceDisplay": "$0.0012",
+        "priceUsd": 0.0012,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "1200",
+            "payTo": "0x2b6D4988Db4723E6908Db86Ab2b8dFBc51FC32C5"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "1200",
+            "payTo": "TW6ntaGzvj63ZgPjszd4FCGmVTGfzv1MAYZbjYcyWhn"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "openweather",
+    "name": "OpenWeather",
+    "provider": "OpenWeather",
+    "kind": "model",
+    "category": "data-intelligence",
+    "subcategory": "weather",
+    "description": "OpenWeather current conditions by location — temperature, humidity, wind, conditions. Pay-per-call x402.",
+    "pricing": {
+      "headline": "$0.0020",
+      "amount": 0.002,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://openweather-coral.vercel.app/weather/current?lat=51.5&lon=-0.12 (x402, USDC on Base $0.002). Pass lat & lon as query params.",
+      "inputExample": {
+        "lat": "51.5",
+        "lon": "-0.12"
+      },
+      "outputShape": "body.city, body.country, body.temperature.{current,feels_like,min,max,unit}, body.humidity, body.pressure, body.wind.{speed,direction,gust}, body.weather.{main,description,icon}, body.clouds, body.sunrise, body.sunset, body.updated_at",
+      "quirks": [
+        "The documented ?city=<name> query param is BROKEN: it returns HTTP 500 (HTML 'Internal Server Error') after the payment flow even though the unpaid pre-flight shows 402. Server-side city-name geocoding fails. Use ?lat=&lon= instead — that variant works reliably.",
+        "Pass lat/lon as query-string params on the GET (not a JSON body).",
+        "Response city field reflects the resolved locality (e.g. lat 51.5/lon -0.12 -> 'City of Westminster'), not necessarily the nearest major city name."
+      ],
+      "guide": "Call GET https://openweather-coral.vercel.app/weather/current with ?lat=<latitude>&lon=<longitude> query params; payment is x402 USDC on Base (~$0.002). Do NOT use the ?city= param — it is documented but returns a 500 server error. Read current conditions from the JSON body: body.temperature.current (celsius), body.humidity, body.wind.speed/direction, and body.weather.main / body.weather.description for the textual condition.",
+      "costObservedUsd": 0.002,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "openweather-coral.vercel",
+        "url": "https://openweather-coral.vercel.app/weather/current",
+        "method": "GET",
+        "priceDisplay": "$0.0020",
+        "priceUsd": 0.002,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "2000",
+            "payTo": "0x5B567A667aB7Bd09De417b9f7A55a767C40496f0"
+          }
+        ],
+        "status": "needs-review",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "japan-weather-jma",
+    "name": "Japan Weather (JMA)",
+    "provider": "Agentic JP",
+    "kind": "model",
+    "category": "data-intelligence",
+    "subcategory": "weather",
+    "description": "Japan Meteorological Agency (JMA) weather forecast data for Japanese locations. Pay-per-call x402.",
+    "pricing": {
+      "headline": "$0.0030",
+      "amount": 0.003,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://weather.agentic-jp.com/forecast/:area where :area is a JMA 6-digit area code (e.g. 130000 for Tokyo). No body, no query params.",
+      "inputExample": {
+        "area": "130000"
+      },
+      "outputShape": "body.summary_en (one-line English summary), body.daily[] (today/tomorrow: .weather_en, .pops[], .temps[]), body.weekly[] (7-day: .weather_en, .pop, .temp_min, .temp_max, .reliability), body.area.name_en, body.report_datetime",
+      "quirks": [
+        "The :area path segment must be a JMA 6-digit area-office code, NOT a city name or lat/long. 130000 = Tokyo. Other examples: 016000=Sapporo, 270000=Osaka, 400000=Fukuoka, 471000=Okinawa.",
+        "Japan-only coverage (Japan Meteorological Agency data).",
+        "Response mixes Japanese and English fields; use the *_en fields (weather_en, name_en, summary_en) for English. Raw weather/wind/wave strings and summary_ja are Japanese.",
+        "Plain sync x402 on Base ($0.003 USDC); no auth, no async."
+      ],
+      "guide": "Pick a JMA 6-digit area code for the Japanese location you want (130000=Tokyo, 270000=Osaka, 016000=Sapporo, 400000=Fukuoka, 471000=Okinawa) and GET https://weather.agentic-jp.com/forecast/{code}. It is a paid x402 endpoint (~$0.003 USDC on Base), no body or auth required. Read body.summary_en for a quick English answer, body.daily[] for today/tomorrow (weather_en, pops percent-chance-of-rain array, temps array), and body.weekly[] for the 7-day outlook (weather_en, pop, temp_min, temp_max). Japan only.",
+      "costObservedUsd": 0.003,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "weather.agentic-jp",
+        "url": "https://weather.agentic-jp.com/forecast/:area",
+        "method": "GET",
+        "priceDisplay": "$0.0030",
+        "priceUsd": 0.003,
+        "networks": [
+          "Base",
+          "Polygon",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "3000",
+            "payTo": "0x38c9F689274E2fC3AE360744eF88ce212077a584"
+          },
+          {
+            "scheme": "exact",
+            "network": "eip155:137",
+            "asset": "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
+            "amount": "3000",
+            "payTo": "0x38c9F689274E2fC3AE360744eF88ce212077a584"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "3000",
+            "payTo": "2BTzdCAcCLaNA2SSZ1YjJvTtscNCpUMUEjLY3LyBpNMk"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "precip-ai",
+    "name": "Precip AI",
+    "provider": "Precip AI",
+    "kind": "model",
+    "category": "data-intelligence",
+    "subcategory": "weather",
+    "description": "Precip AI hyperlocal weather — current conditions and short-term hyperlocal precipitation/forecast data. Pay-per-call x402 via Orthogonal.",
+    "pricing": {
+      "headline": "$0.100",
+      "amount": 0.1,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://x402.orth.sh/precip/embed/location?lat={lat}&lon={lon}&units=metric&widgets=current,temp,precip (x402-paid, no apiKey supplied by caller)",
+      "inputExample": {
+        "lat": 42.378792,
+        "lon": -83.7935,
+        "units": "metric",
+        "widgets": "current,temp,precip"
+      },
+      "outputShape": "Response body is a full text/html document (the Precip embed widget SPA page, ~6KB), NOT JSON. The weather data is rendered client-side inside this embeddable widget page; there is no JSON dot-path. Treat body as an HTML widget to iframe/render.",
+      "quirks": [
+        "Returns text/html (an embeddable widget SPA page), NOT JSON weather data — an agent expecting structured precip/temp values will not find them in the raw response; the data is rendered client-side.",
+        "The inputSchema lists apiKey as required, but the caller does NOT supply it — the x402 gateway auto-applies the apiKey header after payment. Do not pass apiKey.",
+        "lat and lon are required query params; units (metric/imperial, default metric) and widgets (comma-separated keys like current,temp,precip; defaults to all) are optional.",
+        "This is the /embed/location route — it serves an HTML widget for embedding, not a data API."
+      ],
+      "guide": "Call GET https://x402.orth.sh/precip/embed/location with required lat and lon query params (e.g. lat=42.378792&lon=-83.7935); add optional units (metric|imperial) and widgets (comma-separated: current,event,calendar,cumulative,total,precip,table,wind,temp,soiltemp,soilmoisture,snow). Pay via x402 (~$0.10 USDC on Base) — do NOT pass the apiKey param, the gateway injects it after payment. The 200 response is a text/html embeddable widget page, not JSON; use it by embedding/rendering the HTML (iframe), since the weather values are rendered client-side rather than returned as structured data.",
+      "costObservedUsd": 0.1,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "Orthogonal",
+        "url": "https://x402.orth.sh/precip/embed/location",
+        "method": "GET",
+        "priceDisplay": "$0.100",
+        "priceUsd": 0.1,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "base",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "100000",
+            "payTo": "0x6013D764502369012dF405A21C7DCBb6eFD1507b"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  }
+]

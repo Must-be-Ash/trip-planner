@@ -1,0 +1,1207 @@
+[
+  {
+    "id": "stabletravel-google-flights-search",
+    "name": "StableTravel Google Flights Search",
+    "provider": "stabletravel",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "flight-aviation",
+    "description": "Search Google Flights (via SerpAPI) for cash-fare flight offers. Returns best_flights, other_flights, price_insights (lowest price, typical range, 60-day price history), and airport metadata. Same data as google.com/flights. Use for cheapest cash-price discovery across all airlines and booking sites.",
+    "pricing": {
+      "headline": "$0.020",
+      "amount": 0.02,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://stabletravel.dev/api/google-flights/search?departure_id=JFK&arrival_id=LAX&outbound_date=2026-07-15&type=2 — all params in query string. Required: departure_id, arrival_id, outbound_date. type: 1=round-trip (default; REQUIRES return_date), 2=one-way, 3=multi-city. Optional: return_date (YYYY-MM-DD), travel_class (1=Economy,2=Premium,3=Business,4=First), adults, children, infants_in_seat, infants_on_lap, stops (0=any,1=nonstop,2=<=1stop,3=<=2stops), max_price, include_airlines, exclude_airlines (comma-sep codes), currency (3-letter, default USD), hl (default en).",
+      "inputExample": {
+        "departure_id": "JFK",
+        "arrival_id": "LAX",
+        "outbound_date": "2026-07-15",
+        "type": "2"
+      },
+      "outputShape": "best_flights[].{flights[].{departure_airport.{name,id,time}, arrival_airport.{name,id,time}, duration, airplane, airline, airline_logo, travel_class, flight_number, legroom, extensions[], often_delayed_by_over_30_min}, layovers[].{duration,name,id}, total_duration, carbon_emissions.{this_flight,typical_for_this_route,difference_percent}, price, type, airline_logo, extensions[], booking_token (one-way) | departure_token (round-trip outbound)}; other_flights[] (same shape); price_insights.{lowest_price, price_level, typical_price_range[], price_history[][]}; airports[].{departure[].{airport.{id,name},city,country,country_code,image,thumbnail}, arrival[]...}; search_metadata.{id,status,google_flights_url,...}; search_parameters.{...}",
+      "quirks": [
+        "FIELD-NAME TRAP: one-way (type=2) results carry `booking_token` per flight; round-trip (type=1) results carry `departure_token` per outbound flight. They are DIFFERENT fields. The /booking endpoint only accepts `departure_token`.",
+        "type defaults to 1 (round-trip), which REQUIRES return_date — omit return_date and you get an error. For a single search use type=2 (one-way) with no return_date.",
+        "All params are query-string strings; type/travel_class/stops are numeric codes passed as strings ('1'..'4').",
+        "Airport IDs are IATA codes (JFK, LAX); city names or Google kgmid also accepted.",
+        "price_insights gives a 60-point daily price_history (unix-ts, price pairs) and typical_price_range — useful for deal detection."
+      ],
+      "guide": "Search Google Flights (via SerpAPI) for cash-fare flight offers. Returns best_flights, other_flights, price_insights (lowest price, typical range, 60-day price history), and airport metadata. Same data as google.com/flights. Use for cheapest cash-price discovery across all airlines and booking sites. GET https://stabletravel.dev/api/google-flights/search?departure_id=JFK&arrival_id=LAX&outbound_date=2026-07-15&type=2 — all params in query string. Required: departure_id, arrival_id, outbound_date. type: 1=round-trip (default; REQUIRES return_date), 2=one-way, 3=multi-city. Optional: return_date (YYYY-MM-DD), travel_class (1=Economy,2=Premium,3=Business,4=First), adults, children, infants_in_seat, infants_on_lap, stops (0=any,1=nonstop,2=<=1stop,3=<=2stops), max_price, include_airlines, exclude_airlines (comma-sep codes), currency (3-letter, default USD), hl (default en). Output: best_flights[].{flights[].{departure_airport.{name,id,time}, arrival_airport.{name,id,time}, duration, airplane, airline, airline_logo, travel_class, flight_number, legroom, extensions[], often_delayed_by_over_30_min}, layovers[].{duration,name,id}, total_duration, carbon_emissions.{this_flight,typical_for_this_route,difference_percent}, price, type, airline_logo, extensions[], booking_token (one-way) | departure_token (round-trip outbound)}; other_flights[] (same shape); price_insights.{lowest_price, price_level, typical_price_range[], price_history[][]}; airports[].{departure[].{airport.{id,name},city,country,country_code,image,thumbnail}, arrival[]...}; search_metadata.{id,status,google_flights_url,...}; search_parameters.{...}",
+      "costObservedUsd": 0.02,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stabletravel",
+        "url": "https://stabletravel.dev/api/google-flights/search",
+        "method": "GET",
+        "priceDisplay": "$0.020",
+        "priceUsd": 0.02,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "20000",
+            "payTo": "0xDd257723b86B4947483905cdAcBbBC70fACF2ec0"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "20000",
+            "payTo": "6u5LMGQC2qk9peNibahmRWxGVXrBypk8nhTCcqtiuqMY"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "stabletravel-google-flights-booking",
+    "name": "StableTravel Google Flights Booking",
+    "provider": "stabletravel",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "flight-aviation",
+    "description": "Get the next flight-selection step and booking links for a specific flight from a Google Flights search. Pass a `departure_token` obtained from a round-trip/multi-city /search result. For round-trip outbound selection it returns the return-leg flights (each with a follow-up booking_token); for a fully-selected itinerary it returns selected_flights and booking_options (airline sites, OTAs, prices, deep-link URLs). Read-only — does NOT place a booking.",
+    "pricing": {
+      "headline": "$0.020",
+      "amount": 0.02,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://stabletravel.dev/api/google-flights/booking?departure_id=JFK&arrival_id=LAX&outbound_date=2026-07-15&return_date=2026-07-22&type=1&departure_token=... — MUST resend the SAME search params (departure_id, arrival_id, outbound_date, type, and return_date for round-trip) that produced the token, PLUS the required `departure_token`. Same optional passenger/class/currency params as search.",
+      "inputExample": {
+        "departure_id": "JFK",
+        "arrival_id": "LAX",
+        "outbound_date": "2026-07-15",
+        "return_date": "2026-07-22",
+        "type": "1",
+        "departure_token": "<departure_token from a round-trip /search best_flights[].departure_token>"
+      },
+      "outputShape": "For round-trip outbound token (intermediate step): best_flights[] & other_flights[] of RETURN-leg flights, each with a follow-up `booking_token` (chain to next step). For a final itinerary: selected_flights[].{flights[]..., layovers[], total_duration, carbon_emissions, price, type, departure_token, extensions[]} + booking_options[].{book_with, airline_logo, price, local_prices[].{currency,price}, url, option_title, extensions[], baggage_prices[]} + price_insights.{...}. Also search_metadata, search_parameters, airports[].",
+      "quirks": [
+        "REQUIRES `departure_token` — and that token ONLY comes from a ROUND-TRIP (type=1) or multi-city /search (one-way searches return booking_token, which is NOT accepted here).",
+        "You MUST resend the original search params alongside the token (departure_id, arrival_id, outbound_date, type, return_date) — the token alone is not enough.",
+        "Multi-step for round-trips: outbound departure_token -> /booking returns RETURN flights (with booking_token each), not the final booking_options. The booking_options[] link array appears at the fully-selected step.",
+        "Read-only: returns booking deep-links/prices; it does NOT actually book or charge beyond the $0.02 x402 fee.",
+        "booking_options[].url are deep-links to airline/OTA sites for completing the purchase off-platform."
+      ],
+      "guide": "Get the next flight-selection step and booking links for a specific flight from a Google Flights search. Pass a `departure_token` obtained from a round-trip/multi-city /search result. For round-trip outbound selection it returns the return-leg flights (each with a follow-up booking_token); for a fully-selected itinerary it returns selected_flights and booking_options (airline sites, OTAs, prices, deep-link URLs). Read-only — does NOT place a booking. GET https://stabletravel.dev/api/google-flights/booking?departure_id=JFK&arrival_id=LAX&outbound_date=2026-07-15&return_date=2026-07-22&type=1&departure_token=... — MUST resend the SAME search params (departure_id, arrival_id, outbound_date, type, and return_date for round-trip) that produced the token, PLUS the required `departure_token`. Same optional passenger/class/currency params as search. Output: For round-trip outbound token (intermediate step): best_flights[] & other_flights[] of RETURN-leg flights, each with a follow-up `booking_token` (chain to next step). For a final itinerary: selected_flights[].{flights[]..., layovers[], total_duration, carbon_emissions, price, type, departure_token, extensions[]} + booking_options[].{book_with, airline_logo, price, local_prices[].{currency,price}, url, option_title, extensions[], baggage_prices[]} + price_insights.{...}. Also search_metadata, search_parameters, airports[].",
+      "costObservedUsd": 0.02,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stabletravel",
+        "url": "https://stabletravel.dev/api/google-flights/booking",
+        "method": "GET",
+        "priceDisplay": "$0.020",
+        "priceUsd": 0.02,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "20000",
+            "payTo": "0xDd257723b86B4947483905cdAcBbBC70fACF2ec0"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "20000",
+            "payTo": "6u5LMGQC2qk9peNibahmRWxGVXrBypk8nhTCcqtiuqMY"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "stabletravel-amadeus-flight-search-get",
+    "name": "StableTravel Amadeus Flight Search (GET)",
+    "provider": "stabletravel",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "flight-aviation",
+    "description": "Search Amadeus GDS flight offers by simple query params. Returns priced flight offers with itineraries, fares, baggage.",
+    "pricing": {
+      "headline": "$0.054",
+      "amount": 0.054,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET /api/flights/search?originLocationCode=&destinationLocationCode=&departureDate=YYYY-MM-DD&adults=N[&returnDate=&travelClass=&nonStop=&currencyCode=USD&maxPrice=&max=]",
+      "inputExample": {
+        "originLocationCode": "JFK",
+        "destinationLocationCode": "LAX",
+        "departureDate": "2026-07-15",
+        "adults": "1",
+        "max": "2",
+        "currencyCode": "USD"
+      },
+      "outputShape": "{meta.count,data[].{type:flight-offer,id,source,price.{currency,total,grandTotal,base},itineraries[].segments[].{departure.{iataCode,at},arrival,carrierCode,number,aircraft.code,duration,numberOfStops},travelerPricings[].{travelerType,price,fareDetailsBySegment[].{cabin,class,fareBasis}}},dictionaries.{carriers,aircraft,locations}}",
+      "quirks": [
+        "Prices default to EUR — pass currencyCode=USD",
+        "There is ALSO a POST /api/flights/search for advanced multi-city using {originDestinations[],travelers[],sources:['GDS'],searchCriteria} (uses departureDateTimeRange.date)",
+        "Feed data[] offer into /flights/price,/seatmap,/upsell"
+      ],
+      "guide": "Search Amadeus GDS flight offers by simple query params. Returns priced flight offers with itineraries, fares, baggage. GET /api/flights/search?originLocationCode=&destinationLocationCode=&departureDate=YYYY-MM-DD&adults=N[&returnDate=&travelClass=&nonStop=&currencyCode=USD&maxPrice=&max=] Output: {meta.count,data[].{type:flight-offer,id,source,price.{currency,total,grandTotal,base},itineraries[].segments[].{departure.{iataCode,at},arrival,carrierCode,number,aircraft.code,duration,numberOfStops},travelerPricings[].{travelerType,price,fareDetailsBySegment[].{cabin,class,fareBasis}}},dictionaries.{carriers,aircraft,locations}}",
+      "costObservedUsd": 0.054,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stabletravel",
+        "url": "https://stabletravel.dev/api/flights/search",
+        "method": "GET",
+        "priceDisplay": "$0.054",
+        "priceUsd": 0.054,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "54000",
+            "payTo": "0xDd257723b86B4947483905cdAcBbBC70fACF2ec0"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "54000",
+            "payTo": "6u5LMGQC2qk9peNibahmRWxGVXrBypk8nhTCcqtiuqMY"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "stabletravel-award-seats-search-seats-aero",
+    "name": "StableTravel Award Seats Search (Seats.aero)",
+    "provider": "stabletravel",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "flight-aviation",
+    "description": "Search cached Seats.aero points/miles award availability by origin, destination, date range, cabin and carrier. Returns dated availability records across all mileage programs for the route. Use for award (miles) redemptions, not cash fares.",
+    "pricing": {
+      "headline": "$0.020",
+      "amount": 0.02,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://stabletravel.dev/api/seats-aero/search?origin_airport=SFO&destination_airport=NRT&cabin=business&take=10 (x402, no body)",
+      "inputExample": {
+        "origin_airport": "SFO",
+        "destination_airport": "NRT",
+        "cabin": "business",
+        "take": "10"
+      },
+      "outputShape": "data[].{ID, RouteID, Route.{OriginAirport,DestinationAirport,OriginRegion,DestinationRegion,Distance,Source}, Date, ParsedDate, YAvailable/WAvailable/JAvailable/FAvailable, YMileageCost/.../FMileageCost (string) + YMileageCostRaw/... (number), YTotalTaxes/..., YRemainingSeats/..., YAirlines/..., YDirect/..., Source, CreatedAt, UpdatedAt}; count; hasMore; cursor; moreURL",
+      "quirks": [
+        "REQUIRED params are origin_airport and destination_airport (snake_case, NOT originLocationCode/destinationLocationCode). Comma-delimit for multiple, e.g. origin_airport=SFO,LAX.",
+        "Cabin values are lowercase words: economy | premium | business | first. cabin does NOT hard-filter results — records for all cabins are returned; read the per-cabin Y/W/J/F columns instead.",
+        "Column-prefix convention: Y=economy, W=premium economy, J=business, F=first. Every metric repeats 4x (e.g. JMileageCost, JRemainingSeats, JAirlines, JDirect).",
+        "Each metric has BOTH a formatted string field (e.g. YMileageCost:\"50000\") AND a *Raw numeric field (YMileageCostRaw:50000). Mileage 0 / empty airline string means that cabin is unavailable.",
+        "Pagination via cursor + take (take must be 10-1000) or skip; hasMore + cursor + moreURL drive next page. moreURL points at the upstream /partnerapi path, not this gateway.",
+        "Optional filters: start_date, end_date (YYYY-MM-DD), carriers (CSV e.g. UA,LH), only_direct_flights=true, order_by=lowest_mileage.",
+        "Results are CACHED availability (per-day snapshots with CreatedAt/UpdatedAt), not a live booking quote. Feed an ID into /seats-aero/trips/{id} for flight segments + booking links."
+      ],
+      "guide": "Search cached Seats.aero points/miles award availability by origin, destination, date range, cabin and carrier. Returns dated availability records across all mileage programs for the route. Use for award (miles) redemptions, not cash fares. GET https://stabletravel.dev/api/seats-aero/search?origin_airport=SFO&destination_airport=NRT&cabin=business&take=10 (x402, no body) Output: data[].{ID, RouteID, Route.{OriginAirport,DestinationAirport,OriginRegion,DestinationRegion,Distance,Source}, Date, ParsedDate, YAvailable/WAvailable/JAvailable/FAvailable, YMileageCost/.../FMileageCost (string) + YMileageCostRaw/... (number), YTotalTaxes/..., YRemainingSeats/..., YAirlines/..., YDirect/..., Source, CreatedAt, UpdatedAt}; count; hasMore; cursor; moreURL",
+      "costObservedUsd": 0.02,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stabletravel",
+        "url": "https://stabletravel.dev/api/seats-aero/search",
+        "method": "GET",
+        "priceDisplay": "$0.020",
+        "priceUsd": 0.02,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "20000",
+            "payTo": "0xDd257723b86B4947483905cdAcBbBC70fACF2ec0"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "20000",
+            "payTo": "6u5LMGQC2qk9peNibahmRWxGVXrBypk8nhTCcqtiuqMY"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "stabletravel-award-trip-detail-seats-aero",
+    "name": "StableTravel Award Trip Detail (Seats.aero)",
+    "provider": "stabletravel",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "flight-aviation",
+    "description": "Retrieve flight-level trip details (segments, flight numbers, aircraft, times, mileage cost, taxes, remaining seats) plus airline booking links for a single Seats.aero availability ID. Final step after /search or /availability.",
+    "pricing": {
+      "headline": "$0.020",
+      "amount": 0.02,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://stabletravel.dev/api/seats-aero/trips/{availabilityId} (path param, x402, no body). Get the availability ID from the ID field of a /search or /availability result.",
+      "inputExample": {
+        "AVAILABILITY_ID": "2zBh453VqQ0rX6GpMJABMp5KKyu"
+      },
+      "outputShape": "data[].{ID, RouteID, AvailabilityID, AvailabilitySegments[].{FlightNumber, OriginAirport, DestinationAirport, DepartsAt, ArrivesAt, Distance, Duration, AircraftName, AircraftCode, Cabin, Order}, TotalDuration, Stops, Carriers, RemainingSeats, MileageCost, TotalTaxes, Connections[], Aircraft[], FlightNumbers, Cabin, DepartsAt, ArrivesAt, Source}; origin_coordinates.{Lat,Lon}; destination_coordinates.{Lat,Lon}; booking_links[].{label,link,primary}; carriers.{CODE:name}",
+      "quirks": [
+        "Availability ID goes in the URL PATH, not a query param: /api/seats-aero/trips/{id}. The placeholder in the registry url is literal AVAILABILITY_ID — substitute a real ID.",
+        "data[] is a list of trip options (one per cabin/routing) for that availability ID; each trip has its own AvailabilitySegments[], MileageCost, RemainingSeats and per-segment Cabin.",
+        "Unlike /search & /availability, trip detail uses a flat per-trip schema (MileageCost/RemainingSeats as plain numbers, segment Cabin as a word) — NOT the Y/W/J/F column prefixes.",
+        "Includes ready-to-use booking_links (with primary flag) and origin/destination lat-lon coordinates and a carriers code->name map.",
+        "Availability IDs are real and can go stale as the cache refreshes; always source a fresh ID from /search or /availability immediately before calling.",
+        "booking_links point to the airline loyalty program homepage (e.g. Qatar Privilege Club) — this op does NOT book; it only returns links. Read-only, safe to auto-call.",
+        "Activated 2026-06-11: Requires an availability ID from /seats-aero/search (substitute into the path)."
+      ],
+      "guide": "Retrieve flight-level trip details (segments, flight numbers, aircraft, times, mileage cost, taxes, remaining seats) plus airline booking links for a single Seats.aero availability ID. Final step after /search or /availability. GET https://stabletravel.dev/api/seats-aero/trips/{availabilityId} (path param, x402, no body). Get the availability ID from the ID field of a /search or /availability result. Output: data[].{ID, RouteID, AvailabilityID, AvailabilitySegments[].{FlightNumber, OriginAirport, DestinationAirport, DepartsAt, ArrivesAt, Distance, Duration, AircraftName, AircraftCode, Cabin, Order}, TotalDuration, Stops, Carriers, RemainingSeats, MileageCost, TotalTaxes, Connections[], Aircraft[], FlightNumbers, Cabin, DepartsAt, ArrivesAt, Source}; origin_coordinates.{Lat,Lon}; destination_coordinates.{Lat,Lon}; booking_links[].{label,link,primary}; carriers.{CODE:name}",
+      "costObservedUsd": 0.02,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stabletravel",
+        "url": "https://stabletravel.dev/api/seats-aero/trips/AVAILABILITY_ID",
+        "method": "GET",
+        "priceDisplay": "$0.020",
+        "priceUsd": 0.02,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "20000",
+            "payTo": "0xDd257723b86B4947483905cdAcBbBC70fACF2ec0"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "stabletravel-award-availability-sweep-seats-aero",
+    "name": "StableTravel Award Availability Sweep (Seats.aero)",
+    "provider": "stabletravel",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "flight-aviation",
+    "description": "Bulk-retrieve all cached Seats.aero award availability for one mileage program (source), optionally filtered by region, date and cabin. Use for open-ended award hunting across a whole program (e.g. all United-partner awards) rather than a fixed O&D pair.",
+    "pricing": {
+      "headline": "$0.040",
+      "amount": 0.04,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://stabletravel.dev/api/seats-aero/availability?source=united&take=10 (x402, no body)",
+      "inputExample": {
+        "source": "united",
+        "take": "10"
+      },
+      "outputShape": "data[].{ID, RouteID, Route.{OriginAirport,DestinationAirport,OriginRegion,DestinationRegion,Distance,Source}, Date, ParsedDate, Y/W/J/F Available + MileageCost(+Raw) + TotalTaxes(+Raw) + RemainingSeats(+Raw) + Airlines + Direct + Direct* variants, Source, CreatedAt, UpdatedAt}; count; hasMore; cursor; moreURL (same record shape as /search)",
+      "quirks": [
+        "REQUIRED param is source (the mileage program, e.g. source=united, source=aeroplan, source=flyingblue) — NOT origin/destination. This is the key difference from /search.",
+        "Same Y/W/J/F column-prefix convention and dual string+*Raw fields as /search; also exposes Direct-cabin variants (YDirectMileageCost, YDirectRemainingSeats, YDirectAirlines).",
+        "Optional filters: origin_region / destination_region (North America, South America, Africa, Asia, Europe, Oceania), cabin, start_date, end_date.",
+        "Paginate with cursor + take (10-1000) or skip; large programs return many pages (hasMore=true). moreURL is the upstream /partnerapi/availability path.",
+        "Most expensive of the four seats-aero ops at $0.04 (broad sweep). Discover valid source values via /seats-aero/routes."
+      ],
+      "guide": "Bulk-retrieve all cached Seats.aero award availability for one mileage program (source), optionally filtered by region, date and cabin. Use for open-ended award hunting across a whole program (e.g. all United-partner awards) rather than a fixed O&D pair. GET https://stabletravel.dev/api/seats-aero/availability?source=united&take=10 (x402, no body) Output: data[].{ID, RouteID, Route.{OriginAirport,DestinationAirport,OriginRegion,DestinationRegion,Distance,Source}, Date, ParsedDate, Y/W/J/F Available + MileageCost(+Raw) + TotalTaxes(+Raw) + RemainingSeats(+Raw) + Airlines + Direct + Direct* variants, Source, CreatedAt, UpdatedAt}; count; hasMore; cursor; moreURL (same record shape as /search)",
+      "costObservedUsd": 0.04,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stabletravel",
+        "url": "https://stabletravel.dev/api/seats-aero/availability",
+        "method": "GET",
+        "priceDisplay": "$0.040",
+        "priceUsd": 0.04,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "40000",
+            "payTo": "0xDd257723b86B4947483905cdAcBbBC70fACF2ec0"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "40000",
+            "payTo": "6u5LMGQC2qk9peNibahmRWxGVXrBypk8nhTCcqtiuqMY"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "stabletravel-amadeus-flight-seatmap",
+    "name": "StableTravel Amadeus Flight Seatmap",
+    "provider": "stabletravel",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "flight-aviation",
+    "description": "Seat maps for flight offers — per-deck seat grid with availability status, characteristics, per-seat pricing, cabin amenities.",
+    "pricing": {
+      "headline": "$0.032",
+      "amount": 0.0324,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST /api/flights/seatmap JSON {data:[ <full flight-offer object from /flights/search> ]}. (Also GET /api/flights/seatmap for an existing order.)",
+      "inputExample": {
+        "data": [
+          {
+            "type": "flight-offer",
+            "id": "1",
+            "source": "GDS",
+            "itineraries": [
+              {
+                "segments": [
+                  {
+                    "departure": {
+                      "iataCode": "JFK",
+                      "at": "2026-07-15T06:00:00"
+                    },
+                    "arrival": {
+                      "iataCode": "LAX",
+                      "at": "2026-07-15T08:49:00"
+                    },
+                    "carrierCode": "B6",
+                    "number": "123",
+                    "aircraft": {
+                      "code": "32S"
+                    },
+                    "id": "2",
+                    "numberOfStops": 0
+                  }
+                ]
+              }
+            ],
+            "price": {
+              "currency": "EUR",
+              "total": "170.29",
+              "grandTotal": "170.29"
+            },
+            "travelerPricings": [
+              {
+                "travelerId": "1",
+                "fareOption": "STANDARD",
+                "travelerType": "ADULT",
+                "fareDetailsBySegment": [
+                  {
+                    "segmentId": "2",
+                    "cabin": "ECONOMY",
+                    "class": "L"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "outputShape": "{meta.count,data[].{id,type:seatmap,carrierCode,number,aircraft.code,flightOfferId,segmentId,decks[].{deckType,deckConfiguration.{width,length,startSeatRow,endSeatRow,exitRowsX[]},facilities[],seats[].{cabin,number,characteristicsCodes[],travelerPricing[].{seatAvailabilityStatus(AVAILABLE|OCCUPIED|BLOCKED),price.{currency,total}},coordinates.{x,y}}}],aircraftCabinAmenities.{power,seat,wifi,food,beverage},availableSeatsCounters[]},dictionaries.{seatCharacteristics,facilities}}",
+      "quirks": [
+        "POST body must wrap offer(s) in {data:[...]} — a bare array or {flightOffers} 400s 'Invalid JSON'",
+        "Requires a real prior flight-offer object from /flights/search",
+        "seatAvailabilityStatus per seat: AVAILABLE/OCCUPIED/BLOCKED"
+      ],
+      "guide": "Seat maps for flight offers — per-deck seat grid with availability status, characteristics, per-seat pricing, cabin amenities. POST /api/flights/seatmap JSON {data:[ <full flight-offer object from /flights/search> ]}. (Also GET /api/flights/seatmap for an existing order.) Output: {meta.count,data[].{id,type:seatmap,carrierCode,number,aircraft.code,flightOfferId,segmentId,decks[].{deckType,deckConfiguration.{width,length,startSeatRow,endSeatRow,exitRowsX[]},facilities[],seats[].{cabin,number,characteristicsCodes[],travelerPricing[].{seatAvailabilityStatus(AVAILABLE|OCCUPIED|BLOCKED),price.{currency,total}},coordinates.{x,y}}}],aircraftCabinAmenities.{power,seat,wifi,food,beverage},availableSeatsCounters[]},dictionaries.{seatCharacteristics,facilities}}",
+      "costObservedUsd": 0.0324,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stabletravel",
+        "url": "https://stabletravel.dev/api/flights/seatmap",
+        "method": "POST",
+        "priceDisplay": "$0.032",
+        "priceUsd": 0.0324,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "32400",
+            "payTo": "0xDd257723b86B4947483905cdAcBbBC70fACF2ec0"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "32400",
+            "payTo": "6u5LMGQC2qk9peNibahmRWxGVXrBypk8nhTCcqtiuqMY"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "stabletravel-amadeus-flight-status",
+    "name": "StableTravel Amadeus Flight Status",
+    "provider": "stabletravel",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "flight-aviation",
+    "description": "Amadeus scheduled flight status (DatedFlight) by carrier/number/date — schedule, route points, segment durations, operating carrier, aircraft.",
+    "pricing": {
+      "headline": "$0.0054",
+      "amount": 0.0054,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET /api/flights/status?carrierCode=AA&flightNumber=100&scheduledDepartureDate=YYYY-MM-DD",
+      "inputExample": {
+        "carrierCode": "AA",
+        "flightNumber": "100",
+        "scheduledDepartureDate": "2026-06-15"
+      },
+      "outputShape": "{meta.count,data[].{type:DatedFlight,scheduledDepartureDate,flightDesignator.{carrierCode,flightNumber},flightPoints[].{iataCode,departure.timings[]/arrival.timings[]},segments[].{boardPointIataCode,offPointIataCode,scheduledSegmentDuration,partnership.operatingFlight},legs[].{aircraftEquipment.aircraftType,scheduledLegDuration}}}",
+      "quirks": [
+        "Uses carrierCode+flightNumber+scheduledDepartureDate (Amadeus naming), NOT a FlightAware ident",
+        "Cheap ($0.0054)",
+        "Amadeus schedule data, not live tracking"
+      ],
+      "guide": "Amadeus scheduled flight status (DatedFlight) by carrier/number/date — schedule, route points, segment durations, operating carrier, aircraft. GET /api/flights/status?carrierCode=AA&flightNumber=100&scheduledDepartureDate=YYYY-MM-DD Output: {meta.count,data[].{type:DatedFlight,scheduledDepartureDate,flightDesignator.{carrierCode,flightNumber},flightPoints[].{iataCode,departure.timings[]/arrival.timings[]},segments[].{boardPointIataCode,offPointIataCode,scheduledSegmentDuration,partnership.operatingFlight},legs[].{aircraftEquipment.aircraftType,scheduledLegDuration}}}",
+      "costObservedUsd": 0.0054,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stabletravel",
+        "url": "https://stabletravel.dev/api/flights/status",
+        "method": "GET",
+        "priceDisplay": "$0.0054",
+        "priceUsd": 0.0054,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "5400",
+            "payTo": "0xDd257723b86B4947483905cdAcBbBC70fACF2ec0"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "5400",
+            "payTo": "6u5LMGQC2qk9peNibahmRWxGVXrBypk8nhTCcqtiuqMY"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "stabletravel-amadeus-check-in-links",
+    "name": "StableTravel Amadeus Check-in Links",
+    "provider": "stabletravel",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "flight-aviation",
+    "description": "Online check-in page URLs for an airline (mobile + web) via Amadeus reference data.",
+    "pricing": {
+      "headline": "$0.0054",
+      "amount": 0.0054,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET /api/flights/checkin-links?airlineCode=BA",
+      "inputExample": {
+        "airlineCode": "BA"
+      },
+      "outputShape": "{warnings[],meta.count,data[].{type:checkin-link,id,href,channel(Mobile|Web)}}",
+      "quirks": [
+        "Param is airlineCode (NOT carrierCode like /flights/status)",
+        "May return 200 warning {code:10151 DEFAULT LANGUAGE USED} — still returns links"
+      ],
+      "guide": "Online check-in page URLs for an airline (mobile + web) via Amadeus reference data. GET /api/flights/checkin-links?airlineCode=BA Output: {warnings[],meta.count,data[].{type:checkin-link,id,href,channel(Mobile|Web)}}",
+      "costObservedUsd": 0.0054,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stabletravel",
+        "url": "https://stabletravel.dev/api/flights/checkin-links",
+        "method": "GET",
+        "priceDisplay": "$0.0054",
+        "priceUsd": 0.0054,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "5400",
+            "payTo": "0xDd257723b86B4947483905cdAcBbBC70fACF2ec0"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "5400",
+            "payTo": "6u5LMGQC2qk9peNibahmRWxGVXrBypk8nhTCcqtiuqMY"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "stabletravel-flightaware-flight-by-ident",
+    "name": "StableTravel FlightAware Flight by Ident",
+    "provider": "stabletravel",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "flight-aviation",
+    "description": "Look up real-time/recent flights for an ident (flight number, registration, or fa_flight_id). Returns recent instances with schedule, status, gates, route, and the fa_flight_id needed for position/track.",
+    "pricing": {
+      "headline": "$0.010",
+      "amount": 0.01,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET /api/flightaware/flights/{ident} — ident path segment (AA95, N776AN, or fa_flight_id). Optional: ident_type,start,end,cursor.",
+      "inputExample": {
+        "ident": "AA95"
+      },
+      "outputShape": "flights[].{ident,ident_iata,fa_flight_id,operator_iata,flight_number,registration,origin.{code_iata,city,name},destination.{...},scheduled_out,actual_out,scheduled_in,status,progress_percent,aircraft_type,route,gate_origin,gate_destination,codeshares[]},links.next,num_pages",
+      "quirks": [
+        "ident is a PATH segment",
+        "Capture flights[].fa_flight_id here for /position,/track,/route-info,/map",
+        "Returns multiple dated instances of the same flight number"
+      ],
+      "guide": "Look up real-time/recent flights for an ident (flight number, registration, or fa_flight_id). Returns recent instances with schedule, status, gates, route, and the fa_flight_id needed for position/track. GET /api/flightaware/flights/{ident} — ident path segment (AA95, N776AN, or fa_flight_id). Optional: ident_type,start,end,cursor. Output: flights[].{ident,ident_iata,fa_flight_id,operator_iata,flight_number,registration,origin.{code_iata,city,name},destination.{...},scheduled_out,actual_out,scheduled_in,status,progress_percent,aircraft_type,route,gate_origin,gate_destination,codeshares[]},links.next,num_pages",
+      "costObservedUsd": 0.01,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stabletravel",
+        "url": "https://stabletravel.dev/api/flightaware/flights/AA95",
+        "method": "GET",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0xDd257723b86B4947483905cdAcBbBC70fACF2ec0"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "10000",
+            "payTo": "6u5LMGQC2qk9peNibahmRWxGVXrBypk8nhTCcqtiuqMY"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "stabletravel-flightaware-airport-delays-specific",
+    "name": "StableTravel FlightAware Airport Delays (specific)",
+    "provider": "stabletravel",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "flight-aviation",
+    "description": "Current delay summary for one airport: overall delay seconds, severity color, per-reason arrival/departure breakdown.",
+    "pricing": {
+      "headline": "$0.020",
+      "amount": 0.02,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET /api/flightaware/airports/{id}/delays",
+      "inputExample": {
+        "id": "KJFK"
+      },
+      "outputShape": "{airport,category,color,delay_secs,reasons[].{category,color,delay_secs,reason}}",
+      "quirks": [
+        "color is severity (yellow/red)",
+        "delay_secs in seconds; reason strings human-readable",
+        "Activated 2026-06-11: Airport code is a path segment (e.g. KJFK). Verified read."
+      ],
+      "guide": "Current delay summary for one airport: overall delay seconds, severity color, per-reason arrival/departure breakdown. GET /api/flightaware/airports/{id}/delays Output: {airport,category,color,delay_secs,reasons[].{category,color,delay_secs,reason}}",
+      "costObservedUsd": 0.02,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stabletravel",
+        "url": "https://stabletravel.dev/api/flightaware/airports/KJFK/delays",
+        "method": "GET",
+        "priceDisplay": "$0.020",
+        "priceUsd": 0.02,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "20000",
+            "payTo": "0xDd257723b86B4947483905cdAcBbBC70fACF2ec0"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "stabletravel-flightaware-disruption-counts-by-type",
+    "name": "StableTravel FlightAware Disruption Counts by Type",
+    "provider": "stabletravel",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "flight-aviation",
+    "description": "Aggregated disruption (cancellation/delay) counts by entity type (airline/origin/destination) over a window, plus national/worldwide totals.",
+    "pricing": {
+      "headline": "$0.010",
+      "amount": 0.01,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET /api/flightaware/disruption-counts/{entity_type}?time_period=<today|yesterday|last3days|last7days|last14days|last30days>. entity_type path = airline|origin|destination.",
+      "inputExample": {
+        "entity_type": "airline",
+        "time_period": "today"
+      },
+      "outputShape": "{entities[].{cancellations,delays,total,entity_name,entity_id},total_cancellations_national,total_cancellations_worldwide,total_delays_worldwide,links.next,num_pages}",
+      "quirks": [
+        "entity_type is a PATH segment (airline/origin/destination)",
+        "time_period query controls window",
+        "links.next echoes underscore 'disruption_counts'"
+      ],
+      "guide": "Aggregated disruption (cancellation/delay) counts by entity type (airline/origin/destination) over a window, plus national/worldwide totals. GET /api/flightaware/disruption-counts/{entity_type}?time_period=<today|yesterday|last3days|last7days|last14days|last30days>. entity_type path = airline|origin|destination. Output: {entities[].{cancellations,delays,total,entity_name,entity_id},total_cancellations_national,total_cancellations_worldwide,total_delays_worldwide,links.next,num_pages}",
+      "costObservedUsd": 0.01,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stabletravel",
+        "url": "https://stabletravel.dev/api/flightaware/disruption-counts/airline",
+        "method": "GET",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0xDd257723b86B4947483905cdAcBbBC70fACF2ec0"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "10000",
+            "payTo": "6u5LMGQC2qk9peNibahmRWxGVXrBypk8nhTCcqtiuqMY"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "stabletravel-reference-airport-routes",
+    "name": "StableTravel Reference Airport Routes",
+    "provider": "stabletravel",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "flight-aviation",
+    "description": "Get direct destinations from an airport (Amadeus airport direct-destinations). Returns the cities/airports reachable nonstop from a departure airport.",
+    "pricing": {
+      "headline": "$0.0054",
+      "amount": 0.0054,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://stabletravel.dev/api/reference/airport-routes?departureAirportCode=JFK&max=1",
+      "inputExample": {
+        "departureAirportCode": "JFK",
+        "max": 1
+      },
+      "outputShape": "meta.count, meta.links.self, data[].{type,subtype,name,iataCode,geoCode.{latitude,longitude},address.{countryName,countryCode,regionCode},timeZone.{offSet,referenceLocalDateTime}}",
+      "quirks": [
+        "Required query param is departureAirportCode (a 3-letter IATA airport code like JFK) — NOT keyword/subType.",
+        "Optional max caps results (default 50); use max=1 for a cheap minimal probe.",
+        "Output field is lowercase 'subtype'.",
+        "Backed by api.amadeus.com/v1/airport/direct-destinations."
+      ],
+      "guide": "Get direct destinations from an airport (Amadeus airport direct-destinations). Returns the cities/airports reachable nonstop from a departure airport. GET https://stabletravel.dev/api/reference/airport-routes?departureAirportCode=JFK&max=1 Output: meta.count, meta.links.self, data[].{type,subtype,name,iataCode,geoCode.{latitude,longitude},address.{countryName,countryCode,regionCode},timeZone.{offSet,referenceLocalDateTime}}",
+      "costObservedUsd": 0.0054,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stabletravel",
+        "url": "https://stabletravel.dev/api/reference/airport-routes",
+        "method": "GET",
+        "priceDisplay": "$0.0054",
+        "priceUsd": 0.0054,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "5400",
+            "payTo": "0xDd257723b86B4947483905cdAcBbBC70fACF2ec0"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "5400",
+            "payTo": "6u5LMGQC2qk9peNibahmRWxGVXrBypk8nhTCcqtiuqMY"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "stabletravel-reference-locations-search",
+    "name": "StableTravel Reference Locations Search",
+    "provider": "stabletravel",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "flight-aviation",
+    "description": "Search airports and cities by keyword (Amadeus reference-data locations). Returns matching locations with IATA code, geoCode, and address.",
+    "pricing": {
+      "headline": "$0.0054",
+      "amount": 0.0054,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://stabletravel.dev/api/reference/locations?keyword=NYC&subType=CITY",
+      "inputExample": {
+        "keyword": "NYC",
+        "subType": "CITY"
+      },
+      "outputShape": "meta.count, meta.links.self, data[].{type,subType,name,detailedName,id,iataCode,geoCode.{latitude,longitude},address.{cityName,cityCode,countryName,countryCode,stateCode,regionCode},timeZoneOffset,analytics.travelers.score}",
+      "quirks": [
+        "Both keyword AND subType are required; subType must be one of AIRPORT, CITY, or AIRPORT,CITY (comma-joined, no space).",
+        "This is the ONLY reference endpoint that uses keyword+subType; do not reuse this input for the other 5.",
+        "City id is prefixed (e.g. CNYC for NYC).",
+        "meta.links.self leaks the underlying api.amadeus.com URL."
+      ],
+      "guide": "Search airports and cities by keyword (Amadeus reference-data locations). Returns matching locations with IATA code, geoCode, and address. GET https://stabletravel.dev/api/reference/locations?keyword=NYC&subType=CITY Output: meta.count, meta.links.self, data[].{type,subType,name,detailedName,id,iataCode,geoCode.{latitude,longitude},address.{cityName,cityCode,countryName,countryCode,stateCode,regionCode},timeZoneOffset,analytics.travelers.score}",
+      "costObservedUsd": 0.0054,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stabletravel",
+        "url": "https://stabletravel.dev/api/reference/locations",
+        "method": "GET",
+        "priceDisplay": "$0.0054",
+        "priceUsd": 0.0054,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "5400",
+            "payTo": "0xDd257723b86B4947483905cdAcBbBC70fACF2ec0"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "5400",
+            "payTo": "6u5LMGQC2qk9peNibahmRWxGVXrBypk8nhTCcqtiuqMY"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "flight-delay-predictor",
+    "name": "Flight Delay Predictor",
+    "provider": "gg402",
+    "kind": "model",
+    "category": "data-intelligence",
+    "subcategory": "flight-aviation",
+    "description": "Predicts the likelihood and expected duration of a flight delay from route, carrier and schedule inputs. Pay-per-call x402.",
+    "pricing": {
+      "headline": "$0.010",
+      "amount": 0.01,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://gg402.vercel.app/flight_delay_predictor with JSON body {flight_number, departure_date, origin, destination}",
+      "inputExample": {
+        "flight_number": "AA100",
+        "departure_date": "2026-06-15",
+        "origin": "JFK",
+        "destination": "LAX"
+      },
+      "outputShape": "On success, expected at body (status/error envelope observed on validation failures as body.status='ERROR', body.error.{message,code,details[]}); success body shape (delay likelihood/duration) NOT yet captured.",
+      "quirks": [
+        "Registry inputSchema was null. The endpoint uses STRICT validation and requires ALL of: flight_number, departure_date, origin, destination. Sending only a subset returns HTTP 400 status='ERROR' with body.error.details[] naming the missing fields.",
+        "Field names are exact snake_case: flight_number (e.g. 'AA100'), departure_date (YYYY-MM-DD), origin and destination (IATA codes like 'JFK','LAX'). Fields like 'carrier','date','scheduled_departure' are IGNORED/not accepted.",
+        "WARNING: this endpoint CHARGES the $0.01 payment even on a 400 validation error (paid:true, status 400). Send the complete body the first time or you lose money on rejected calls.",
+        "A 200 success response was NOT captured during QA (2-paid-attempt cap hit while reverse-engineering the field set). The known-good body {flight_number,departure_date,origin,destination} should succeed but its exact output shape is unconfirmed."
+      ],
+      "guide": "Call POST https://gg402.vercel.app/flight_delay_predictor with a complete JSON body containing all four required fields: flight_number, departure_date (YYYY-MM-DD), origin and destination (IATA airport codes). Payment is $0.01 USDC on Base (eip155:8453), sync. CRITICAL: the endpoint validates strictly and CHARGES even when it rejects the body with a 400, so include every field on the first call. Read the result from the JSON response body; on validation failure it returns body.status='ERROR' and body.error.details[] listing missing fields.",
+      "costObservedUsd": 0.02,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "gg402.vercel",
+        "url": "https://gg402.vercel.app/flight_delay_predictor",
+        "method": "POST",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0x9257cD24721e3c06E9F7655b77C283bCD9652132"
+          }
+        ],
+        "status": "needs-review",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  }
+]

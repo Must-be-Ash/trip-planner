@@ -1,0 +1,942 @@
+[
+  {
+    "id": "stabletravel-hotel-autocomplete",
+    "name": "StableTravel Hotel Autocomplete",
+    "provider": "stabletravel",
+    "kind": "api",
+    "category": "scheduling-calendars",
+    "subcategory": "scheduling-booking",
+    "description": "Autocomplete hotel names by keyword; returns matching hotels with their Amadeus hotelIds, city/country, and geocode. Cheap name-to-hotelId resolver.",
+    "pricing": {
+      "headline": "$0.0054",
+      "amount": 0.0054,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://stabletravel.dev/api/hotels/autocomplete?keyword=PARIS&subType=HOTEL_GDS&max=5",
+      "inputExample": {
+        "keyword": "PARIS",
+        "subType": "HOTEL_GDS",
+        "max": 5
+      },
+      "outputShape": "data[].{id,name,iataCode,subType,relevance,type:'location',hotelIds[],address.{cityName,countryCode},geoCode.{latitude,longitude}}",
+      "quirks": [
+        "BOTH keyword AND subType are REQUIRED. subType enum is HOTEL_LEISURE or HOTEL_GDS.",
+        "GOTCHA (observed): subType=HOTEL_LEISURE returned HTTP 500 'Amadeus API error: Unknown error' even for a valid keyword; subType=HOTEL_GDS succeeded. Prefer HOTEL_GDS.",
+        "Returns hotelIds[] per match (note: array) — use those with /api/hotels/search.",
+        "Cheapest hotel endpoint ($0.0054). Optional: countryCode, lang, max.",
+        "Upstream Amadeus errors surface as {success:false,error} with a non-2xx status — treat 5xx as retry-with-HOTEL_GDS or transient."
+      ],
+      "guide": "Autocomplete hotel names by keyword; returns matching hotels with their Amadeus hotelIds, city/country, and geocode. Cheap name-to-hotelId resolver. GET https://stabletravel.dev/api/hotels/autocomplete?keyword=PARIS&subType=HOTEL_GDS&max=5 Output: data[].{id,name,iataCode,subType,relevance,type:'location',hotelIds[],address.{cityName,countryCode},geoCode.{latitude,longitude}}",
+      "costObservedUsd": 0.0054,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stabletravel",
+        "url": "https://stabletravel.dev/api/hotels/autocomplete",
+        "method": "GET",
+        "priceDisplay": "$0.0054",
+        "priceUsd": 0.0054,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "5400",
+            "payTo": "0xDd257723b86B4947483905cdAcBbBC70fACF2ec0"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "5400",
+            "payTo": "6u5LMGQC2qk9peNibahmRWxGVXrBypk8nhTCcqtiuqMY"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "stabletravel-hotel-list-by-city",
+    "name": "StableTravel Hotel List by City",
+    "provider": "stabletravel",
+    "kind": "api",
+    "category": "scheduling-calendars",
+    "subcategory": "scheduling-booking",
+    "description": "List hotels in a city by IATA city code (Amadeus reference data). Returns hotelId values used to fetch offers. This is the discovery step; it does NOT return prices/offers.",
+    "pricing": {
+      "headline": "$0.032",
+      "amount": 0.0324,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://stabletravel.dev/api/hotels/list?cityCode=PAR&max=5",
+      "inputExample": {
+        "cityCode": "PAR",
+        "max": 5
+      },
+      "outputShape": "data[].{hotelId,name,chainCode,iataCode,dupeId,geoCode.{latitude,longitude},address.{countryCode,postalCode,cityName,lines[]},lastUpdate}; meta.count",
+      "quirks": [
+        "cityCode is REQUIRED and must be a 3-letter IATA CITY code (PAR, LON, NYC) — not a hotel name or country.",
+        "Returns hotel directory entries only (no prices). Feed hotelId into /api/hotels/search to get bookable offers.",
+        "Optional filters: radius, radiusUnit(KM|MILE), chainCodes, amenities, ratings(1-5 csv), hotelScore(BEDBANK|DIRECTCHAIN|ALL), max(default 100).",
+        "402 pre-flight body is empty; pay and you get 200 JSON.",
+        "meta.count is the total catalog size (e.g. 1694 for PAR), not the number of rows returned."
+      ],
+      "guide": "List hotels in a city by IATA city code (Amadeus reference data). Returns hotelId values used to fetch offers. This is the discovery step; it does NOT return prices/offers. GET https://stabletravel.dev/api/hotels/list?cityCode=PAR&max=5 Output: data[].{hotelId,name,chainCode,iataCode,dupeId,geoCode.{latitude,longitude},address.{countryCode,postalCode,cityName,lines[]},lastUpdate}; meta.count",
+      "costObservedUsd": 0.0324,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stabletravel",
+        "url": "https://stabletravel.dev/api/hotels/list",
+        "method": "GET",
+        "priceDisplay": "$0.032",
+        "priceUsd": 0.0324,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "32400",
+            "payTo": "0xDd257723b86B4947483905cdAcBbBC70fACF2ec0"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "32400",
+            "payTo": "6u5LMGQC2qk9peNibahmRWxGVXrBypk8nhTCcqtiuqMY"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "stabletravel-hotel-list-by-geocode",
+    "name": "StableTravel Hotel List by Geocode",
+    "provider": "stabletravel",
+    "kind": "api",
+    "category": "scheduling-calendars",
+    "subcategory": "scheduling-booking",
+    "description": "List hotels near a latitude/longitude (Amadeus by-geocode). Returns hotelId values plus distance from the point. Discovery step; no prices/offers.",
+    "pricing": {
+      "headline": "$0.032",
+      "amount": 0.0324,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://stabletravel.dev/api/hotels/list/by-geocode?latitude=48.8757&longitude=2.32553&radius=2&max=5",
+      "inputExample": {
+        "latitude": 48.8757,
+        "longitude": 2.32553,
+        "radius": 2,
+        "max": 5
+      },
+      "outputShape": "data[].{hotelId,name,chainCode,geoCode.{latitude,longitude},distance.{value,unit},address.{countryCode,postalCode,cityName,lines[]}}; meta.count",
+      "quirks": [
+        "latitude AND longitude are BOTH REQUIRED (numbers). This is the by-geocode variant, distinct from /api/hotels/list (by city code).",
+        "Each row adds distance.{value,unit} from the query point; data[] is distance-sorted.",
+        "Returns hotel directory only (no offers/prices) — use returned hotelId with /api/hotels/search for bookable offers.",
+        "Optional: radius, radiusUnit(KM|MILE), chainCodes, amenities, ratings, hotelScore, max(default 100). Empty data[] means no hotels near coords, not an error."
+      ],
+      "guide": "List hotels near a latitude/longitude (Amadeus by-geocode). Returns hotelId values plus distance from the point. Discovery step; no prices/offers. GET https://stabletravel.dev/api/hotels/list/by-geocode?latitude=48.8757&longitude=2.32553&radius=2&max=5 Output: data[].{hotelId,name,chainCode,geoCode.{latitude,longitude},distance.{value,unit},address.{countryCode,postalCode,cityName,lines[]}}; meta.count",
+      "costObservedUsd": 0.0324,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stabletravel",
+        "url": "https://stabletravel.dev/api/hotels/list/by-geocode",
+        "method": "GET",
+        "priceDisplay": "$0.032",
+        "priceUsd": 0.0324,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "32400",
+            "payTo": "0xDd257723b86B4947483905cdAcBbBC70fACF2ec0"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "32400",
+            "payTo": "6u5LMGQC2qk9peNibahmRWxGVXrBypk8nhTCcqtiuqMY"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "stabletravel-hotel-offers-search",
+    "name": "StableTravel Hotel Offers Search",
+    "provider": "stabletravel",
+    "kind": "api",
+    "category": "scheduling-calendars",
+    "subcategory": "scheduling-booking",
+    "description": "Search bookable hotel offers (prices, rooms, cancellation policy) for one or more Amadeus hotel IDs and a date range. Returns offer.id values needed for booking.",
+    "pricing": {
+      "headline": "$0.032",
+      "amount": 0.0324,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://stabletravel.dev/api/hotels/search?hotelIds=HLPAR266,MDPARMER&adults=1&checkInDate=2026-08-15&checkOutDate=2026-08-16",
+      "inputExample": {
+        "hotelIds": "HLPAR266,MDPARMER",
+        "adults": 1,
+        "checkInDate": "2026-08-15",
+        "checkOutDate": "2026-08-16"
+      },
+      "outputShape": "data[].{type:'hotel-offers',hotel.{hotelId,name,chainCode,cityCode,latitude,longitude},available,offers[].{id,checkInDate,checkOutDate,rateCode,room.{type,typeEstimated,description.text},price.{currency,base,total,taxes[]},policies.{cancellations[],deposit,refundable.cancellationRefund},self},self}",
+      "quirks": [
+        "hotelIds is REQUIRED — COMMA-SEPARATED Amadeus hotelId codes (e.g. HLPAR266). Get these from /api/hotels/list or /api/hotels/list/by-geocode first.",
+        "checkInDate/checkOutDate must be FUTURE dates (YYYY-MM-DD); past/today dates yield no offers.",
+        "offers[].id is the offerId used by /api/hotels/offer and /api/hotels/book — capture it.",
+        "Prices come back in the hotel's native currency (e.g. EUR) unless currencyCode is passed (enum of ~33 codes incl USD,EUR,GBP).",
+        "Optional filters: adults(default 1), priceRange(e.g. 100-300), currencyCode, paymentPolicy(GUARANTEE|DEPOSIT|NONE), boardType(ROOM_ONLY|BREAKFAST|HALF_BOARD|FULL_BOARD|ALL_INCLUSIVE), includeClosed, bestRateOnly, lang.",
+        "available:false hotels are omitted/marked; not every hotelId returns offers for a given date."
+      ],
+      "guide": "Search bookable hotel offers (prices, rooms, cancellation policy) for one or more Amadeus hotel IDs and a date range. Returns offer.id values needed for booking. GET https://stabletravel.dev/api/hotels/search?hotelIds=HLPAR266,MDPARMER&adults=1&checkInDate=2026-08-15&checkOutDate=2026-08-16 Output: data[].{type:'hotel-offers',hotel.{hotelId,name,chainCode,cityCode,latitude,longitude},available,offers[].{id,checkInDate,checkOutDate,rateCode,room.{type,typeEstimated,description.text},price.{currency,base,total,taxes[]},policies.{cancellations[],deposit,refundable.cancellationRefund},self},self}",
+      "costObservedUsd": 0.0324,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stabletravel",
+        "url": "https://stabletravel.dev/api/hotels/search",
+        "method": "GET",
+        "priceDisplay": "$0.032",
+        "priceUsd": 0.0324,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "32400",
+            "payTo": "0xDd257723b86B4947483905cdAcBbBC70fACF2ec0"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "32400",
+            "payTo": "6u5LMGQC2qk9peNibahmRWxGVXrBypk8nhTCcqtiuqMY"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "stabletravel-hotel-offers-by-hotel",
+    "name": "StableTravel Hotel Offers by Hotel",
+    "provider": "stabletravel",
+    "kind": "api",
+    "category": "scheduling-calendars",
+    "subcategory": "scheduling-booking",
+    "description": "Search bookable offers for a SINGLE Amadeus hotel ID and date range. Same shape as hotels/search but scoped to one hotelId.",
+    "pricing": {
+      "headline": "$0.032",
+      "amount": 0.0324,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://stabletravel.dev/api/hotels/search/by-hotel?hotelId=HLPAR266&adults=1&checkInDate=2026-08-15&checkOutDate=2026-08-16",
+      "inputExample": {
+        "hotelId": "HLPAR266",
+        "adults": 1,
+        "checkInDate": "2026-08-15",
+        "checkOutDate": "2026-08-16"
+      },
+      "outputShape": "data[].{hotel.{hotelId,name,chainCode,cityCode},available,offers[].{id,checkInDate,checkOutDate,room.{type,typeEstimated,description.text},price.{currency,base,total,taxes[]},policies.{cancellations[],deposit,refundable},self}}",
+      "quirks": [
+        "FIELD-NAME TRAP: this endpoint uses SINGULAR hotelId (one code), whereas /api/hotels/search uses PLURAL hotelIds (comma list). Don't mix them up.",
+        "hotelId is REQUIRED; checkInDate/checkOutDate must be future YYYY-MM-DD.",
+        "offers[].id is the offerId for /api/hotels/offer and /api/hotels/book.",
+        "Same optional filters as hotels/search (adults, currencyCode, priceRange, paymentPolicy, boardType, includeClosed, bestRateOnly, lang)."
+      ],
+      "guide": "Search bookable offers for a SINGLE Amadeus hotel ID and date range. Same shape as hotels/search but scoped to one hotelId. GET https://stabletravel.dev/api/hotels/search/by-hotel?hotelId=HLPAR266&adults=1&checkInDate=2026-08-15&checkOutDate=2026-08-16 Output: data[].{hotel.{hotelId,name,chainCode,cityCode},available,offers[].{id,checkInDate,checkOutDate,room.{type,typeEstimated,description.text},price.{currency,base,total,taxes[]},policies.{cancellations[],deposit,refundable},self}}",
+      "costObservedUsd": 0.0324,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stabletravel",
+        "url": "https://stabletravel.dev/api/hotels/search/by-hotel",
+        "method": "GET",
+        "priceDisplay": "$0.032",
+        "priceUsd": 0.0324,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "32400",
+            "payTo": "0xDd257723b86B4947483905cdAcBbBC70fACF2ec0"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "32400",
+            "payTo": "6u5LMGQC2qk9peNibahmRWxGVXrBypk8nhTCcqtiuqMY"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "stabletravel-hotel-offer-detail",
+    "name": "StableTravel Hotel Offer Detail",
+    "provider": "stabletravel",
+    "kind": "api",
+    "category": "scheduling-calendars",
+    "subcategory": "scheduling-booking",
+    "description": "Get full details for a single hotel offer by offerId (re-confirms price, room, deposit/cancellation policy, accepted credit cards). Use right before booking.",
+    "pricing": {
+      "headline": "$0.032",
+      "amount": 0.0324,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://stabletravel.dev/api/hotels/offer?offerId=NINLXLXOQ3",
+      "inputExample": {
+        "offerId": "NINLXLXOQ3"
+      },
+      "outputShape": "data.{type:'hotel-offers',hotel.{hotelId,name,chainCode,cityCode,amenities[]},available,offers[].{id,checkInDate,checkOutDate,room.{type,typeEstimated,description.text},price.{currency,base,total,taxes[]},policies.{cancellations[],deposit.acceptedPayments.{creditCards[],methods[],creditCardPolicies[]},refundable.cancellationRefund}}}; meta.lang",
+      "quirks": [
+        "offerId is REQUIRED — the offers[].id value harvested from /api/hotels/search or /api/hotels/search/by-hotel.",
+        "Offer IDs are time-sensitive: a stale/expired offerId returns an Amadeus error. Fetch fresh offers shortly before calling.",
+        "Response data is a single object (not an array) wrapping one hotel + its offers[]; includes deposit.acceptedPayments.creditCardPolicies for booking input prep."
+      ],
+      "guide": "Get full details for a single hotel offer by offerId (re-confirms price, room, deposit/cancellation policy, accepted credit cards). Use right before booking. GET https://stabletravel.dev/api/hotels/offer?offerId=NINLXLXOQ3 Output: data.{type:'hotel-offers',hotel.{hotelId,name,chainCode,cityCode,amenities[]},available,offers[].{id,checkInDate,checkOutDate,room.{type,typeEstimated,description.text},price.{currency,base,total,taxes[]},policies.{cancellations[],deposit.acceptedPayments.{creditCards[],methods[],creditCardPolicies[]},refundable.cancellationRefund}}}; meta.lang",
+      "costObservedUsd": 0.0324,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stabletravel",
+        "url": "https://stabletravel.dev/api/hotels/offer",
+        "method": "GET",
+        "priceDisplay": "$0.032",
+        "priceUsd": 0.0324,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "32400",
+            "payTo": "0xDd257723b86B4947483905cdAcBbBC70fACF2ec0"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "32400",
+            "payTo": "6u5LMGQC2qk9peNibahmRWxGVXrBypk8nhTCcqtiuqMY"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "stabletravel-hotel-booking",
+    "name": "StableTravel Hotel Booking",
+    "provider": "stabletravel",
+    "kind": "api",
+    "category": "scheduling-calendars",
+    "subcategory": "scheduling-booking",
+    "description": "Create a real hotel booking order against an offer (Amadeus hotel-order). OUTWARD/irreversible: provisions an actual reservation. Not auto-called.",
+    "pricing": {
+      "headline": "$0.0022",
+      "amount": 0.00216,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "RED",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://stabletravel.dev/api/hotels/book  body: {data:{type:'hotel-order',guests[],travelAgent,roomAssociations[],payment}}",
+      "inputExample": {
+        "data": {
+          "type": "hotel-order",
+          "guests": [
+            {
+              "tid": 1,
+              "title": "MR",
+              "firstName": "Jane",
+              "lastName": "Doe",
+              "phone": "+33679278416",
+              "email": "jane@example.com"
+            }
+          ],
+          "travelAgent": {
+            "contact": {
+              "email": "agent@example.com"
+            }
+          },
+          "roomAssociations": [
+            {
+              "guestReferences": [
+                {
+                  "guestReference": "1"
+                }
+              ],
+              "hotelOfferId": "<offerId>"
+            }
+          ],
+          "payment": {
+            "method": "CREDIT_CARD",
+            "paymentCard": {
+              "paymentCardInfo": {
+                "vendorCode": "VI",
+                "cardNumber": "<card>",
+                "expiryDate": "2027-08",
+                "holderName": "JANE DOE"
+              }
+            }
+          }
+        }
+      },
+      "outputShape": "data.{type:'hotel-order',id,hotelBookings[].{id,confirmationNumber,hotelOffer,hotelProviderInformation}}; warnings[]",
+      "quirks": [
+        "Required top-level: data.type MUST be literal 'hotel-order'; data.guests[] (each needs tid number); data.travelAgent.contact.email required.",
+        "guests[].tid is a numeric guest index referenced by roomAssociations; do not confuse with a string id.",
+        "Real booking needs a fresh offerId (from /api/hotels/offer) tied to roomAssociations[].hotelOfferId, plus a real payment.paymentCard. Offer must still be live or Amadeus rejects.",
+        "Cheapest write endpoint ($0.00216) but the x402 fee is separate from the actual hotel charge taken by the property/Amadeus.",
+        "APPROVAL-GATED: this is an OUTWARD/irreversible action (real charge / order / shipment). Shape is from the provider OpenAPI/discovery and was NOT QA-executed (we do not place real bookings/purchases as tests). The needsApproval gate fires before any real execution."
+      ],
+      "guide": "Create a real hotel booking order against an offer (Amadeus hotel-order). OUTWARD/irreversible: provisions an actual reservation. Not auto-called. POST https://stabletravel.dev/api/hotels/book  body: {data:{type:'hotel-order',guests[],travelAgent,roomAssociations[],payment}} Output: data.{type:'hotel-order',id,hotelBookings[].{id,confirmationNumber,hotelOffer,hotelProviderInformation}}; warnings[]",
+      "costObservedUsd": 0,
+      "needsApproval": true
+    },
+    "endpoints": [
+      {
+        "provider": "stabletravel",
+        "url": "https://stabletravel.dev/api/hotels/book",
+        "method": "POST",
+        "priceDisplay": "$0.0022",
+        "priceUsd": 0.00216,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "2160",
+            "payTo": "0xDd257723b86B4947483905cdAcBbBC70fACF2ec0"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "2160",
+            "payTo": "6u5LMGQC2qk9peNibahmRWxGVXrBypk8nhTCcqtiuqMY"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "stabletravel-activities-search",
+    "name": "StableTravel Activities Search",
+    "provider": "stabletravel",
+    "kind": "api",
+    "category": "scheduling-calendars",
+    "subcategory": "scheduling-booking",
+    "description": "Search tours and activities near a geographic point (lat/lng + radius) via the Amadeus Tours & Activities backend. Returns bookable activities with name, description, geocode, price, pictures, and a booking link.",
+    "pricing": {
+      "headline": "$0.054",
+      "amount": 0.054,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://stabletravel.dev/api/activities/search?latitude={lat}&longitude={lng}&radius={km}&max={n}  (no body; x402/MPP payment auto-handled)",
+      "inputExample": {
+        "latitude": 48.8566,
+        "longitude": 2.3522,
+        "radius": 1,
+        "max": 2
+      },
+      "outputShape": "data[].id, data[].name, data[].shortDescription?, data[].description (HTML string), data[].geoCode.latitude, data[].geoCode.longitude, data[].price.amount, data[].price.currencyCode, data[].pictures[], data[].bookingLink, data[].minimumDuration, meta.count, meta.links.self",
+      "quirks": [
+        "Required query params: latitude, longitude. Optional: radius (km, default 1), max (default 50). No request body (GET).",
+        "data[].id is the activityId you pass to /api/activities/details.",
+        "price.currencyCode is EUR (not USD) for European activities — do not assume USD.",
+        "data[].description is an HTML string (contains <div>/<p> tags); shortDescription is plain text but not always present.",
+        "meta.count can be large (e.g. 1300) while only up to `max` items are returned."
+      ],
+      "guide": "Search tours and activities near a geographic point (lat/lng + radius) via the Amadeus Tours & Activities backend. Returns bookable activities with name, description, geocode, price, pictures, and a booking link. GET https://stabletravel.dev/api/activities/search?latitude={lat}&longitude={lng}&radius={km}&max={n}  (no body; x402/MPP payment auto-handled) Output: data[].id, data[].name, data[].shortDescription?, data[].description (HTML string), data[].geoCode.latitude, data[].geoCode.longitude, data[].price.amount, data[].price.currencyCode, data[].pictures[], data[].bookingLink, data[].minimumDuration, meta.count, meta.links.self",
+      "costObservedUsd": 0.05,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stabletravel",
+        "url": "https://stabletravel.dev/api/activities/search",
+        "method": "GET",
+        "priceDisplay": "$0.054",
+        "priceUsd": 0.054,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "54000",
+            "payTo": "0xDd257723b86B4947483905cdAcBbBC70fACF2ec0"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "54000",
+            "payTo": "6u5LMGQC2qk9peNibahmRWxGVXrBypk8nhTCcqtiuqMY"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "stabletravel-transfers-search",
+    "name": "StableTravel Transfers Search",
+    "provider": "stabletravel",
+    "kind": "api",
+    "category": "scheduling-calendars",
+    "subcategory": "scheduling-booking",
+    "description": "Search available ground/airport transfer (private car/shuttle) offers between an airport (IATA code) and a drop-off address via Amadeus. Returns priced transfer offers with vehicle, service provider, and a bookable offer ID.",
+    "pricing": {
+      "headline": "$0.0032",
+      "amount": 0.00324,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://stabletravel.dev/api/transfers/search with JSON body {startLocationCode, endAddressLine, endCityName, endCountryCode, endGeoCode, transferType, startDateTime, passengers}",
+      "inputExample": {
+        "startLocationCode": "CDG",
+        "endAddressLine": "5 Avenue Anatole France",
+        "endCityName": "Paris",
+        "endCountryCode": "FR",
+        "endGeoCode": "48.8584,2.2945",
+        "transferType": "PRIVATE",
+        "startDateTime": "2026-08-15T10:00:00",
+        "passengers": 2
+      },
+      "outputShape": "data[].id, data[].type ('transfer-offer'), data[].transferType, data[].start.{dateTime,locationCode}, data[].end.{dateTime,address.{line,cityName,countryCode,latitude,longitude}}, data[].vehicle.{code,category,description,imageURL,seats[].count,baggages[]}, data[].converted.{monetaryAmount,currencyCode,base.monetaryAmount,totalFees.monetaryAmount}, data[].quotation.{monetaryAmount,currencyCode}, data[].serviceProvider.{code,name,termsUrl,logoUrl,settings[]}, data[].extraServices[].{code,itemId,description,quotation.monetaryAmount,isBookable}",
+      "quirks": [
+        "DROP-OFF REQUIRES BOTH full address (endAddressLine + endCityName + endCountryCode) AND endGeoCode together. Address-only -> 200 with body {errors:[{code:34604,detail:'NEED GEOCODES OF THE ADDRESS'}]}. Geocode-only -> 200 with body {errors:[{code:32803,detail:'MISSING DROP OFF LOCATION INFORMATION'}]}.",
+        "endGeoCode format is 'lat,long' as a single string (e.g. '48.8584,2.2945').",
+        "startLocationCode must be a valid IATA airport code (e.g. CDG).",
+        "You pay ~$0.003 even when the call returns a validation error in the body (HTTP is still 200) — build the body correctly the first time.",
+        "Response is large (~280KB); data[] holds many offers. Read price from data[i].converted.monetaryAmount (currency in data[i].converted.currencyCode, e.g. EUR).",
+        "Each offer's serviceProvider.settings may include 'FLIGHT_NUMBER_REQUIRED' — that flightNumber is needed at /transfers/book time.",
+        "Offer IDs (data[].id) are the offerId you pass to /transfers/book."
+      ],
+      "guide": "Search available ground/airport transfer (private car/shuttle) offers between an airport (IATA code) and a drop-off address via Amadeus. Returns priced transfer offers with vehicle, service provider, and a bookable offer ID. POST https://stabletravel.dev/api/transfers/search with JSON body {startLocationCode, endAddressLine, endCityName, endCountryCode, endGeoCode, transferType, startDateTime, passengers} Output: data[].id, data[].type ('transfer-offer'), data[].transferType, data[].start.{dateTime,locationCode}, data[].end.{dateTime,address.{line,cityName,countryCode,latitude,longitude}}, data[].vehicle.{code,category,description,imageURL,seats[].count,baggages[]}, data[].converted.{monetaryAmount,currencyCode,base.monetaryAmount,totalFees.monetaryAmount}, data[].quotation.{monetaryAmount,currencyCode}, data[].serviceProvider.{code,name,termsUrl,logoUrl,settings[]}, data[].extraServices[].{code,itemId,description,quotation.monetaryAmount,isBookable}",
+      "costObservedUsd": 0.00324,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stabletravel",
+        "url": "https://stabletravel.dev/api/transfers/search",
+        "method": "POST",
+        "priceDisplay": "$0.0032",
+        "priceUsd": 0.00324,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "3240",
+            "payTo": "0xDd257723b86B4947483905cdAcBbBC70fACF2ec0"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "3240",
+            "payTo": "6u5LMGQC2qk9peNibahmRWxGVXrBypk8nhTCcqtiuqMY"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "stabletravel-transfers-book",
+    "name": "StableTravel Transfers Book",
+    "provider": "stabletravel",
+    "kind": "api",
+    "category": "scheduling-calendars",
+    "subcategory": "scheduling-booking",
+    "description": "Book a transfer order from a transfer offer returned by /transfers/search. Creates a real, billable transfer reservation (Amadeus). OUTWARD/irreversible — places an actual booking; do not call without explicit user approval.",
+    "pricing": {
+      "headline": "$0.0022",
+      "amount": 0.00216,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "RED",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://stabletravel.dev/api/transfers/book with JSON body {offerId, data:{passengers[], payment, flightNumber?, note?, extraServices?[], ...}}. offerId + data are required; data.passengers and data.payment are required.",
+      "inputExample": {
+        "offerId": "<offer id from /transfers/search data[].id>",
+        "data": {
+          "passengers": [
+            {
+              "firstName": "Jane",
+              "lastName": "Doe",
+              "title": "MS",
+              "contacts": {
+                "phoneNumber": "+33123456789",
+                "email": "jane@example.com"
+              }
+            }
+          ],
+          "payment": {
+            "methodOfPayment": "CREDIT_CARD",
+            "creditCard": {
+              "number": "...",
+              "holderName": "...",
+              "vendorCode": "VI",
+              "expiryDate": "1028"
+            }
+          },
+          "flightNumber": "AF1234"
+        }
+      },
+      "outputShape": "data (booked transfer order object), warnings[] (per OpenAPI; full shape unverified — not paid because outward)",
+      "quirks": [
+        "offerId comes from a prior /transfers/search response (data[].id).",
+        "data.passengers and data.payment are REQUIRED by the OpenAPI schema.",
+        "If the chosen offer's serviceProvider.settings includes 'FLIGHT_NUMBER_REQUIRED', you must supply data.flightNumber.",
+        "Schema source: OpenAPI at https://stabletravel.dev/openapi.json — exact payment sub-object fields not live-verified.",
+        "APPROVAL-GATED: this is an OUTWARD/irreversible action (real charge / order / shipment). Shape is from the provider OpenAPI/discovery and was NOT QA-executed (we do not place real bookings/purchases as tests). The needsApproval gate fires before any real execution."
+      ],
+      "guide": "Book a transfer order from a transfer offer returned by /transfers/search. Creates a real, billable transfer reservation (Amadeus). OUTWARD/irreversible — places an actual booking; do not call without explicit user approval. POST https://stabletravel.dev/api/transfers/book with JSON body {offerId, data:{passengers[], payment, flightNumber?, note?, extraServices?[], ...}}. offerId + data are required; data.passengers and data.payment are required. Output: data (booked transfer order object), warnings[] (per OpenAPI; full shape unverified — not paid because outward)",
+      "costObservedUsd": 0,
+      "needsApproval": true
+    },
+    "endpoints": [
+      {
+        "provider": "stabletravel",
+        "url": "https://stabletravel.dev/api/transfers/book",
+        "method": "POST",
+        "priceDisplay": "$0.0022",
+        "priceUsd": 0.00216,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "2160",
+            "payTo": "0xDd257723b86B4947483905cdAcBbBC70fACF2ec0"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "2160",
+            "payTo": "6u5LMGQC2qk9peNibahmRWxGVXrBypk8nhTCcqtiuqMY"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "stabletravel-transfers-cancel",
+    "name": "StableTravel Transfers Cancel",
+    "provider": "stabletravel",
+    "kind": "api",
+    "category": "scheduling-calendars",
+    "subcategory": "scheduling-booking",
+    "description": "Cancel a previously booked transfer order by orderId + confirmation number (Amadeus). OUTWARD/irreversible state change on a real booking; do not call without explicit user approval.",
+    "pricing": {
+      "headline": "$0.0022",
+      "amount": 0.00216,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "RED",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://stabletravel.dev/api/transfers/cancel with JSON body {orderId, confirmNbr}. Both required.",
+      "inputExample": {
+        "orderId": "<transfer order id from /transfers/book>",
+        "confirmNbr": "<confirmation number from booking>"
+      },
+      "outputShape": "data (cancellation result object; per OpenAPI — not live-verified because outward)",
+      "quirks": [
+        "Both orderId AND confirmNbr are REQUIRED (note the abbreviated field name 'confirmNbr', not 'confirmationNumber').",
+        "orderId and confirmNbr come from a prior /transfers/book response.",
+        "Schema source: OpenAPI at https://stabletravel.dev/openapi.json.",
+        "APPROVAL-GATED: this is an OUTWARD/irreversible action (real charge / order / shipment). Shape is from the provider OpenAPI/discovery and was NOT QA-executed (we do not place real bookings/purchases as tests). The needsApproval gate fires before any real execution."
+      ],
+      "guide": "Cancel a previously booked transfer order by orderId + confirmation number (Amadeus). OUTWARD/irreversible state change on a real booking; do not call without explicit user approval. POST https://stabletravel.dev/api/transfers/cancel with JSON body {orderId, confirmNbr}. Both required. Output: data (cancellation result object; per OpenAPI — not live-verified because outward)",
+      "costObservedUsd": 0,
+      "needsApproval": true
+    },
+    "endpoints": [
+      {
+        "provider": "stabletravel",
+        "url": "https://stabletravel.dev/api/transfers/cancel",
+        "method": "POST",
+        "priceDisplay": "$0.0022",
+        "priceUsd": 0.00216,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "2160",
+            "payTo": "0xDd257723b86B4947483905cdAcBbBC70fACF2ec0"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "2160",
+            "payTo": "6u5LMGQC2qk9peNibahmRWxGVXrBypk8nhTCcqtiuqMY"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  }
+]

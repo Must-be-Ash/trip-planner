@@ -1,0 +1,372 @@
+[
+  {
+    "id": "reddit-search-stableenrich",
+    "name": "Reddit Search (StableEnrich)",
+    "provider": "stableenrich",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "social-media-data",
+    "description": "Search Reddit posts by keyword. Returns a ranked list of post previews (title, author, subreddit, score, comment count, created date, and a possibly-truncated selftext) with a base64 pagination cursor.",
+    "pricing": {
+      "headline": "$0.020",
+      "amount": 0.02,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://stableenrich.dev/api/reddit/search with JSON body {query (required), sort?, timeframe?, maxResults?, after?}. sort enum: relevance(default)|new|top|comment_count. timeframe enum: all(default)|day|week|month|year. maxResults 1-25 (default 10).",
+      "inputExample": {
+        "query": "AI agents",
+        "maxResults": 2
+      },
+      "outputShape": "posts[] (each: id, title, author, subreddit, score, numComments, createdAt|null, selftext|null, selftextTruncated:boolean, permalink), after:string|null (base64 cursor), searchContext.query, searchContext.resultCount",
+      "quirks": [
+        "maxResults is a loose hint, not a hard cap: requesting maxResults:2 returned 7 posts in testing.",
+        "selftext is capped (~500 chars) and selftextTruncated flags it; for the full untruncated body + comments, feed the post's permalink into the SEPARATE /api/reddit/post-comments service (another $0.02 call).",
+        "after is a base64-encoded pagination cursor (opaque blob), NOT a page number; pass it back as input.after for the next page.",
+        "createdAt and selftext can be null.",
+        "Pays via x402 on Base; mpp also supported. costObserved $0.02."
+      ],
+      "guide": "Search Reddit posts by keyword. Returns a ranked list of post previews (title, author, subreddit, score, comment count, created date, and a possibly-truncated selftext) with a base64 pagination cursor. POST https://stableenrich.dev/api/reddit/search with JSON body {query (required), sort?, timeframe?, maxResults?, after?}. sort enum: relevance(default)|new|top|comment_count. timeframe enum: all(default)|day|week|month|year. maxResults 1-25 (default 10). Output: posts[] (each: id, title, author, subreddit, score, numComments, createdAt|null, selftext|null, selftextTruncated:boolean, permalink), after:string|null (base64 cursor), searchContext.query, searchContext.resultCount",
+      "costObservedUsd": 0.02,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stableenrich",
+        "url": "https://stableenrich.dev/api/reddit/search",
+        "method": "POST",
+        "priceDisplay": "$0.020",
+        "priceUsd": 0.02,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "20000",
+            "payTo": "0x325bdF6F7efAB24a2210c48c1b64cAb2eAe1d430"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "20000",
+            "payTo": "8EgACpZ16XWEt7YjJPsh1ZheVRZUGmmwQ8nJdmA1o5w4"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "reddit-post-comments-stableenrich",
+    "name": "Reddit Post Comments (StableEnrich)",
+    "provider": "stableenrich",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "social-media-data",
+    "description": "Fetch a single Reddit post's full details (untruncated body) plus its comment thread, given the post URL. Supports cursor pagination through comments.",
+    "pricing": {
+      "headline": "$0.020",
+      "amount": 0.02,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://stableenrich.dev/api/reddit/post-comments with JSON body {url (required, full Reddit post URL), cursor?}. Use cursor (returned in output) to page through more comments.",
+      "inputExample": {
+        "url": "https://reddit.com/r/ChatGPT/comments/1tolh94/anyone_who_regularly_uses_ai_agents_for_personal/"
+      },
+      "outputShape": "post{id,title,author,subreddit,score,numComments,createdAt|null,selftext|null,permalink}, comments[]{id,author,body,bodyTruncated:boolean,score,createdAt|null}, hasMore:boolean, cursor:string|null",
+      "quirks": [
+        "Input key is `url` (full Reddit post URL), NOT a post id; the permalink returned by /api/reddit/search works directly.",
+        "Comment `body` can still be truncated (bodyTruncated flag, e.g. trailing '...[+289 chars]'); no per-comment full-fetch is exposed.",
+        "Comment pagination uses `cursor` (input) <-> output `cursor`/`hasMore`; when hasMore=false, cursor is null.",
+        "The post object's selftext here is the FULL untruncated body (unlike search, which truncates).",
+        "Pays via x402 on Base; mpp also supported. costObserved $0.02."
+      ],
+      "guide": "Fetch a single Reddit post's full details (untruncated body) plus its comment thread, given the post URL. Supports cursor pagination through comments. POST https://stableenrich.dev/api/reddit/post-comments with JSON body {url (required, full Reddit post URL), cursor?}. Use cursor (returned in output) to page through more comments. Output: post{id,title,author,subreddit,score,numComments,createdAt|null,selftext|null,permalink}, comments[]{id,author,body,bodyTruncated:boolean,score,createdAt|null}, hasMore:boolean, cursor:string|null",
+      "costObservedUsd": 0.02,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stableenrich",
+        "url": "https://stableenrich.dev/api/reddit/post-comments",
+        "method": "POST",
+        "priceDisplay": "$0.020",
+        "priceUsd": 0.02,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "20000",
+            "payTo": "0x325bdF6F7efAB24a2210c48c1b64cAb2eAe1d430"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "20000",
+            "payTo": "8EgACpZ16XWEt7YjJPsh1ZheVRZUGmmwQ8nJdmA1o5w4"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "twit-sh-tweet-search",
+    "name": "twit.sh Tweet Search",
+    "provider": "x402.twit",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "social-media-data",
+    "description": "Search X/Twitter tweets with advanced filters. Returns up to 20 tweets per page (most recent first) with pagination. Each result is a full X v2-compatible tweet object with embedded author profile and engagement metrics. At least one filter param is required.",
+    "pricing": {
+      "headline": "$0.0050",
+      "amount": 0.005,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "poll",
+      "auth": "none",
+      "callShape": "GET https://x402.twit.sh/tweets/search?words=<terms>&minLikes=<n>&... (x402 paid on Base, no body; all filters are query-string params, at least one required)",
+      "inputExample": {
+        "words": "bitcoin",
+        "minLikes": "1000"
+      },
+      "outputShape": "data[] (array of tweet objects), each: data[].id, data[].text, data[].created_at, data[].author_id, data[].conversation_id, data[].lang, data[].public_metrics.{retweet_count,reply_count,like_count,quote_count,bookmark_count}, data[].entities.{mentions[],user_mentions[]}, data[].author.{id,username,name,description,verified,verified_type,public_metrics.*}; plus a pagination next_token (pass back via ?next_token=)",
+      "quirks": [
+        "AT LEAST ONE filter query-param is required (returns {} / empty if none supplied). Available filters: words (all words must appear), phrase (exact phrase), anyWords, noneWords, hashtags, from (username), to (replies-to username), mentioning (username), minReplies, minLikes, minReposts, since (YYYY-MM-DD), until (YYYY-MM-DD), next_token (pagination cursor).",
+        "Numeric thresholds (minLikes/minReplies/minReposts) are passed as strings in the query string.",
+        "All inputs are query-string params; no request body.",
+        "Returns up to ~20 tweets per page under data[]; use next_token for the next page.",
+        "REAL price is $0.005 (402 challenge amount '5000'), NOT the $0.01 advertised in the OpenAPI spec.",
+        "ORIGIN-WIDE: the agentcash MCP fetch wrapper falsely reports x402.twit.sh as 'deprecated' — origin is LIVE; pay via qa-pay/direct x402 instead.",
+        "x402 settlement is async: qa-pay showed confirmed:false/txHash:null but status was 200 with real tweet data — the response is the success proof."
+      ],
+      "guide": "Search X/Twitter tweets with advanced filters. Returns up to 20 tweets per page (most recent first) with pagination. Each result is a full X v2-compatible tweet object with embedded author profile and engagement metrics. At least one filter param is required. GET https://x402.twit.sh/tweets/search?words=<terms>&minLikes=<n>&... (x402 paid on Base, no body; all filters are query-string params, at least one required) Output: data[] (array of tweet objects), each: data[].id, data[].text, data[].created_at, data[].author_id, data[].conversation_id, data[].lang, data[].public_metrics.{retweet_count,reply_count,like_count,quote_count,bookmark_count}, data[].entities.{mentions[],user_mentions[]}, data[].author.{id,username,name,description,verified,verified_type,public_metrics.*}; plus a pagination next_token (pass back via ?next_token=)",
+      "costObservedUsd": 0.005,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "x402.twit",
+        "url": "https://x402.twit.sh/tweets/search",
+        "method": "GET",
+        "priceDisplay": "$0.0050",
+        "priceUsd": 0.005,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "5000",
+            "payTo": "0x9dBA414637c611a16BEa6f0796BFcbcBdc410df8"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "scrape-creators-tiktok-video",
+    "name": "Scrape Creators TikTok Video",
+    "provider": "Orthogonal",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "social-media-data",
+    "description": "Fetch full TikTok video metadata (desc, stats, all bitrate/play_addr download URLs, covers, full author object) by video URL; optional transcript and region proxy override.",
+    "pricing": {
+      "headline": "$0.020",
+      "amount": 0.02,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://x402.orth.sh/scrapecreators/v2/tiktok/video?url=<TikTok video URL>&trim=true — no body; video URL passed as query param (+ optional get_transcript, region, trim).",
+      "inputExample": {
+        "url": "https://www.tiktok.com/@scout2015/video/6718335390845095173",
+        "trim": "true"
+      },
+      "outputShape": "success, credits_remaining, aweme_detail.{aweme_id, desc, region, statistics.{play_count,digg_count,comment_count,share_count,collect_count}, video.{duration, bit_rate[].{gear_name,bit_rate,play_addr.url_list[]}, cover, play_addr, ratio, width, height}, author.{uid,unique_id,nickname,sec_uid,follower_count,signature,...}, create_time, create_time_utc, url, is_paid_partnership}",
+      "quirks": [
+        "x402 PROTOCOL V1 gateway — pay via qa-pay.mjs / x402-fetch (agentcash/MCP fetch rejects v1).",
+        "This is the /v2/ path (TikTok), distinct from the /v1/ Truth Social paths.",
+        "`url` is REQUIRED: the full TikTok video URL. Optional: `get_transcript` (bool), `trim` (bool), `region` (2-letter country code like US/GB/PH — set it if you get no response, esp. Philippines='PH').",
+        "Output is huge even with trim=true (~29KB) due to multiple bitrate/play_addr variants; payload nested under `aweme_detail`.",
+        "Flat 0.02 USDC on Base."
+      ],
+      "guide": "Fetch full TikTok video metadata (desc, stats, all bitrate/play_addr download URLs, covers, full author object) by video URL; optional transcript and region proxy override. GET https://x402.orth.sh/scrapecreators/v2/tiktok/video?url=<TikTok video URL>&trim=true — no body; video URL passed as query param (+ optional get_transcript, region, trim). Output: success, credits_remaining, aweme_detail.{aweme_id, desc, region, statistics.{play_count,digg_count,comment_count,share_count,collect_count}, video.{duration, bit_rate[].{gear_name,bit_rate,play_addr.url_list[]}, cover, play_addr, ratio, width, height}, author.{uid,unique_id,nickname,sec_uid,follower_count,signature,...}, create_time, create_time_utc, url, is_paid_partnership}",
+      "costObservedUsd": 0.02,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "Orthogonal",
+        "url": "https://x402.orth.sh/scrapecreators/v2/tiktok/video",
+        "method": "GET",
+        "priceDisplay": "$0.020",
+        "priceUsd": 0.02,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "base",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "20000",
+            "payTo": "0x9EdC06E69FBf71B191510CA9446Fe09caa95668d"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "social-trend-predictor",
+    "name": "Social Trend Predictor",
+    "provider": "gg402",
+    "kind": "model",
+    "category": "data-intelligence",
+    "subcategory": "social-media-data",
+    "description": "Predicts emerging social-media trends and virality from topic/keyword inputs. Pay-per-call x402.",
+    "pricing": {
+      "headline": "$0.010",
+      "amount": 0.01,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://gg402.vercel.app/social_media_trend_predictor with JSON body {topic, platform}",
+      "inputExample": {
+        "topic": "AI agents",
+        "platform": "twitter"
+      },
+      "outputShape": "body.predicted_trends[] ({trend, description}), body.content_ideas[] ({idea, type}), body.timing (string), body.processedAt (ISO)",
+      "quirks": [
+        "Requires BOTH 'topic' and 'platform' string fields; 'platform' is mandatory but not documented in any schema — omitting it returns 400 with {status:'ERROR', error:{message:'Validation failed', details:[{field:'platform'}]}}.",
+        "'platform' takes a value like 'twitter'.",
+        "Success response wraps result at top level (predicted_trends/content_ideas/timing); errors come back as {status:'ERROR', error:{...}}."
+      ],
+      "guide": "POST to https://gg402.vercel.app/social_media_trend_predictor with a JSON body containing both a 'topic' (keyword to analyze) and a 'platform' (e.g. 'twitter'). Payment is x402 USDC on Base ($0.01). The response is plain synchronous JSON: read body.predicted_trends[] for forecasted trends ({trend, description}), body.content_ideas[] for suggested posts ({idea, type}), and body.timing for the recommended posting window. If you omit 'platform' you get a 400 validation error even though it is not in the schema.",
+      "costObservedUsd": 0.01,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "gg402.vercel",
+        "url": "https://gg402.vercel.app/social_media_trend_predictor",
+        "method": "POST",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0x9257cD24721e3c06E9F7655b77C283bCD9652132"
+          }
+        ],
+        "status": "needs-review",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  }
+]

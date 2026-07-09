@@ -1,0 +1,924 @@
+[
+  {
+    "id": "x402node-geocoding-forward",
+    "name": "x402node Geocoding Forward",
+    "provider": "x402node",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "maps-geolocation",
+    "description": "Forward geocode: convert a street address / place name to latitude/longitude plus structured address components and bounding box. Backed by OpenStreetMap Nominatim.",
+    "pricing": {
+      "headline": "$0.0080",
+      "amount": 0.008,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://api.x402node.dev/maps/forward?q=<url-encoded address>&limit=<N> (x402 USDC on Base, $0.008/call). No request body.",
+      "inputExample": {
+        "q": "1600 Amphitheatre Parkway Mountain View CA",
+        "limit": 1
+      },
+      "outputShape": "query (string) · count (number) · results[] each: results[].lat · results[].lng · results[].display_name · results[].place_id · results[].type · results[].importance · results[].address{building,house_number,road,city,county,state,ISO3166-2-lvl4,postcode,country,country_code} · results[].boundingbox (string[4]) · _hint (string)",
+      "quirks": [
+        "Registry/usage may say POST but POST returns 404 'Cannot POST /maps/forward' — you MUST use GET.",
+        "Address goes in the q= query param (NOT address=, NOT a JSON body). Endpoint reads the query string only.",
+        "Output uses lng (not lon) for longitude.",
+        "Results are wrapped in a results[] array; use limit=1 for a single best match (default may return multiple).",
+        "Fixed price $0.008 USDC on Base (8000 atomic units), payTo 0x4466d4A84b7c49a6A094ec6eef4a0712D6dd125e, asset USDC 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913.",
+        "boundingbox is an array of strings, not numbers (Nominatim convention).",
+        "No OpenAPI spec; schema only discoverable from the 402 challenge body."
+      ],
+      "guide": "Forward geocode: convert a street address / place name to latitude/longitude plus structured address components and bounding box. Backed by OpenStreetMap Nominatim. GET https://api.x402node.dev/maps/forward?q=<url-encoded address>&limit=<N> (x402 USDC on Base, $0.008/call). No request body. Output: query (string) · count (number) · results[] each: results[].lat · results[].lng · results[].display_name · results[].place_id · results[].type · results[].importance · results[].address{building,house_number,road,city,county,state,ISO3166-2-lvl4,postcode,country,country_code} · results[].boundingbox (string[4]) · _hint (string)",
+      "costObservedUsd": 0.008,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "x402node",
+        "url": "https://api.x402node.dev/maps/forward",
+        "method": "GET",
+        "priceDisplay": "$0.0080",
+        "priceUsd": 0.008,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "base",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "8000",
+            "payTo": "0x4466d4A84b7c49a6A094ec6eef4a0712D6dd125e"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "google-maps-text-search-stableenrich",
+    "name": "Google Maps Text Search (StableEnrich)",
+    "provider": "stableenrich",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "maps-geolocation",
+    "description": "Search Google Maps places by free-text query (e.g. 'coffee shops in San Francisco'). Partial tier ($0.02) returns basic place fields; Full tier ($0.08) adds ratings, reviews, contact info and atmosphere data.",
+    "pricing": {
+      "headline": "$0.020",
+      "amount": 0.02,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://stableenrich.dev/api/google-maps/text-search/partial with JSON {textQuery, maxResultCount} (x402, $0.02 USDC on Base).",
+      "inputExample": {
+        "textQuery": "coffee shops in San Francisco",
+        "maxResultCount": 3
+      },
+      "outputShape": "places[].id, places[].types[], places[].formattedAddress, places[].location.latitude/longitude, places[].displayName.text, places[].primaryType, nextPageToken",
+      "quirks": [
+        "Required field is 'textQuery' (NOT 'query' or 'q').",
+        "POST body, not query params (unlike place-details which is GET).",
+        "Two backends are the SAME op at different tiers: partial ($0.02) vs full ($0.08, adds ratings/reviews/contact). Default to partial.",
+        "Pagination via pageToken in body; response carries nextPageToken.",
+        "Defaults to excluding 'photos'; pass excludeFields:[] to include them.",
+        "Other optional body fields: includedType, languageCode, locationBias, rankPreference."
+      ],
+      "guide": "Search Google Maps places by free-text query (e.g. 'coffee shops in San Francisco'). Partial tier ($0.02) returns basic place fields; Full tier ($0.08) adds ratings, reviews, contact info and atmosphere data. POST https://stableenrich.dev/api/google-maps/text-search/partial with JSON {textQuery, maxResultCount} (x402, $0.02 USDC on Base). Output: places[].id, places[].types[], places[].formattedAddress, places[].location.latitude/longitude, places[].displayName.text, places[].primaryType, nextPageToken",
+      "costObservedUsd": 0.02,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stableenrich",
+        "url": "https://stableenrich.dev/api/google-maps/text-search/partial",
+        "method": "POST",
+        "priceDisplay": "$0.020",
+        "priceUsd": 0.02,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "20000",
+            "payTo": "0x325bdF6F7efAB24a2210c48c1b64cAb2eAe1d430"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "20000",
+            "payTo": "8EgACpZ16XWEt7YjJPsh1ZheVRZUGmmwQ8nJdmA1o5w4"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "stableenrich",
+        "url": "https://stableenrich.dev/api/google-maps/text-search/full",
+        "method": "POST",
+        "priceDisplay": "$0.080",
+        "priceUsd": 0.08,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "80000",
+            "payTo": "0x325bdF6F7efAB24a2210c48c1b64cAb2eAe1d430"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "80000",
+            "payTo": "8EgACpZ16XWEt7YjJPsh1ZheVRZUGmmwQ8nJdmA1o5w4"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "google-maps-nearby-search-stableenrich",
+    "name": "Google Maps Nearby Search (StableEnrich)",
+    "provider": "stableenrich",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "maps-geolocation",
+    "description": "Find Google Maps places near a geographic point within a radius. Partial tier ($0.02) returns basic place fields; Full tier ($0.08) adds ratings, reviews and contact info.",
+    "pricing": {
+      "headline": "$0.020",
+      "amount": 0.02,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://stableenrich.dev/api/google-maps/nearby-search/partial with JSON {locationRestriction.circle.center.{latitude,longitude}, locationRestriction.circle.radius, maxResultCount} (x402, $0.02 USDC on Base).",
+      "inputExample": {
+        "locationRestriction": {
+          "circle": {
+            "center": {
+              "latitude": 37.7749,
+              "longitude": -122.4194
+            },
+            "radius": 500
+          }
+        },
+        "maxResultCount": 3
+      },
+      "outputShape": "places[].id, places[].types[], places[].formattedAddress, places[].location.latitude/longitude, places[].displayName.text, places[].primaryType",
+      "quirks": [
+        "Required: locationRestriction.circle with center {latitude,longitude} and radius (meters). NOT a flat lat/lng.",
+        "POST body, not query params.",
+        "radius is in meters; circle (not rectangle) is the verified shape.",
+        "Two backends are the SAME op at different tiers: partial ($0.02) vs full ($0.08). Default to partial.",
+        "Optional body fields: includedTypes[], excludedTypes[], rankPreference (POPULARITY|DISTANCE), languageCode, excludeFields.",
+        "Defaults to excluding 'photos'; pass excludeFields:[] to include them.",
+        "No nextPageToken observed in the partial response (nearby-search returns a single page up to maxResultCount, max 20)."
+      ],
+      "guide": "Find Google Maps places near a geographic point within a radius. Partial tier ($0.02) returns basic place fields; Full tier ($0.08) adds ratings, reviews and contact info. POST https://stableenrich.dev/api/google-maps/nearby-search/partial with JSON {locationRestriction.circle.center.{latitude,longitude}, locationRestriction.circle.radius, maxResultCount} (x402, $0.02 USDC on Base). Output: places[].id, places[].types[], places[].formattedAddress, places[].location.latitude/longitude, places[].displayName.text, places[].primaryType",
+      "costObservedUsd": 0.02,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stableenrich",
+        "url": "https://stableenrich.dev/api/google-maps/nearby-search/partial",
+        "method": "POST",
+        "priceDisplay": "$0.020",
+        "priceUsd": 0.02,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "20000",
+            "payTo": "0x325bdF6F7efAB24a2210c48c1b64cAb2eAe1d430"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "20000",
+            "payTo": "8EgACpZ16XWEt7YjJPsh1ZheVRZUGmmwQ8nJdmA1o5w4"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "stableenrich",
+        "url": "https://stableenrich.dev/api/google-maps/nearby-search/full",
+        "method": "POST",
+        "priceDisplay": "$0.080",
+        "priceUsd": 0.08,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "80000",
+            "payTo": "0x325bdF6F7efAB24a2210c48c1b64cAb2eAe1d430"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "80000",
+            "payTo": "8EgACpZ16XWEt7YjJPsh1ZheVRZUGmmwQ8nJdmA1o5w4"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "google-maps-place-details-stableenrich",
+    "name": "Google Maps Place Details (StableEnrich)",
+    "provider": "stableenrich",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "maps-geolocation",
+    "description": "Get details for a specific Google Maps place by placeId. Partial tier ($0.02) returns id, types, formattedAddress, location, displayName, primaryType; Full tier ($0.05) adds ratings, reviews, contact info, opening hours and atmosphere data.",
+    "pricing": {
+      "headline": "$0.020",
+      "amount": 0.02,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://stableenrich.dev/api/google-maps/place-details/partial?placeId=<placeId> (x402, $0.02 USDC on Base). Optional query params: excludeFields (comma/array dot-paths), languageCode.",
+      "inputExample": {
+        "placeId": "ChIJL86gDJmBhYARjQPJ6NsYQZQ"
+      },
+      "outputShape": "id, types[], formattedAddress, location.latitude, location.longitude, displayName.text, displayName.languageCode, primaryType (full adds rating, userRatingCount, reviews[], regularOpeningHours, etc.)",
+      "quirks": [
+        "GET with placeId as a query param, NOT a request body.",
+        "placeId must be a real Google place id (e.g. obtained from text-search/nearby-search 'places[].id').",
+        "Two backends are the SAME op at different price/field-depth tiers: partial ($0.02, basic fields) and full ($0.05, ratings/reviews/contact). Default to partial.",
+        "Defaults to excluding 'photos'; pass excludeFields=[] (empty) to include photos."
+      ],
+      "guide": "Get details for a specific Google Maps place by placeId. Partial tier ($0.02) returns id, types, formattedAddress, location, displayName, primaryType; Full tier ($0.05) adds ratings, reviews, contact info, opening hours and atmosphere data. GET https://stableenrich.dev/api/google-maps/place-details/partial?placeId=<placeId> (x402, $0.02 USDC on Base). Optional query params: excludeFields (comma/array dot-paths), languageCode. Output: id, types[], formattedAddress, location.latitude, location.longitude, displayName.text, displayName.languageCode, primaryType (full adds rating, userRatingCount, reviews[], regularOpeningHours, etc.)",
+      "costObservedUsd": 0.02,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stableenrich",
+        "url": "https://stableenrich.dev/api/google-maps/place-details/partial",
+        "method": "GET",
+        "priceDisplay": "$0.020",
+        "priceUsd": 0.02,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "20000",
+            "payTo": "0x325bdF6F7efAB24a2210c48c1b64cAb2eAe1d430"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "20000",
+            "payTo": "8EgACpZ16XWEt7YjJPsh1ZheVRZUGmmwQ8nJdmA1o5w4"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "stableenrich",
+        "url": "https://stableenrich.dev/api/google-maps/place-details/full",
+        "method": "GET",
+        "priceDisplay": "$0.050",
+        "priceUsd": 0.05,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "50000",
+            "payTo": "0x325bdF6F7efAB24a2210c48c1b64cAb2eAe1d430"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "50000",
+            "payTo": "8EgACpZ16XWEt7YjJPsh1ZheVRZUGmmwQ8nJdmA1o5w4"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "tripadvisor-location-search",
+    "name": "Tripadvisor Location Search",
+    "provider": "Tripadvisor",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "maps-geolocation",
+    "description": "Search Tripadvisor locations (hotels/restaurants/attractions) by query; returns location_id + names.",
+    "pricing": {
+      "headline": "$0.010",
+      "amount": 0.01,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://tripadvisor.x402.paysponge.com/api/v1/location/search with query params (x402)",
+      "inputExample": {
+        "searchQuery": "Vancouver"
+      },
+      "outputShape": "body.data",
+      "quirks": [
+        "Served via Sponge's x402 gateway (*.x402.paysponge.com) — a single x402 payment proxies the upstream provider. No API key. Base or Solana USDC."
+      ],
+      "guide": "Search Tripadvisor locations (hotels/restaurants/attractions) by query; returns location_id + names. Served via Sponge's x402 gateway (*.x402.paysponge.com) — a single x402 payment proxies the upstream provider. No API key. Base or Solana USDC.",
+      "costObservedUsd": 0.01
+    },
+    "endpoints": [
+      {
+        "provider": "Sponge",
+        "url": "https://tripadvisor.x402.paysponge.com/api/v1/location/search?searchQuery=Vancouver",
+        "method": "GET",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0x6302D9e6DBB22fEC3c350551568Bb39B4b35Ad57"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "10000",
+            "payTo": "9246XrsAEKH6hAyEQe5PvdpUL1p5Ktj9c7ySnwQn6ois"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "tripadvisor-nearby-search",
+    "name": "Tripadvisor Nearby Search",
+    "provider": "Tripadvisor",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "maps-geolocation",
+    "description": "Find Tripadvisor locations near a lat/long.",
+    "pricing": {
+      "headline": "$0.010",
+      "amount": 0.01,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://tripadvisor.x402.paysponge.com/api/v1/location/nearby_search with query params (x402)",
+      "inputExample": {
+        "latLong": "49.2827,-123.1207"
+      },
+      "outputShape": "body.data",
+      "quirks": [
+        "Served via Sponge's x402 gateway (*.x402.paysponge.com) — a single x402 payment proxies the upstream provider. No API key. Base or Solana USDC."
+      ],
+      "guide": "Find Tripadvisor locations near a lat/long. Served via Sponge's x402 gateway (*.x402.paysponge.com) — a single x402 payment proxies the upstream provider. No API key. Base or Solana USDC.",
+      "costObservedUsd": 0.01
+    },
+    "endpoints": [
+      {
+        "provider": "Sponge",
+        "url": "https://tripadvisor.x402.paysponge.com/api/v1/location/nearby_search?latLong=49.2827%2C-123.1207",
+        "method": "GET",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0x6302D9e6DBB22fEC3c350551568Bb39B4b35Ad57"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "10000",
+            "payTo": "9246XrsAEKH6hAyEQe5PvdpUL1p5Ktj9c7ySnwQn6ois"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "tripadvisor-location-details",
+    "name": "Tripadvisor Location Details",
+    "provider": "Tripadvisor",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "maps-geolocation",
+    "description": "Full details for a Tripadvisor location by id (address, rating, hours, etc.).",
+    "pricing": {
+      "headline": "$0.010",
+      "amount": 0.01,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://tripadvisor.x402.paysponge.com/api/v1/location/154943/details with query params (x402)",
+      "inputExample": {
+        "locationId": "154943 (from /location/search)"
+      },
+      "outputShape": "body",
+      "quirks": [
+        "Served via Sponge's x402 gateway (*.x402.paysponge.com) — a single x402 payment proxies the upstream provider. No API key. Base or Solana USDC.",
+        "locationId is a PATH param — get it from /location/search first."
+      ],
+      "guide": "Full details for a Tripadvisor location by id (address, rating, hours, etc.). Served via Sponge's x402 gateway (*.x402.paysponge.com) — a single x402 payment proxies the upstream provider. No API key. Base or Solana USDC.",
+      "costObservedUsd": 0.01
+    },
+    "endpoints": [
+      {
+        "provider": "Sponge",
+        "url": "https://tripadvisor.x402.paysponge.com/api/v1/location/154943/details",
+        "method": "GET",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0x6302D9e6DBB22fEC3c350551568Bb39B4b35Ad57"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "10000",
+            "payTo": "9246XrsAEKH6hAyEQe5PvdpUL1p5Ktj9c7ySnwQn6ois"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "tripadvisor-location-reviews",
+    "name": "Tripadvisor Location Reviews",
+    "provider": "Tripadvisor",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "maps-geolocation",
+    "description": "Recent reviews for a Tripadvisor location by id.",
+    "pricing": {
+      "headline": "$0.010",
+      "amount": 0.01,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://tripadvisor.x402.paysponge.com/api/v1/location/154943/reviews with query params (x402)",
+      "inputExample": {
+        "locationId": "154943 (from /location/search)"
+      },
+      "outputShape": "body.data",
+      "quirks": [
+        "Served via Sponge's x402 gateway (*.x402.paysponge.com) — a single x402 payment proxies the upstream provider. No API key. Base or Solana USDC.",
+        "locationId is a PATH param — get it from /location/search first."
+      ],
+      "guide": "Recent reviews for a Tripadvisor location by id. Served via Sponge's x402 gateway (*.x402.paysponge.com) — a single x402 payment proxies the upstream provider. No API key. Base or Solana USDC.",
+      "costObservedUsd": 0.01
+    },
+    "endpoints": [
+      {
+        "provider": "Sponge",
+        "url": "https://tripadvisor.x402.paysponge.com/api/v1/location/154943/reviews",
+        "method": "GET",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0x6302D9e6DBB22fEC3c350551568Bb39B4b35Ad57"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "10000",
+            "payTo": "9246XrsAEKH6hAyEQe5PvdpUL1p5Ktj9c7ySnwQn6ois"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "tripadvisor-location-photos",
+    "name": "Tripadvisor Location Photos",
+    "provider": "Tripadvisor",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "maps-geolocation",
+    "description": "Photos for a Tripadvisor location by id.",
+    "pricing": {
+      "headline": "$0.010",
+      "amount": 0.01,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://tripadvisor.x402.paysponge.com/api/v1/location/154943/photos with query params (x402)",
+      "inputExample": {
+        "locationId": "154943 (from /location/search)"
+      },
+      "outputShape": "body.data",
+      "quirks": [
+        "Served via Sponge's x402 gateway (*.x402.paysponge.com) — a single x402 payment proxies the upstream provider. No API key. Base or Solana USDC.",
+        "locationId is a PATH param — get it from /location/search first."
+      ],
+      "guide": "Photos for a Tripadvisor location by id. Served via Sponge's x402 gateway (*.x402.paysponge.com) — a single x402 payment proxies the upstream provider. No API key. Base or Solana USDC.",
+      "costObservedUsd": 0.01
+    },
+    "endpoints": [
+      {
+        "provider": "Sponge",
+        "url": "https://tripadvisor.x402.paysponge.com/api/v1/location/154943/photos",
+        "method": "GET",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0x6302D9e6DBB22fEC3c350551568Bb39B4b35Ad57"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "10000",
+            "payTo": "9246XrsAEKH6hAyEQe5PvdpUL1p5Ktj9c7ySnwQn6ois"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "serper-maps",
+    "name": "Serper Maps",
+    "provider": "Orthogonal",
+    "kind": "api",
+    "category": "search",
+    "subcategory": "serp-seo-apis",
+    "description": "Google Maps search via Serper. Returns map listings with title, address, lat/long, rating, ratingCount, phoneNumber, website, opening hours, types, and cid/placeId. More detailed than Places.",
+    "pricing": {
+      "headline": "$0.0060",
+      "amount": 0.006,
+      "currency": "USD",
+      "unit": "per search"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://x402.orth.sh/serper/maps with JSON body {q (required), gl?, hl?, num?, page?, autocorrect?, location?, ll?}. ll = '@lat,lng,zoomz' for precise geo targeting. x402 payment on Base.",
+      "inputExample": {
+        "q": "coffee shop",
+        "num": 5,
+        "gl": "us",
+        "hl": "en",
+        "location": "New York, NY"
+      },
+      "outputShape": "searchParameters.{q,gl,hl,uule,type,num,page,location,engine}; ll; places[].{position,title,address,latitude,longitude,rating,ratingCount,priceLevel,type,types[],website,phoneNumber?,openingHours{},description?,bookingLinks?,thumbnailUrl,cid,fid,placeId}; credits",
+      "quirks": [
+        "Orthogonal-only (no StableEnrich mirror for maps). $0.006, credits:3.",
+        "Body field is `q`. Use ll ('@40.7128,-74.0060,15z') for precise geo; richer than Places.",
+        "Returns full opening hours, phone, website, lat/lng, and cid/placeId per result.",
+        "Orthogonal schema only via x402 402-challenge probe."
+      ],
+      "guide": "Google Maps search via Serper. Returns map listings with title, address, lat/long, rating, ratingCount, phoneNumber, website, opening hours, types, and cid/placeId. More detailed than Places. POST https://x402.orth.sh/serper/maps with JSON body {q (required), gl?, hl?, num?, page?, autocorrect?, location?, ll?}. ll = '@lat,lng,zoomz' for precise geo targeting. x402 payment on Base. Output: searchParameters.{q,gl,hl,uule,type,num,page,location,engine}; ll; places[].{position,title,address,latitude,longitude,rating,ratingCount,priceLevel,type,types[],website,phoneNumber?,openingHours{},description?,bookingLinks?,thumbnailUrl,cid,fid,placeId}; credits",
+      "costObservedUsd": 0.006,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "Orthogonal",
+        "url": "https://x402.orth.sh/serper/maps",
+        "method": "POST",
+        "priceDisplay": "$0.0060",
+        "priceUsd": 0.006,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "base",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "6000",
+            "payTo": "0x1563CdE0042d17F53b23d91Fd9B73ACE9Da26a09"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "serper-places",
+    "name": "Serper Places",
+    "provider": "Orthogonal",
+    "kind": "api",
+    "category": "search",
+    "subcategory": "serp-seo-apis",
+    "description": "Google Places search via Serper. Returns local businesses with title, address, lat/long, rating, ratingCount, priceLevel, category, and cid. Lighter than Maps; cid feeds the Reviews endpoint.",
+    "pricing": {
+      "headline": "$0.0020",
+      "amount": 0.002,
+      "currency": "USD",
+      "unit": "per search"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://x402.orth.sh/serper/places with JSON body {q (required), gl?, hl?, lr?, num?, page?, autocorrect?, location?, ll?}. x402 payment on Base.",
+      "inputExample": {
+        "q": "coffee shop",
+        "num": 5,
+        "gl": "us",
+        "hl": "en",
+        "location": "New York, NY"
+      },
+      "outputShape": "searchParameters.{q,gl,hl,uule,type,num,page,location,engine}; places[].{position,title,address,latitude,longitude,rating,ratingCount,priceLevel,category,cid}; credits",
+      "quirks": [
+        "Orthogonal-only. $0.002, credits:1.",
+        "Body field is `q`. Lighter than Maps (no hours/phone/website); returns cid for the Reviews endpoint.",
+        "Orthogonal schema only via x402 402-challenge probe."
+      ],
+      "guide": "Google Places search via Serper. Returns local businesses with title, address, lat/long, rating, ratingCount, priceLevel, category, and cid. Lighter than Maps; cid feeds the Reviews endpoint. POST https://x402.orth.sh/serper/places with JSON body {q (required), gl?, hl?, lr?, num?, page?, autocorrect?, location?, ll?}. x402 payment on Base. Output: searchParameters.{q,gl,hl,uule,type,num,page,location,engine}; places[].{position,title,address,latitude,longitude,rating,ratingCount,priceLevel,category,cid}; credits",
+      "costObservedUsd": 0.002,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "Orthogonal",
+        "url": "https://x402.orth.sh/serper/places",
+        "method": "POST",
+        "priceDisplay": "$0.0020",
+        "priceUsd": 0.002,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "base",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "2000",
+            "payTo": "0x1563CdE0042d17F53b23d91Fd9B73ACE9Da26a09"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  }
+]

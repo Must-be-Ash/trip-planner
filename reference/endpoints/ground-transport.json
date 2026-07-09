@@ -1,0 +1,517 @@
+[
+  {
+    "id": "nyc-transit-live-subway-nearest",
+    "name": "NYC Transit Live Subway Nearest",
+    "provider": "transit402",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "traffic-transportation",
+    "description": "Find nearby NYC subway stations with live train arrivals near a WGS84 coordinate. Returns stations with distance, walk time, served lines, and per-train arrival predictions (line, Uptown/Downtown direction, minutes). Does not geocode - caller must resolve place names to lat/lng first.",
+    "pricing": {
+      "headline": "$0.020",
+      "amount": 0.02,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://transit402.dev/subway/nearest with JSON body {lat, lng, limit?}. Pay via MPP on Tempo ($0.02). additionalProperties:false - send only lat/lng/limit.",
+      "inputExample": {
+        "lat": 40.758,
+        "lng": -73.9855,
+        "limit": 2
+      },
+      "outputShape": "results[].{name, distance_feet, walk_minutes, lines[], arrivals[].{line, direction(Uptown|Downtown), minutes}, lat, lng}",
+      "quirks": [
+        "lat/lng required (WGS84 decimal degrees); limit optional integer 1-10, default 5. additionalProperties:false.",
+        "PAYMENT: plain x402 'exact' does NOT work and qa-pay cannot complete it - first 402 returns application/problem+json type https://paymentauth.org/problems/payment-required carrying a challengeId. Pay via MPP protocol on Tempo instead (agentcash fetch paymentProtocol:'mpp'); settled $0.02 with real txHash 0xd206b5b2e1d0b7294217d638db0671e310ef780caca0dfa498eae0b8612d8a7c.",
+        "Server advertises protocols [x402, mpp]; mpp is the reliable path.",
+        "No geocoding - resolve place names to lat/lng before calling.",
+        "arrivals direction enum is exactly Uptown|Downtown."
+      ],
+      "guide": "Find nearby NYC subway stations with live train arrivals near a WGS84 coordinate. Returns stations with distance, walk time, served lines, and per-train arrival predictions (line, Uptown/Downtown direction, minutes). Does not geocode - caller must resolve place names to lat/lng first. POST https://transit402.dev/subway/nearest with JSON body {lat, lng, limit?}. Pay via MPP on Tempo ($0.02). additionalProperties:false - send only lat/lng/limit. Output: results[].{name, distance_feet, walk_minutes, lines[], arrivals[].{line, direction(Uptown|Downtown), minutes}, lat, lng}",
+      "costObservedUsd": 0.02,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "transit402",
+        "url": "https://transit402.dev/subway/nearest",
+        "method": "POST",
+        "priceDisplay": "$0.020",
+        "priceUsd": 0.02,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "20000",
+            "payTo": "0x687E3217668DDe7c32478A3F2613750c8Bd505E9"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "nyc-transit-live-bus-nearest",
+    "name": "NYC Transit Live Bus Nearest",
+    "provider": "transit402",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "traffic-transportation",
+    "description": "Find nearby NYC bus stops with live ETA predictions near a WGS84 coordinate. Returns stops with distance, walk time, served routes, and per-bus arrival predictions (route, destination headsign, minutes, proximity text, stops_away). Does not geocode - caller must resolve place names to lat/lng first.",
+    "pricing": {
+      "headline": "$0.020",
+      "amount": 0.02,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://transit402.dev/bus/nearest with JSON body {lat, lng, limit?}. Pay via MPP on Tempo ($0.02). additionalProperties:false - send only lat/lng/limit.",
+      "inputExample": {
+        "lat": 40.758,
+        "lng": -73.9855,
+        "limit": 2
+      },
+      "outputShape": "results[].{name, distance_feet, walk_minutes, routes[], arrivals[].{route, destination, minutes(nullable), proximity(nullable), stops_away(nullable)}, lat, lng}",
+      "quirks": [
+        "lat/lng required (WGS84 decimal degrees); limit optional integer 1-10, default 5. additionalProperties:false.",
+        "Output differs from subway: uses routes[] (not lines[]) and arrivals carry route/destination/proximity/stops_away.",
+        "arrivals.minutes, proximity, and stops_away can each be null (bus not yet predicted with an ETA, only a distance/proximity string).",
+        "PAYMENT: plain x402 'exact' fails and qa-pay can't complete the paymentauth.org challengeId handshake (402 problem+json). Pay via MPP on Tempo (agentcash fetch paymentProtocol:'mpp'); settled $0.02 with real txHash 0x43eb51b4a0f422a65399eac3cfe4fe9950688adc004cae1534a03f32ca8e84bf.",
+        "No geocoding - resolve place names to lat/lng before calling."
+      ],
+      "guide": "Find nearby NYC bus stops with live ETA predictions near a WGS84 coordinate. Returns stops with distance, walk time, served routes, and per-bus arrival predictions (route, destination headsign, minutes, proximity text, stops_away). Does not geocode - caller must resolve place names to lat/lng first. POST https://transit402.dev/bus/nearest with JSON body {lat, lng, limit?}. Pay via MPP on Tempo ($0.02). additionalProperties:false - send only lat/lng/limit. Output: results[].{name, distance_feet, walk_minutes, routes[], arrivals[].{route, destination, minutes(nullable), proximity(nullable), stops_away(nullable)}, lat, lng}",
+      "costObservedUsd": 0.02,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "transit402",
+        "url": "https://transit402.dev/bus/nearest",
+        "method": "POST",
+        "priceDisplay": "$0.020",
+        "priceUsd": 0.02,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "20000",
+            "payTo": "0x687E3217668DDe7c32478A3F2613750c8Bd505E9"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "japan-transit-station-search",
+    "name": "Japan Transit Station Search",
+    "provider": "transit.agentic-jp",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "traffic-transportation",
+    "description": "Fuzzy-search Japanese train stations by name (accepts kanji, kana, or romaji; tolerates the 駅/station suffix). Returns matching stations with canonical station_id, EN/JA names, operator_ids, line_ids, and lat/lng. Use to resolve a station name to a canonical record before calling status.",
+    "pricing": {
+      "headline": "$0.0010",
+      "amount": 0.001,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://transit.agentic-jp.com/stations/search?q=Shinjuku  (query param `q` required, min 2 chars; NOT `query`/`search`)",
+      "inputExample": {
+        "q": "Shinjuku"
+      },
+      "outputShape": "query (string, echoes input), count (number), results[] each: station_id, name_ja, name_en, name_kana, operator_ids[], line_ids[], lat, lng",
+      "quirks": [
+        "Required query param is `q` (NOT `query` or `search`); min 2 chars; accepts kanji (新宿), kana, or romaji (Shinjuku) and tolerates the 駅/station suffix.",
+        "Registry inputSchema is null but the real schema is discoverable from the x402 402-challenge bazaar extension.",
+        "name_kana is frequently null (e.g. Shinjuku); lat/lng can be null for some stations (e.g. Seibu-Shinjuku).",
+        "station_id is operator-prefixed (e.g. toei-oedo-shinjuku) — the same physical station can appear multiple times under different operators.",
+        "Price $0.001 = atomic amount 1000 USDC; x402 rails available on Base/Polygon/Solana."
+      ],
+      "guide": "Fuzzy-search Japanese train stations by name (accepts kanji, kana, or romaji; tolerates the 駅/station suffix). Returns matching stations with canonical station_id, EN/JA names, operator_ids, line_ids, and lat/lng. Use to resolve a station name to a canonical record before calling status. GET https://transit.agentic-jp.com/stations/search?q=Shinjuku  (query param `q` required, min 2 chars; NOT `query`/`search`) Output: query (string, echoes input), count (number), results[] each: station_id, name_ja, name_en, name_kana, operator_ids[], line_ids[], lat, lng",
+      "costObservedUsd": 0.001,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "transit.agentic-jp",
+        "url": "https://transit.agentic-jp.com/stations/search",
+        "method": "GET",
+        "priceDisplay": "$0.0010",
+        "priceUsd": 0.001,
+        "networks": [
+          "Base",
+          "Polygon",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "1000",
+            "payTo": "0x38c9F689274E2fC3AE360744eF88ce212077a584"
+          },
+          {
+            "scheme": "exact",
+            "network": "eip155:137",
+            "asset": "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
+            "amount": "1000",
+            "payTo": "0x38c9F689274E2fC3AE360744eF88ce212077a584"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "1000",
+            "payTo": "2BTzdCAcCLaNA2SSZ1YjJvTtscNCpUMUEjLY3LyBpNMk"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "japan-transit-station-status",
+    "name": "Japan Transit Station Status",
+    "provider": "transit.agentic-jp",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "traffic-transportation",
+    "description": "Real-time delay and operational status for a Japanese train station, sourced live from ODPT. Returns per-line status (normal/delayed/suspended), estimated delay minutes, cause (JA/EN), staleness flag, plus one-line EN and JA summaries. Use to answer 'is my train delayed' for a station.",
+    "pricing": {
+      "headline": "$0.0050",
+      "amount": 0.005,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://transit.agentic-jp.com/station/{name}/status  — station name is a PATH param (kanji/kana/romaji), NOT a query param; no body",
+      "inputExample": {
+        "name": "Shinjuku"
+      },
+      "outputShape": "station{name_ja,name_en,operator,lines[](JA line names)}, status{overall, lines[]{line_id,line_name_ja,line_name_en,status,delay_minutes_estimated,reason,reason_en,updated_at,stale}}, summary_en, summary_ja, generated_at",
+      "quirks": [
+        "Station name is a URL PATH param ({name}), NOT a query param.",
+        "status.overall and per-line `status` use enum normal/delayed/suspended; a line can be flagged `delayed` even when reason text says no >15min delay, so treat `status` as the canonical signal and check `delay_minutes_estimated` (often null).",
+        "reason/reason_en are often null or Japanese-only; English context is in summary_en.",
+        "Each line carries its own `stale` flag and `updated_at` (mixed timezones: ODPT lines use +09:00, fallbacks use Z) — check `stale` before trusting.",
+        "Best used after stations-search to get a resolvable name; provider resolves romaji/kanji directly.",
+        "Price $0.005 = atomic amount 5000 USDC; x402 rails on Base/Polygon/Solana. Note: live discover_api_endpoints quoted the status price as $0.01 but the actual paid call settled at $0.005 (matches registry)."
+      ],
+      "guide": "Real-time delay and operational status for a Japanese train station, sourced live from ODPT. Returns per-line status (normal/delayed/suspended), estimated delay minutes, cause (JA/EN), staleness flag, plus one-line EN and JA summaries. Use to answer 'is my train delayed' for a station. GET https://transit.agentic-jp.com/station/{name}/status  — station name is a PATH param (kanji/kana/romaji), NOT a query param; no body Output: station{name_ja,name_en,operator,lines[](JA line names)}, status{overall, lines[]{line_id,line_name_ja,line_name_en,status,delay_minutes_estimated,reason,reason_en,updated_at,stale}}, summary_en, summary_ja, generated_at",
+      "costObservedUsd": 0.005,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "transit.agentic-jp",
+        "url": "https://transit.agentic-jp.com/station/:name/status",
+        "method": "GET",
+        "priceDisplay": "$0.0050",
+        "priceUsd": 0.005,
+        "networks": [
+          "Base",
+          "Polygon",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "5000",
+            "payTo": "0x38c9F689274E2fC3AE360744eF88ce212077a584"
+          },
+          {
+            "scheme": "exact",
+            "network": "eip155:137",
+            "asset": "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
+            "amount": "5000",
+            "payTo": "0x38c9F689274E2fC3AE360744eF88ce212077a584"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "5000",
+            "payTo": "2BTzdCAcCLaNA2SSZ1YjJvTtscNCpUMUEjLY3LyBpNMk"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "waze-traffic",
+    "name": "Waze Traffic",
+    "provider": "StableNinja",
+    "kind": "model",
+    "category": "data-intelligence",
+    "subcategory": "traffic-transportation",
+    "description": "Waze traffic alerts and live traffic-jam data for a location. Pay-per-call x402.",
+    "pricing": {
+      "headline": "$0.010",
+      "amount": 0.01,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://stableninja.dev/api/waze/alerts-and-jams?center=LAT,LON&radius=5&radius_units=KM&max_alerts=5&max_jams=5 (all params optional; specify a location via center+radius+radius_units, or via bottom_left+top_right bounding box)",
+      "inputExample": {
+        "center": "37.7749,-122.4194",
+        "radius": "5",
+        "radius_units": "KM",
+        "max_alerts": 5,
+        "max_jams": 5
+      },
+      "outputShape": "body.status (\"OK\"), body.data.alerts[] (each: type, subtype, description, street, city, latitude, longitude, num_thumbs_up, publish_datetime_utc), body.data.jams[] (each: level, speed_kmh, length_meters, street, end_location, line_coordinates[], update_datetime_utc), body.parameters (echo of resolved query incl computed bottom_left/top_right)",
+      "quirks": [
+        "All query params are optional but you must specify a location somehow; center=LAT,LON requires radius and radius_units (KM|MI) alongside it. Coordinates are LAT,LON comma-separated strings matching pattern ^-?\\d+(\\.\\d+)?,-?\\d+(\\.\\d+)?$. Cap max_alerts/max_jams (0-100) to keep the response small."
+      ],
+      "guide": "Send a GET to https://stableninja.dev/api/waze/alerts-and-jams with a location in the query string. Simplest: center=LAT,LON plus radius (e.g. 5) and radius_units=KM (or MI); alternatively pass a bounding box via bottom_left and top_right. Optionally cap results with max_alerts and max_jams (0-100). Pays $0.01 USDC via x402 on Base. Read body.data.alerts[] for incidents/hazards/closures and body.data.jams[] for live congestion (level, speed_kmh, length_meters, street). Plain synchronous JSON, no auth beyond payment.",
+      "costObservedUsd": 0.01,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stableninja",
+        "url": "https://stableninja.dev/api/waze/alerts-and-jams",
+        "method": "GET",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0xc0CCF68a8e61A4d25EEcFcaCd486e673e900De0A"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "keyronne-directions-travel-times",
+    "name": "Directions + Travel Times (keyronne)",
+    "provider": "keyronne",
+    "kind": "api",
+    "category": "maps-location",
+    "subcategory": "routing",
+    "description": "Point-to-point directions between 2-10 stops by car/bike/foot: total + per-leg distance and travel time, plus route geometry (encoded polyline). Stops can be place names (geocoded) or {lat,lon}. Global, OpenStreetMap data. Fills the routing/ETA gap.",
+    "pricing": {
+      "headline": "$0.010",
+      "amount": 0.01,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "status": "active",
+    "registryStatus": "bazaar",
+    "verified": true,
+    "source": "bazaar",
+    "usage": {
+      "callShape": "POST https://keyronne.com/api/route  body {\"stops\":[\"Shinjuku, Tokyo\",\"Shibuya, Tokyo\"],\"mode\":\"car\"}",
+      "inputExample": {
+        "stops": [
+          "Shinjuku, Tokyo",
+          "Shibuya, Tokyo"
+        ],
+        "mode": "car"
+      },
+      "outputShape": "distanceKm, durationMinutes, legs[].{distanceKm,durationMinutes,from,to}, geometryPolyline, stops[].{lat,lon,name,snappedName}",
+      "quirks": [
+        "stops: 2-10 items; each a place-name string (auto-geocoded) OR a {lat,lon} object.",
+        "mode enum: car | bike | foot (default car).",
+        "Returns an encoded polyline, NOT a rendered map image (see gaps.md for static-map rendering)."
+      ],
+      "guide": "POST a JSON body {stops:[...], mode} to sequence an itinerary and check a day is feasible. Total and per-leg distanceKm/durationMinutes come back plus a geometry polyline. Pay ~$0.01 USDC on Base via x402.",
+      "resultPull": "sync",
+      "auth": "none"
+    },
+    "endpoints": [
+      {
+        "provider": "keyronne",
+        "url": "https://keyronne.com/api/route",
+        "method": "POST",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0xB86F95EF5FA904318Ea9Df3b59AdCe099b478fC4"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false
+      }
+    ]
+  },
+  {
+    "id": "relaystation-route",
+    "name": "Relaystation Route (OSRM mirror)",
+    "provider": "relaystation",
+    "kind": "api",
+    "category": "maps-location",
+    "subcategory": "routing",
+    "description": "Route between two points — distance, duration, geometry as JSON. Redundant fallback for keyronne.",
+    "pricing": {
+      "headline": "$0.010",
+      "amount": 0.01,
+      "currency": "USD",
+      "unit": "per route"
+    },
+    "confirmGate": "GREEN",
+    "status": "active",
+    "registryStatus": "bazaar",
+    "verified": false,
+    "source": "bazaar",
+    "usage": {
+      "callShape": "POST https://api.relaystation.ai/v1/location/route body {origin:[lat,lng], destination:[lat,lng], travelMode:\"Car\", departNow:true}",
+      "inputExample": {
+        "origin": [
+          35.6896,
+          139.7006
+        ],
+        "destination": [
+          35.658,
+          139.7016
+        ],
+        "travelMode": "Car",
+        "departNow": true
+      },
+      "outputShape": "route distance/duration/geometry JSON",
+      "quirks": [
+        "travelMode enum: Car|Truck|Pedestrian|Scooter.",
+        "Also accepts EURC on Base."
+      ],
+      "guide": "Fallback point-to-point route if keyronne is unavailable. ~$0.01 USDC on Base.",
+      "resultPull": "sync",
+      "auth": "none"
+    },
+    "endpoints": [
+      {
+        "provider": "relaystation",
+        "url": "https://api.relaystation.ai/v1/location/route",
+        "method": "POST",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0x5F7254f252eF9b9f92B6B4F2cF91205eD7A96C7A"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false
+      }
+    ]
+  }
+]

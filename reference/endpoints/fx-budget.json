@@ -1,0 +1,126 @@
+[
+  {
+    "id": "fx-price",
+    "name": "Fx Price",
+    "provider": "BlockRun",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "stocks-financial-data",
+    "description": "Fx Price",
+    "pricing": {
+      "headline": "Free",
+      "amount": 0,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET /api/v1/fx/price/{sym} (e.g. EUR-USD) — FREE; FX spot.",
+      "inputExample": {},
+      "quirks": [
+        "Verified FREE (HTTP 200) 2026-06-24.",
+        "FREE (HTTP 200, no x402 payment).",
+        "FREE endpoint — returns 200 on an unpaid request (no x402 charge)."
+      ]
+    },
+    "endpoints": [
+      {
+        "provider": "BlockRun",
+        "url": "https://blockrun.ai/api/v1/fx/price/{sym}",
+        "method": "GET",
+        "priceDisplay": "Free",
+        "priceUsd": 0,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "0",
+            "payTo": "0xe9030014F5DAe217d0A152f02A043567b16c1aBf"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "fx-symbols",
+    "name": "FX Symbols",
+    "provider": "BlockRun",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "stocks-financial-data",
+    "description": "List available FX symbols from Pyth feeds. Free discovery endpoint. Supports `q` (search) and `limit` (max 2000) query params.",
+    "pricing": {
+      "headline": "Free",
+      "amount": 0,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET /api/v1/fx/list — FREE; supported FX pairs.",
+      "inputExample": {},
+      "quirks": [
+        "Verified FREE (HTTP 200) 2026-06-24.",
+        "FREE (HTTP 200, no x402 payment).",
+        "FREE endpoint — returns 200 on an unpaid request (no x402 charge)."
+      ]
+    },
+    "endpoints": [
+      {
+        "provider": "BlockRun",
+        "url": "https://blockrun.ai/api/v1/fx/list",
+        "method": "GET",
+        "priceDisplay": "Free",
+        "priceUsd": 0,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "0",
+            "payTo": "0xe9030014F5DAe217d0A152f02A043567b16c1aBf"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  }
+]

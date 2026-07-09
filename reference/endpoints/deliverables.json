@@ -1,0 +1,1822 @@
+[
+  {
+    "id": "gpt-image-2-generate",
+    "name": "GPT Image 2 Generate",
+    "provider": "StableStudio",
+    "kind": "api",
+    "category": "media",
+    "subcategory": "image-generation",
+    "description": "Text-to-image generation with GPT Image 2 (OpenAI gpt-image). Given a text prompt, returns a generated PNG/JPEG/WebP image. Available via two gateways: StableStudio (default, async job + poll, cheapest) and BlockRun (synchronous, returns image URL inline).",
+    "pricing": {
+      "headline": "$0.010",
+      "amount": 0.01,
+      "currency": "USD",
+      "unit": "per image"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text",
+        "image"
+      ],
+      "output": [
+        "image"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "poll",
+      "auth": "none",
+      "callShape": "DEFAULT (StableStudio, ASYNC): POST https://stablestudio.dev/api/generate/gpt-image-2/generate with JSON {prompt (required), size?:1024x1024|1536x1024|1024x1536|auto, quality?:low|medium|high (default high), background?:opaque|auto, output_format?:png|jpeg|webp, output_compression?:0-100, moderation?:low|auto}. x402/mpp pay (DYNAMIC 0-10 USD; quality:low quoted $0.01). Returns {success:true, jobId, status:'pending', type:'gpt-image-2-generate'} — NO image in POST response. Then poll GET https://stablestudio.dev/api/jobs/{jobId} with SIWX auth as the SAME wallet that paid (free) until status==='complete'; result is a public PNG on *.public.blob.vercel-storage.com. ALT GATEWAY (BlockRun, SYNCHRONOUS): POST https://blockrun.ai/api/v1/images/generations with JSON {model:'openai/gpt-image-2' (required to select this model), prompt (required, maxLength 4000), size?:1024x1024|1792x1024|1024x1792, n?:1-4}. x402 pay (~$0.063). Returns the image URL directly in the response, no polling.",
+      "inputExample": {
+        "prompt": "a small red circle on a white background",
+        "quality": "low",
+        "size": "1024x1024"
+      },
+      "outputShape": "StableStudio POST: success(bool), jobId(string), status('pending'), type('gpt-image-2-generate'). StableStudio poll GET /api/jobs/{jobId}: status, plus completed result image URL on *.public.blob.vercel-storage.com. BlockRun POST: created(unix), data[].url (https://blockrun.ai/api/media/...png), data[].source_url, data[].backed_up(bool), price.amount, price.currency, payment.status('settled'), payment.tx_hash, payment.network.",
+      "quirks": [
+        "SPLIT/MULTI-GATEWAY: StableStudio (default) and BlockRun are the SAME text-to-image op via different gateways with DIFFERENT call shapes — pick one.",
+        "StableStudio is ASYNC: POST only pays+enqueues and returns {jobId,status:'pending'} with NO image. You MUST poll GET https://stablestudio.dev/api/jobs/{jobId} (host is stablestudio.DEV, path /api/jobs/ NOT /api/status/; this URL is not in the registry, derive from jobId).",
+        "StableStudio poll requires SIWX auth as the SAME wallet that PAID the job. A different wallet identity gets 403 {success:false,error:'Unauthorized'} (confirmed live). Polling is free once authenticated.",
+        "StableStudio pricing is DYNAMIC (0-10 USD by quality); priceDisplay may show $10 but quality:low quoted $0.01 — do NOT skip as over-cap.",
+        "BlockRun is SYNCHRONOUS and returns the image URL inline — simpler but pricier ($0.063 vs $0.01). BlockRun REQUIRES model:'openai/gpt-image-2' in the body to route to this model (default model differs). BlockRun is x402-only (no mpp).",
+        "BlockRun size enum differs from StableStudio: BlockRun uses 1792x1024/1024x1792 (not 1536x1024/1024x1536)."
+      ],
+      "guide": "Text-to-image generation with GPT Image 2 (OpenAI gpt-image). Given a text prompt, returns a generated PNG/JPEG/WebP image. Available via two gateways: StableStudio (default, async job + poll, cheapest) and BlockRun (synchronous, returns image URL inline). DEFAULT (StableStudio, ASYNC): POST https://stablestudio.dev/api/generate/gpt-image-2/generate with JSON {prompt (required), size?:1024x1024|1536x1024|1024x1536|auto, quality?:low|medium|high (default high), background?:opaque|auto, output_format?:png|jpeg|webp, output_compression?:0-100, moderation?:low|auto}. x402/mpp pay (DYNAMIC 0-10 USD; quality:low quoted $0.01). Returns {success:true, jobId, status:'pending', type:'gpt-image-2-generate'} — NO image in POST response. Then poll GET https://stablestudio.dev/api/jobs/{jobId} with SIWX auth as the SAME wallet that paid (free) until status==='complete'; result is a public PNG on *.public.blob.vercel-storage.com. ALT GATEWAY (BlockRun, SYNCHRONOUS): POST https://blockrun.ai/api/v1/images/generations with JSON {model:'openai/gpt-image-2' (required to select this model), prompt (required, maxLength 4000), size?:1024x1024|1792x1024|1024x1792, n?:1-4}. x402 pay (~$0.063). Returns the image URL directly in the response, no polling. Output: StableStudio POST: success(bool), jobId(string), status('pending'), type('gpt-image-2-generate'). StableStudio poll GET /api/jobs/{jobId}: status, plus completed result image URL on *.public.blob.vercel-storage.com. BlockRun POST: created(unix), data[].url (https://blockrun.ai/api/media/...png), data[].source_url, data[].backed_up(bool), price.amount, price.currency, payment.status('settled'), payment.tx_hash, payment.network.",
+      "costObservedUsd": 0.073,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "StableStudio",
+        "url": "https://stablestudio.dev/api/generate/gpt-image-2/generate",
+        "method": "POST",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000000",
+            "payTo": "0x07F067959297767c887dbfA3C72379c66E82a045"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "10000000",
+            "payTo": "HqpEDUY3kV423fSAv7iaY3cQiz8qN8qEuGqLsG4s6h2c"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": true
+      },
+      {
+        "provider": "BlockRun",
+        "url": "https://blockrun.ai/api/v1/images/generations",
+        "method": "POST",
+        "priceDisplay": "$0.063",
+        "priceUsd": 0.063,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "40000",
+            "payTo": "0xe9030014F5DAe217d0A152f02A043567b16c1aBf"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "nano-banana-2",
+    "name": "Nano Banana 2",
+    "provider": "Google",
+    "kind": "model",
+    "category": "media",
+    "subcategory": "image-generation",
+    "description": "Google's Gemini 3.1 Flash Image — pro-quality at Flash speed: text-to-image, editing, multi-image composition (up to 5 characters / 14 objects), subject consistency, precise text rendering.",
+    "pricing": {
+      "headline": "$0.050",
+      "amount": 0.05,
+      "currency": "USD",
+      "unit": "per image"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text",
+        "image"
+      ],
+      "output": [
+        "image"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://x402.orth.sh/nano-banana-2/v1beta/models/gemini-3.1-flash-image-preview:generateContent with JSON body {contents:[{parts:[{text}]}], generationConfig:{responseModalities:[\"IMAGE\"]}}",
+      "inputExample": {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "a red circle"
+              }
+            ]
+          }
+        ],
+        "generationConfig": {
+          "responseModalities": [
+            "IMAGE"
+          ]
+        }
+      },
+      "outputShape": "body.candidates[0].content.parts[].inlineData.data (base64 image string), body.candidates[0].content.parts[].inlineData.mimeType (e.g. image/jpeg)",
+      "quirks": [
+        "Uses Google Gemini generateContent request/response format, not a simple {prompt} field.",
+        "Image comes back as base64 in candidates[0].content.parts[].inlineData.data; find the part that has inlineData (other parts may carry thoughtSignature/text).",
+        "Optional generationConfig.imageConfig.aspectRatio supports 1:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9, 21:9.",
+        "For editing/composition, add an inlineData part to contents with mimeType + base64 source image alongside the text instruction.",
+        "Response is large (~1.8MB) because the JPEG is embedded inline as base64."
+      ],
+      "guide": "POST to the URL with JSON body {\"contents\":[{\"parts\":[{\"text\":\"<your prompt>\"}]}],\"generationConfig\":{\"responseModalities\":[\"IMAGE\"]}}; payment is x402 USDC on Base, ~$0.05 per call, no API key. The response is synchronous Gemini format: decode body.candidates[0].content.parts[].inlineData.data (base64) using the sibling inlineData.mimeType to get the generated image. Add generationConfig.imageConfig.aspectRatio to control shape, or include an inlineData source-image part in contents for editing/composition.",
+      "costObservedUsd": 0.05,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "Orthogonal",
+        "url": "https://x402.orth.sh/nano-banana-2/v1beta/models/gemini-3.1-flash-image-preview:generateContent",
+        "method": "POST",
+        "priceDisplay": "$0.050",
+        "priceUsd": 0.05,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "base",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "50000",
+            "payTo": "0x8bF5C401A41ebe508E259f62612B0E22c3D43B75"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "nano-banana-pro-generate",
+    "name": "Nano Banana Pro Generate",
+    "provider": "StableStudio",
+    "kind": "api",
+    "category": "media",
+    "subcategory": "image-generation",
+    "description": "Generate an image from a text prompt using Nano Banana Pro (Google Gemini 3 Pro Image). Same model offered via 3 gateways: StableStudio (async, cheapest, default), Xona (synchronous, returns image URL inline), and Orthogonal (native Google Gemini generateContent passthrough). Supports 1K/2K/4K output and multiple aspect ratios.",
+    "pricing": {
+      "headline": "$0.130",
+      "amount": 0.13,
+      "currency": "USD",
+      "unit": "per image"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text",
+        "image"
+      ],
+      "output": [
+        "image"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "poll",
+      "auth": "none",
+      "callShape": "ASYNC on default (StableStudio): POST JSON {prompt} -> {jobId,status:'pending'}; poll GET /api/jobs/{jobId} (SIWX, free) ~20-25s until status=='complete' -> result.imageUrl. Xona is SYNC (returns image_url inline). Orthogonal is SYNC native-Gemini (contents/parts in, base64 inlineData out).",
+      "inputExample": {
+        "prompt": "a red circle on white background"
+      },
+      "outputShape": "StableStudio POST: success(bool), jobId(string), status('pending'), type('nano-banana-pro-generate'). Poll GET: id, type, input{model,prompt,imageSize,aspectRatio}, status('complete'), progress(100), result.imageUrl(hosted PNG on *.public.blob.vercel-storage.com), error, createdAt, updatedAt. | Xona: image_url, image_description, metadata. | Orthogonal: Gemini candidates[].content.parts[].inlineData.data (base64).",
+      "quirks": [
+        "MULTI-GATEWAY but NOT drop-in interchangeable: each gateway has a DIFFERENT request/response shape. StableStudio & Xona use simple {prompt}; Orthogonal uses native Google Gemini {contents:[{parts:[{text}]}]}.",
+        "StableStudio (default) is ASYNC: the paid POST does NOT return the image, only {jobId,status:'pending'}. You MUST poll GET https://stablestudio.dev/api/jobs/{jobId} until status=='complete' (~24s observed). Image at result.imageUrl (hosted PNG, NOT base64).",
+        "The poll endpoint /api/jobs/{jobId} is SIWX-gated (free): returns 403/Unauthorized to a DIFFERENT wallet identity. You must poll with the SAME wallet that paid the POST. (MCP agentcash fetch failed with 403 because its identity differs from the qa-pay/Sponge wallet that created the job.)",
+        "StableStudio field names: aspectRatio (camelCase) + imageSize ('1K'/'2K'/'4K'). Xona uses aspect_ratio (snake_case) + referenceImage[]. Do NOT mix the two field conventions.",
+        "Xona is SYNCHRONOUS — returns body.image_url directly, no polling needed. Cheaper to integrate but $0.02 more per call.",
+        "Orthogonal returns base64 inline image data (Gemini inlineData), not a hosted URL; add generationConfig.responseModalities:['IMAGE'] to force image output and tools:[{googleSearch:{}}] for grounded/factual images.",
+        "Payment settles on Base (USDC). StableStudio price observed exactly $0.13."
+      ],
+      "guide": "Generate an image from a text prompt using Nano Banana Pro (Google Gemini 3 Pro Image). Same model offered via 3 gateways: StableStudio (async, cheapest, default), Xona (synchronous, returns image URL inline), and Orthogonal (native Google Gemini generateContent passthrough). Supports 1K/2K/4K output and multiple aspect ratios. ASYNC on default (StableStudio): POST JSON {prompt} -> {jobId,status:'pending'}; poll GET /api/jobs/{jobId} (SIWX, free) ~20-25s until status=='complete' -> result.imageUrl. Xona is SYNC (returns image_url inline). Orthogonal is SYNC native-Gemini (contents/parts in, base64 inlineData out). Output: StableStudio POST: success(bool), jobId(string), status('pending'), type('nano-banana-pro-generate'). Poll GET: id, type, input{model,prompt,imageSize,aspectRatio}, status('complete'), progress(100), result.imageUrl(hosted PNG on *.public.blob.vercel-storage.com), error, createdAt, updatedAt. | Xona: image_url, image_description, metadata. | Orthogonal: Gemini candidates[].content.parts[].inlineData.data (base64).",
+      "costObservedUsd": 0.13,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "StableStudio",
+        "url": "https://stablestudio.dev/api/generate/nano-banana-pro/generate",
+        "method": "POST",
+        "priceDisplay": "$0.130",
+        "priceUsd": 0.13,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000000",
+            "payTo": "0x07F067959297767c887dbfA3C72379c66E82a045"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "10000000",
+            "payTo": "HqpEDUY3kV423fSAv7iaY3cQiz8qN8qEuGqLsG4s6h2c"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": true
+      },
+      {
+        "provider": "Xona",
+        "url": "https://api.xona-agent.com/image/nano-banana-pro",
+        "method": "POST",
+        "priceDisplay": "$0.150",
+        "priceUsd": 0.15,
+        "networks": [
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "150000",
+            "payTo": "9VaDVp1Wb78G4Wm6VuTiMrpESjrUymXefQTHcJGRSTEA"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "Orthogonal",
+        "url": "https://x402.orth.sh/nano-banana/v1beta/models/gemini-3-pro-image-preview:generateContent",
+        "method": "POST",
+        "priceDisplay": "$0.150",
+        "priceUsd": 0.15,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "base",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "150000",
+            "payTo": "0x8bF5C401A41ebe508E259f62612B0E22c3D43B75"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "flux-2-pro-generate",
+    "name": "FLUX.2 Pro Generate",
+    "provider": "StableStudio",
+    "kind": "api",
+    "category": "media",
+    "subcategory": "image-generation",
+    "description": "Text-to-image generation with FLUX.2 Pro (Black Forest Labs). Submit a prompt, get a high-quality image. Available via 3 gateways; StableStudio is the default (cheapest, async with poll). Xona is a sync alternative that returns the image URL directly.",
+    "pricing": {
+      "headline": "$0.030",
+      "amount": 0.03,
+      "currency": "USD",
+      "unit": "per image"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "poll",
+      "auth": "none",
+      "callShape": "POST https://stablestudio.dev/api/generate/flux-2-pro/generate with JSON {prompt} (optional: aspect_ratio one of 1:1|16:9|9:16|3:2|2:3|4:5|5:4|4:3|3:4 default 1:1; resolution 0.5 MP|1 MP|2 MP; output_format webp|jpg|png; output_quality 0-100; seed; safety_tolerance 1-5; prompt_upsampling bool). Returns async {success,jobId,status:'pending',type:'flux-2-pro-generate'} — NOT the image. Then poll GET https://stablestudio.dev/api/jobs/{jobId} (SIWX, free) until status=='complete'; image at body.result.imageUrl. Xona backend is SYNC: POST {prompt,aspect_ratio?,referenceImage?:[]} returns {image_url,image_description,metadata} directly (no poll).",
+      "inputExample": {
+        "prompt": "a red circle on white background"
+      },
+      "outputShape": "StableStudio (async): {success:true, jobId, status:'pending', type:'flux-2-pro-generate'} then poll → result.imageUrl (Vercel Blob, webp public CDN). Xona (sync): {image_url, image_description, metadata}.",
+      "quirks": [
+        "StableStudio/x402-Gateway are ASYNC: the paid POST returns {jobId,status:'pending'}, NOT the image — must poll GET /api/jobs/{jobId} (SIWX-gated, FREE, no USDC charge).",
+        "Poll URL is ONLY https://stablestudio.dev/api/jobs/{jobId} via GET. /api/generate/status/{id} and /api/generate/flux-2-pro/{id} return 405 (wrong route).",
+        "Job poll is bound to the PAYING wallet identity — polling from a different wallet returns 403 {error:'Unauthorized'}. Poll with the same wallet that paid the generate.",
+        "Final StableStudio image is body.result.imageUrl (Vercel Blob, webp, public CDN), NOT body.image_url. Job completed in ~16s in prior test; poll with short backoff.",
+        "Xona backend is a SYNC drop-in returning {image_url,...} immediately (no poll) and supports referenceImage[] for image-to-image; field name is 'referenceImage' (array), not 'images'.",
+        "x402 Gateway (Railway) path is /api/image/quality (not /flux-2-pro); $0.05; returned empty 402 body so input schema inferred as {prompt}, not paid-verified.",
+        "StableStudio pricing is advertised as dynamic 0-10 USD but FLUX.2 Pro generate billed a flat $0.03 in this test."
+      ],
+      "guide": "Text-to-image generation with FLUX.2 Pro (Black Forest Labs). Submit a prompt, get a high-quality image. Available via 3 gateways; StableStudio is the default (cheapest, async with poll). Xona is a sync alternative that returns the image URL directly. POST https://stablestudio.dev/api/generate/flux-2-pro/generate with JSON {prompt} (optional: aspect_ratio one of 1:1|16:9|9:16|3:2|2:3|4:5|5:4|4:3|3:4 default 1:1; resolution 0.5 MP|1 MP|2 MP; output_format webp|jpg|png; output_quality 0-100; seed; safety_tolerance 1-5; prompt_upsampling bool). Returns async {success,jobId,status:'pending',type:'flux-2-pro-generate'} — NOT the image. Then poll GET https://stablestudio.dev/api/jobs/{jobId} (SIWX, free) until status=='complete'; image at body.result.imageUrl. Xona backend is SYNC: POST {prompt,aspect_ratio?,referenceImage?:[]} returns {image_url,image_description,metadata} directly (no poll). Output: StableStudio (async): {success:true, jobId, status:'pending', type:'flux-2-pro-generate'} then poll → result.imageUrl (Vercel Blob, webp public CDN). Xona (sync): {image_url, image_description, metadata}.",
+      "costObservedUsd": 0.03,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "StableStudio",
+        "url": "https://stablestudio.dev/api/generate/flux-2-pro/generate",
+        "method": "POST",
+        "priceDisplay": "$0.030",
+        "priceUsd": 0.03,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000000",
+            "payTo": "0x07F067959297767c887dbfA3C72379c66E82a045"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "10000000",
+            "payTo": "HqpEDUY3kV423fSAv7iaY3cQiz8qN8qEuGqLsG4s6h2c"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": true
+      },
+      {
+        "provider": "Xona",
+        "url": "https://api.xona-agent.com/base-main/image/flux-2-pro",
+        "method": "POST",
+        "priceDisplay": "$0.050",
+        "priceUsd": 0.05,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "50000",
+            "payTo": "0x515e7Bce44Baa5F6e42D16d4B5f27768E7f2F8cC"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "x402 Gateway",
+        "url": "https://x402-gateway-production.up.railway.app/api/image/quality",
+        "method": "POST",
+        "priceDisplay": "$0.050",
+        "priceUsd": 0.05,
+        "networks": [
+          "Base",
+          "eip155:4326",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "50000",
+            "payTo": "0x7dd5Be069f2d2eAd75eC7C3423B116fF043c2629"
+          },
+          {
+            "scheme": "exact",
+            "network": "eip155:4326",
+            "asset": "0xFAfDdbb3FC7688494971a79cc65DCa3EF82079E7",
+            "amount": "50000000000000000",
+            "payTo": "0x7dd5Be069f2d2eAd75eC7C3423B116fF043c2629"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "50000",
+            "payTo": "Gzehfseq1k9AcHFSoV7qHmDGQx92nLMw78XXdqVWQQWa"
+          }
+        ],
+        "status": "needs-review",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "makespdf-markdown-to-pdf",
+    "name": "MakesPDF Markdown to PDF",
+    "provider": "makespdf",
+    "kind": "api",
+    "category": "document-content",
+    "subcategory": "pdf-generation-processing",
+    "description": "Convert GitHub-Flavoured Markdown to a tagged, accessible PDF (PDF/UA-1 + PDF/A-2A dual-compliant). Sub-second, no AI call. Cheapest path when you already have document text.",
+    "pricing": {
+      "headline": "$0.010",
+      "amount": 0.01,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://makespdf.com/api/v1/markdown with JSON body {markdown: string, options?: object}. Only `markdown` is required. `options` accepts pageSize (e.g. A4), fontFamily, fontSize, margins, title, theme.",
+      "inputExample": {
+        "markdown": "# Hello World\n\nSome **bold** text and a list:\n\n- one\n- two\n",
+        "options": {
+          "pageSize": "A4",
+          "title": "Test"
+        }
+      },
+      "outputShape": "Raw binary PDF (Content-Type: application/pdf). Via x402/paid_fetch the body is returned as a 'base64:<base64-of-PDF-bytes>' string — strip the 'base64:' prefix and base64-decode to get the PDF (starts with %PDF-1.7). Response headers carry x-pages (page count) and x-render-ms (render latency); options.title sets the content-disposition filename.",
+      "quirks": [
+        "x402 payment bypasses the normal Bearer-token requirement — no API key needed for the paid call.",
+        "Response is RAW BINARY PDF, not JSON. paid_fetch/qa-pay surface it as a 'base64:...' string — strip the prefix and base64-decode to get PDF bytes (magic %PDF-1.7).",
+        "Field is `markdown` (GFM source), not `text` or `content`. `options` is a flat object (pageSize, fontFamily, fontSize, margins, title, theme).",
+        "Same operation is also reachable at the anonymous alias POST /api/v1/md (rate-limited 60/hour, 200/day, 20 pages) when the operator enables promo:md_anonymous_enabled — but the registry/x402 path uses /api/v1/markdown.",
+        "x-pages and x-render-ms headers report page count and render latency; options.title sets the download filename."
+      ],
+      "guide": "Convert GitHub-Flavoured Markdown to a tagged, accessible PDF (PDF/UA-1 + PDF/A-2A dual-compliant). Sub-second, no AI call. Cheapest path when you already have document text. POST https://makespdf.com/api/v1/markdown with JSON body {markdown: string, options?: object}. Only `markdown` is required. `options` accepts pageSize (e.g. A4), fontFamily, fontSize, margins, title, theme. Output: Raw binary PDF (Content-Type: application/pdf). Via x402/paid_fetch the body is returned as a 'base64:<base64-of-PDF-bytes>' string — strip the 'base64:' prefix and base64-decode to get the PDF (starts with %PDF-1.7). Response headers carry x-pages (page count) and x-render-ms (render latency); options.title sets the content-disposition filename.",
+      "costObservedUsd": 0.01,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "makespdf",
+        "url": "https://makespdf.com/api/v1/markdown",
+        "method": "POST",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0x9bB96Acb3fD11D8949D862736B96e7e12D319DC4"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "html-to-pdf-raw-html",
+    "name": "HTML to PDF (raw HTML)",
+    "provider": "x402.nichospt",
+    "kind": "api",
+    "category": "document-content",
+    "subcategory": "pdf-generation-processing",
+    "description": "Render a raw HTML document string to a PDF. Returns the PDF as a binary (application/pdf) response. Part of x402-tools, a set of keyless pay-per-call utility APIs settled in USDC via x402.",
+    "pricing": {
+      "headline": "$0.0050",
+      "amount": 0.005,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://x402.nichospt.net/render with JSON body {\"html\":\"<html>...</html>\", \"options\"?:{format?:\"A4\"|\"Letter\", landscape?:bool, margin?}} . x402 payment handshake (USDC on Base). Response is the raw PDF binary, NOT JSON.",
+      "inputExample": {
+        "html": "<html><body><h1>Hello PDF</h1><p>Test render.</p></body></html>"
+      },
+      "outputShape": "Binary PDF. Content-Type: application/pdf. Body is the PDF bytes (qa-pay surfaced as base64:JVBERi0xLjQ... i.e. %PDF-1.4 header). No JSON wrapper, no pdf_url — the file itself is the response body.",
+      "quirks": [
+        "Input is a raw HTML STRING in field 'html' (required, maxLength 2,000,000) — NOT a url. This is the key difference from the URL->PDF op.",
+        "Output is the PDF binary directly in the response body (Content-Type application/pdf), not a JSON object and not a presigned URL. Save the bytes to disk.",
+        "Optional 'options': {format:'A4'|'Letter' (default A4), landscape:bool (default false), margin: CSS-length string or {top,bottom,left,right}}.",
+        "Rendered with HeadlessChrome (Skia/PDF) — full CSS/HTML support.",
+        "Cheap: $0.005/call, fixed price, keyless (x402 USDC on Base)."
+      ],
+      "guide": "Render a raw HTML document string to a PDF. Returns the PDF as a binary (application/pdf) response. Part of x402-tools, a set of keyless pay-per-call utility APIs settled in USDC via x402. POST https://x402.nichospt.net/render with JSON body {\"html\":\"<html>...</html>\", \"options\"?:{format?:\"A4\"|\"Letter\", landscape?:bool, margin?}} . x402 payment handshake (USDC on Base). Response is the raw PDF binary, NOT JSON. Output: Binary PDF. Content-Type: application/pdf. Body is the PDF bytes (qa-pay surfaced as base64:JVBERi0xLjQ... i.e. %PDF-1.4 header). No JSON wrapper, no pdf_url — the file itself is the response body.",
+      "costObservedUsd": 0.005,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "x402.nichospt",
+        "url": "https://x402.nichospt.net/render",
+        "method": "POST",
+        "priceDisplay": "$0.0050",
+        "priceUsd": 0.005,
+        "networks": [
+          "Solana",
+          "Base",
+          "Polygon"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "5000",
+            "payTo": "HJfYcc2XtmrLgr4kze6kdp1JNHsqrdfJiHucpKNQaoJe"
+          },
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "5000",
+            "payTo": "0x954c90740b8247e4b0d4a3f92201167895405555"
+          },
+          {
+            "scheme": "exact",
+            "network": "eip155:137",
+            "asset": "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
+            "amount": "5000",
+            "payTo": "0x954c90740b8247e4b0d4a3f92201167895405555"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "makespdf-template-render",
+    "name": "MakesPDF Template Render",
+    "provider": "makespdf",
+    "kind": "api",
+    "category": "document-content",
+    "subcategory": "pdf-generation-processing",
+    "description": "Generate a PDF from structured data with no source document — supply data plus a curated-library template id (or inline builder DSL). Output is a tagged, accessible PDF/UA-1 + PDF/A-2A document. Use for branded layouts like invoices, certificates, reports.",
+    "pricing": {
+      "headline": "$0.020",
+      "amount": 0.02,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://makespdf.com/api/v1/render with JSON body {templateId: string, data: object} OR {dsl: string, data: object}. templateId and dsl are mutually exclusive — supply exactly one. `data` holds the template variables.",
+      "inputExample": {
+        "templateId": "invoice-classic",
+        "data": {
+          "name": "Ada",
+          "amount": "42.00"
+        }
+      },
+      "outputShape": "Raw binary PDF (Content-Type: application/pdf). Via x402/paid_fetch returned as 'base64:<base64-of-PDF-bytes>' — strip the prefix and decode (starts with %PDF-1.7). Same x-pages / x-render-ms headers as the markdown endpoint.",
+      "quirks": [
+        "x402 payment bypasses the normal Bearer-token requirement — no API key needed for the paid call.",
+        "Response is RAW BINARY PDF, not JSON — surfaced as a 'base64:...' string by paid_fetch/qa-pay; strip prefix and base64-decode.",
+        "`templateId` and `dsl` are MUTUALLY EXCLUSIVE — pass exactly one. templateId is the simplest path; browse valid ids at GET /api/v1/templates?owner=library (free). Verified id: invoice-classic. Other library ids: certificate-formal, certificate-modern, invoice-compact, invoice-modern.",
+        "Template variables go in the `data` object (not top-level). invoice-classic tolerates partial data; other templates may expect specific fields.",
+        "Costs $0.02 (double the /markdown endpoint at $0.01)."
+      ],
+      "guide": "Generate a PDF from structured data with no source document — supply data plus a curated-library template id (or inline builder DSL). Output is a tagged, accessible PDF/UA-1 + PDF/A-2A document. Use for branded layouts like invoices, certificates, reports. POST https://makespdf.com/api/v1/render with JSON body {templateId: string, data: object} OR {dsl: string, data: object}. templateId and dsl are mutually exclusive — supply exactly one. `data` holds the template variables. Output: Raw binary PDF (Content-Type: application/pdf). Via x402/paid_fetch returned as 'base64:<base64-of-PDF-bytes>' — strip the prefix and decode (starts with %PDF-1.7). Same x-pages / x-render-ms headers as the markdown endpoint.",
+      "costObservedUsd": 0.02,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "makespdf",
+        "url": "https://makespdf.com/api/v1/render",
+        "method": "POST",
+        "priceDisplay": "$0.020",
+        "priceUsd": 0.02,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "20000",
+            "payTo": "0x9bB96Acb3fD11D8949D862736B96e7e12D319DC4"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "stableupload-file-upload",
+    "name": "StableUpload File Upload",
+    "provider": "stableupload",
+    "kind": "api",
+    "category": "database-storage",
+    "subcategory": "object-file-storage",
+    "description": "Buy a pay-per-upload single-file hosting slot. Returns a presigned S3 form to upload one file plus a permanent publicUrl that serves the bytes until expiresAt. No API key (x402/MPP on Base).",
+    "pricing": {
+      "headline": "$0.0050",
+      "amount": 0.005,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://stableupload.dev/api/upload with JSON {filename, contentType, tier, policyTtlSeconds?}. Then perform the two-step upload: if uploadMethod=='post', POST multipart/form-data to postUrl with EVERY postFields key/value PLUS a 'file' part containing the bytes (use curlExample verbatim); if 'put', PUT raw bytes to uploadUrl with the requested Content-Type. The file is then served at publicUrl.",
+      "inputExample": {
+        "filename": "a.txt",
+        "contentType": "text/plain",
+        "tier": "short-10mb"
+      },
+      "outputShape": "uploadId, uploadUrl, uploadMethod ('post'|'put'), uploadUrlExpiresAt, postUrl, postFields.{key,Content-Type,x-amz-algorithm,x-amz-credential,x-amz-date,policy,x-amz-signature}, publicUrl, expiresAt, maxSize, curlExample, txHash",
+      "quirks": [
+        "REQUIRED fields: filename, contentType, tier. contentType is MANDATORY here (the site endpoint does NOT take it) — omitting it 400s.",
+        "Two-step flow: the POST only ISSUES a presigned S3 form; it does NOT accept file bytes. Upload the bytes separately to postUrl (uploadMethod 'post', multipart with all postFields + 'file') or uploadUrl ('put', raw bytes). curlExample is the exact command.",
+        "Unlike /api/site, this response DOES include publicUrl (served at https://f.stableupload.dev/<uploadId>/<filename>). Bytes available until expiresAt.",
+        "PRICE IS TIER-DEPENDENT and the body 'tier' overrides the x402 default quote. File tiers (6-month): 10mb=$0.02, 100mb=$0.20, 1gb=$2.00. Short-term 7-day: short-10mb=$0.005, short-100mb=$0.02, short-1gb=$0.10, short-5gb=$0.50 (5gb is FILE-ONLY, not sites). Pick smallest that fits.",
+        "Use short-* tiers only for temporary/intermediate links; default to 6-month tiers for anything a user keeps.",
+        "Optional policyTtlSeconds (60-86400) sets the presigned form/URL TTL (uploadUrlExpiresAt) — use a longer TTL only when handing the postUrl/postFields to a downstream service to upload.",
+        "Presigned form expires fast (uploadUrlExpiresAt ~15 min) — upload promptly.",
+        "S3 enforces Content-Type and a content-length-range (maxSize) before storing; mismatched Content-Type is rejected by S3.",
+        "txHash may be null in the qa-pay response (paid:true, confirmed:false) yet payment settles and the call returns 200.",
+        "Owner-side SIWX (free, no payment) helpers exist for inspection: GET /api/uploads (list wallet uploads), GET /api/download/:uploadId (metadata only, not bytes)."
+      ],
+      "guide": "Buy a pay-per-upload single-file hosting slot. Returns a presigned S3 form to upload one file plus a permanent publicUrl that serves the bytes until expiresAt. No API key (x402/MPP on Base). POST https://stableupload.dev/api/upload with JSON {filename, contentType, tier, policyTtlSeconds?}. Then perform the two-step upload: if uploadMethod=='post', POST multipart/form-data to postUrl with EVERY postFields key/value PLUS a 'file' part containing the bytes (use curlExample verbatim); if 'put', PUT raw bytes to uploadUrl with the requested Content-Type. The file is then served at publicUrl. Output: uploadId, uploadUrl, uploadMethod ('post'|'put'), uploadUrlExpiresAt, postUrl, postFields.{key,Content-Type,x-amz-algorithm,x-amz-credential,x-amz-date,policy,x-amz-signature}, publicUrl, expiresAt, maxSize, curlExample, txHash",
+      "costObservedUsd": 0.005,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stableupload",
+        "url": "https://stableupload.dev/api/upload",
+        "method": "POST",
+        "priceDisplay": "$0.0050",
+        "priceUsd": 0.005,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "2000000",
+            "payTo": "0x06dFF3c8380b5D1799874adA903fc3422882FD6f"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "2000000",
+            "payTo": "95xcrFtRVn2fkoAKiCUKxPpTc1GN8MTyonVwLFfJfzux"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "text-to-speech-elevenlabs",
+    "name": "Text-to-Speech (ElevenLabs)",
+    "provider": "BlockRun",
+    "kind": "api",
+    "category": "media",
+    "subcategory": "voice-tts",
+    "description": "Synthesize speech from text with ElevenLabs (Flash v2.5 for real-time agents, Multilingual v2 / Eleven v3 for narration). Billed per input character; the exact price is quoted in the 402. Returns a hosted MP3 URL.",
+    "pricing": {
+      "headline": "$0.0010",
+      "amount": 0.001,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "audio"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://blockrun.ai/api/v1/audio/speech with body {input} (req), optional {model, voice, response_format, speed} -> synthesizes ElevenLabs TTS, returns JSON with a hosted MP3 URL + character count.",
+      "inputExample": {
+        "model": "elevenlabs/flash-v2.5",
+        "input": "Hello world",
+        "voice": "sarah",
+        "response_format": "mp3"
+      },
+      "quirks": [
+        "Pay-tested live 2026-06-24 ($0.001).",
+        "Dynamic pricing: billed per input character; the 402 quotes exact price (min $0.001, max $2.10). Short probe input quoted 1000 atomic units = $0.001 USDC on Base.",
+        "model must be a valid enum value: elevenlabs/flash-v2.5, elevenlabs/turbo-v2.5, elevenlabs/multilingual-v2, elevenlabs/v3. An invalid/OpenAI-style model (e.g. tts-1) returns HTTP 400 before the 402 (charge-then-error risk is low since validation happens pre-payment).",
+        "voice takes a voice alias (e.g. sarah, george) or a raw ElevenLabs voice_id; response_format one of mp3/opus/pcm/wav; optional speed 0.7-1.2.",
+        "Synchronous (no job id to poll) - synthesis typically <1s for Flash; returns the hosted MP3 URL directly in the response.",
+        "accepts only USDC on Base (eip155:8453) via x402 exact scheme."
+      ]
+    },
+    "endpoints": [
+      {
+        "provider": "BlockRun",
+        "url": "https://blockrun.ai/api/v1/audio/speech",
+        "method": "POST",
+        "priceDisplay": "$0.0010",
+        "priceUsd": 0.001,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "1000",
+            "payTo": "0xe9030014F5DAe217d0A152f02A043567b16c1aBf"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "openai-tts",
+    "name": "OpenAI TTS",
+    "provider": "OpenAI",
+    "kind": "model",
+    "category": "media",
+    "subcategory": "voice-tts",
+    "description": "OpenAI text-to-speech voices.",
+    "pricing": {
+      "headline": "$0.010",
+      "amount": 0.01,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "audio"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://x402-gateway-production.up.railway.app/api/tts/openai with JSON body {text}.",
+      "inputExample": {
+        "text": "hello how are you?"
+      },
+      "outputShape": "JSON: body.audio is a base64-encoded MP3 string; body.format = 'mp3'; body.model = 'tts-1'. Base64-decode body.audio and write it to a .mp3 file.",
+      "quirks": [
+        "Body is just {text} — re-verified working 2026-06-10 ($0.01, 200). The OpenAI-native shape {model,input,voice} returns 400 'Provide text (string, required)'; use {text}.",
+        "Output is JSON, NOT raw bytes: the MP3 is base64 in body.audio. Decode it and save as .mp3 (do not save the JSON).",
+        "x402-paid ~$0.01 USDC on Base (also accepts Solana + Tempo)."
+      ],
+      "guide": "POST https://x402-gateway-production.up.railway.app/api/tts/openai with a JSON body {\"text\":\"...your text...\"} and pay the ~$0.01 USDC x402 quote on Base. The response is JSON: base64-decode body.audio (an MP3) and write it to a .mp3 file. body.format is 'mp3'.",
+      "costObservedUsd": 0.01,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "x402 Gateway",
+        "url": "https://x402-gateway-production.up.railway.app/api/tts/openai",
+        "method": "POST",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base",
+          "eip155:4326",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0x7dd5Be069f2d2eAd75eC7C3423B116fF043c2629"
+          },
+          {
+            "scheme": "exact",
+            "network": "eip155:4326",
+            "asset": "0xFAfDdbb3FC7688494971a79cc65DCa3EF82079E7",
+            "amount": "10000000000000000",
+            "payTo": "0x7dd5Be069f2d2eAd75eC7C3423B116fF043c2629"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "10000",
+            "payTo": "Gzehfseq1k9AcHFSoV7qHmDGQx92nLMw78XXdqVWQQWa"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "voices-free",
+    "name": "Voices (free)",
+    "provider": "BlockRun",
+    "kind": "api",
+    "category": "media",
+    "subcategory": "voice-tts",
+    "description": "List available ElevenLabs voices and their aliases for use with /v1/audio/speech. Free.",
+    "pricing": {
+      "headline": "Free",
+      "amount": 0,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "audio"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://blockrun.ai/api/v1/audio/voices (no params) -> returns a JSON list of available ElevenLabs voices, each with voice_id, name, category, labels (language/gender/age/accent/use_case), preview_url, and optional alias for use as the `voice` field on /v1/audio/speech.",
+      "inputExample": "GET https://blockrun.ai/api/v1/audio/voices (no params)",
+      "quirks": [
+        "Verified FREE (HTTP 200) 2026-06-24.",
+        "FREE endpoint: unpaid GET returns HTTP 200 with the full voices list, no x402 challenge, no payment header — never charges.",
+        "This is a helper/discovery endpoint for the paid /api/v1/audio/speech TTS endpoint, not a standalone TTS generator.",
+        "Response shape is {object:'list', endpoint:'/v1/audio/speech', note, data:[...]}; pass a voice's `alias` (if present) or `voice_id` as the `voice` field to /v1/audio/speech.",
+        "Cloudflare-cached (cache-control max-age=300), so the voice list may be up to 5 minutes stale.",
+        "No path/query params; GET only.",
+        "FREE endpoint — returns 200 on an unpaid request (no x402 charge)."
+      ]
+    },
+    "endpoints": [
+      {
+        "provider": "BlockRun",
+        "url": "https://blockrun.ai/api/v1/audio/voices",
+        "method": "GET",
+        "priceDisplay": "Free",
+        "priceUsd": 0,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "0",
+            "payTo": "0xe9030014F5DAe217d0A152f02A043567b16c1aBf"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "stableemail-send",
+    "name": "StableEmail Send",
+    "provider": "StableEmail",
+    "kind": "api",
+    "category": "communication",
+    "subcategory": "email",
+    "description": "Send an email over x402 via StableEmail — no account, no API key, no domain setup. Sends from relay@stableemail.dev.",
+    "pricing": {
+      "headline": "$0.020",
+      "amount": 0.02,
+      "currency": "USD",
+      "unit": "per email"
+    },
+    "confirmGate": "RED",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://stableemail.dev/api/send with JSON {to:[\"dest@example.com\"], subject, text|html}",
+      "inputExample": {
+        "to": [
+          "dest@example.com"
+        ],
+        "subject": "Hello",
+        "text": "Hi there."
+      },
+      "outputShape": "body.success (bool), body.messageId, body.from (\"StableEmail <relay@stableemail.dev>\")",
+      "quirks": [
+        "DELIVERY CONFIRMED 2026-06-11 to a real inbox ($0.02, 200).",
+        "No from field — always sends from relay@stableemail.dev. For a custom sender domain use the subdomain flow (buy subdomain then /api/subdomain/send).",
+        "to is an ARRAY. Provide text or html."
+      ],
+      "guide": "POST https://stableemail.dev/api/send with {\"to\":[\"x@y.com\"],\"subject\":\"...\",\"text\":\"...\"}. Keyless x402 (~$0.02 on Base). Sends from relay@stableemail.dev. Outward/irreversible — confirm recipients. Delivery confirmed working.",
+      "costObservedUsd": 0.02,
+      "needsApproval": true
+    },
+    "endpoints": [
+      {
+        "provider": "StableEmail",
+        "url": "https://stableemail.dev/api/send",
+        "method": "POST",
+        "priceDisplay": "$0.020",
+        "priceUsd": 0.02,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "20000",
+            "payTo": "0xdb5aa553feeb2c3e3d03e8360b36fb0f7e480671"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "20000",
+            "payTo": "HvBMG7ezcwDssxXP7DPJJsveyDnvUm2wNySBR5WF2XEY"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "agentmail-send-email",
+    "name": "AgentMail Send Email",
+    "provider": "AgentMail",
+    "kind": "api",
+    "category": "communication",
+    "subcategory": "email",
+    "description": "Send an email from an owned inbox via Amazon SES. inbox_id is a URL path parameter (the full email address). At least one of to/cc/bcc is required. Returns message_id + thread_id.",
+    "pricing": {
+      "headline": "$0.010",
+      "amount": 0.01,
+      "currency": "USD",
+      "unit": "per email"
+    },
+    "confirmGate": "RED",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://x402.orth.sh/agentmail/v0/inboxes/{inbox_id}/messages/send (substitute the full inbox email into the path, URL-encode if it has special chars) with JSON {to|cc|bcc (string or array), subject?, text?, html?, reply_to?, labels?, attachments?, headers?}. x402 paid ($0.01 = 10000 base-units USDC on Base). Provide at least one recipient and at least one of text/html.",
+      "inputExample": {
+        "to": [
+          "recipient@example.com"
+        ],
+        "subject": "Hello from agent",
+        "text": "This is a test message sent via AgentMail."
+      },
+      "outputShape": "body.message_id, body.thread_id (delivered via Amazon SES)",
+      "quirks": [
+        "OUTWARD/irreversible: sends a real email — never auto-fire in QA. Not paid-verified in this run by policy.",
+        "Independently re-verified working 2026-06-10 ($0.01, HTTP 200) from the master wallet's existing inbox powerfulrule82@agentmail.to — returned message_id + thread_id.",
+        "inbox_id is a URL PATH parameter: /v0/inboxes/{inbox_id}/messages/send — substitute the full email address directly (URL-encode the @ if needed).",
+        "OWNERSHIP GATE: returns HTTP 403 'Ownership required' (NOT 402) when the inbox does not exist or is not owned by the calling wallet — the x402 payment flow never starts; ownership validation runs BEFORE the payment challenge.",
+        "to/cc/bcc each accept a single string OR an array of strings; at least one of the three is required.",
+        "Provide text, html, or both for the body.",
+        "attachments are objects: {filename, content_type, content (base64)} or {filename, content_type, url}.",
+        "The {inbox_id} template breaks free schema discovery — probe the schema against a real inbox path instead of the literal {inbox_id} placeholder.",
+        "DELIVERY CONFIRMED 2026-06-11 to a real inbox ($0.01, 200, via Amazon SES).",
+        "Requires an owned AgentMail inbox: create one (AgentMail Create Inbox, $2) and substitute its address as {inbox_id} in the path. Reuse across sends.",
+        "Paid-verified 2026-06-08: $0.01 send → real email delivered via Amazon SES. Outward send → needsApproval."
+      ],
+      "guide": "Send an email from an owned inbox via Amazon SES. inbox_id is a URL path parameter (the full email address). At least one of to/cc/bcc is required. Returns message_id + thread_id. POST https://x402.orth.sh/agentmail/v0/inboxes/{inbox_id}/messages/send (substitute the full inbox email into the path, URL-encode if it has special chars) with JSON {to|cc|bcc (string or array), subject?, text?, html?, reply_to?, labels?, attachments?, headers?}. x402 paid ($0.01 = 10000 base-units USDC on Base). Provide at least one recipient and at least one of text/html. Output: body.message_id, body.thread_id (delivered via Amazon SES)",
+      "costObservedUsd": 0.01,
+      "needsApproval": true
+    },
+    "endpoints": [
+      {
+        "provider": "AgentMail",
+        "url": "https://x402.api.agentmail.to/v0/inboxes/{inbox_id}/messages/send",
+        "method": "POST",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base",
+          "Solana",
+          "Avalanche",
+          "eip155:196",
+          "Polygon"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0x6e3184C204e596dED89E8A5693B602097F4Ab687"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "10000",
+            "payTo": "7r4e5dwNS68MDaxbw7N8jbzHq7RCMBp9z6smHFH4NXWw"
+          },
+          {
+            "scheme": "exact",
+            "network": "eip155:43114",
+            "asset": "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+            "amount": "10000",
+            "payTo": "0x6e3184C204e596dED89E8A5693B602097F4Ab687"
+          },
+          {
+            "scheme": "exact",
+            "network": "eip155:196",
+            "asset": "0x74b7f16337b8972027f6196a17a631ac6de26d22",
+            "amount": "10000",
+            "payTo": "0x6e3184C204e596dED89E8A5693B602097F4Ab687"
+          },
+          {
+            "scheme": "exact",
+            "network": "eip155:137",
+            "asset": "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
+            "amount": "10000",
+            "payTo": "0x6e3184C204e596dED89E8A5693B602097F4Ab687"
+          }
+        ],
+        "status": "active",
+        "needsApproval": true,
+        "async": false
+      },
+      {
+        "provider": "Orthogonal",
+        "url": "https://x402.orth.sh/agentmail/v0/inboxes/{inbox_id}/messages/send",
+        "method": "POST",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "base",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0xaA4a75114b5BdA671844ae10256d2B048dF8fdc3"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "agentmail-create-inbox",
+    "name": "AgentMail Create Inbox",
+    "provider": "AgentMail",
+    "kind": "api",
+    "category": "communication",
+    "subcategory": "email",
+    "description": "Provision a new email inbox on agentmail.to (or a verified custom domain). Returns an inbox_id in email-address format (e.g. myagent@agentmail.to) used as both the inbox identifier and the from-address for all subsequent sends. The paying wallet becomes the inbox owner.",
+    "pricing": {
+      "headline": "$2.00",
+      "amount": 2,
+      "currency": "USD",
+      "unit": "per email"
+    },
+    "confirmGate": "RED",
+    "verified": true,
+    "registryStatus": "hidden",
+    "hiddenReason": "over-cap",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://x402.orth.sh/agentmail/v0/inboxes with optional JSON {username?, domain?, display_name?, client_id?}. All fields optional — empty body {} mints a random username @agentmail.to. x402 paid ($2.00 = 2000000 base-units USDC on Base). Returns inbox_id.",
+      "inputExample": {
+        "username": "myagent",
+        "domain": "agentmail.to",
+        "display_name": "My Agent",
+        "client_id": "my-idempotency-key"
+      },
+      "outputShape": "body.inbox_id (full email address, e.g. myagent@agentmail.to) — doubles as id + from-address",
+      "quirks": [
+        "PRICE IS $2.00 (2000000 USDC base-units on Base), ABOVE the $1 QA cap — over-cap, not paid-verified in QA.",
+        "PROVISIONING op: creates a billable resource at $2/month. Inboxes with no API activity for 30+ days are auto-deleted; any request resets the inactivity timer.",
+        "CHECK-BEFORE-CREATE money-safety: before paying $2, check whether the wallet already owns an inbox and reuse its inbox_id. The QA master wallet already owns powerfulrule82@agentmail.to.",
+        "client_id acts as an idempotency key — safe to retry with the same client_id if the $2 payment goes through but the response is lost.",
+        "username = local part only (e.g. 'myagent' -> myagent@agentmail.to); domain must be a verified custom domain or defaults to agentmail.to.",
+        "OWNERSHIP: the wallet that pays this create becomes the sole owner; only that exact wallet can later call send on the inbox. Wallet identity IS the auth — auth:'none' understates it.",
+        "inbox_id returned is the FULL email address, used verbatim as a URL path param in the send endpoint.",
+        "Paid-verified 2026-06-08: $2 one-time inbox creation (real inbox powerfulrule82@agentmail.to, owned by the paying wallet). Reuse the inbox_id — do NOT recreate ($2 each). See MASTERKEY_ASSETS.md."
+      ],
+      "guide": "Provision a new email inbox on agentmail.to (or a verified custom domain). Returns an inbox_id in email-address format (e.g. myagent@agentmail.to) used as both the inbox identifier and the from-address for all subsequent sends. The paying wallet becomes the inbox owner. POST https://x402.orth.sh/agentmail/v0/inboxes with optional JSON {username?, domain?, display_name?, client_id?}. All fields optional — empty body {} mints a random username @agentmail.to. x402 paid ($2.00 = 2000000 base-units USDC on Base). Returns inbox_id. Output: body.inbox_id (full email address, e.g. myagent@agentmail.to) — doubles as id + from-address",
+      "costObservedUsd": 2,
+      "needsApproval": true
+    },
+    "endpoints": [
+      {
+        "provider": "AgentMail",
+        "url": "https://x402.api.agentmail.to/v0/inboxes",
+        "method": "POST",
+        "priceDisplay": "$2.00",
+        "priceUsd": 2,
+        "networks": [
+          "Base",
+          "Solana",
+          "Avalanche",
+          "eip155:196",
+          "Polygon"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "2000000",
+            "payTo": "0x6e3184C204e596dED89E8A5693B602097F4Ab687"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "2000000",
+            "payTo": "7r4e5dwNS68MDaxbw7N8jbzHq7RCMBp9z6smHFH4NXWw"
+          },
+          {
+            "scheme": "exact",
+            "network": "eip155:43114",
+            "asset": "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+            "amount": "2000000",
+            "payTo": "0x6e3184C204e596dED89E8A5693B602097F4Ab687"
+          },
+          {
+            "scheme": "exact",
+            "network": "eip155:196",
+            "asset": "0x74b7f16337b8972027f6196a17a631ac6de26d22",
+            "amount": "2000000",
+            "payTo": "0x6e3184C204e596dED89E8A5693B602097F4Ab687"
+          },
+          {
+            "scheme": "exact",
+            "network": "eip155:137",
+            "asset": "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
+            "amount": "2000000",
+            "payTo": "0x6e3184C204e596dED89E8A5693B602097F4Ab687"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "Orthogonal",
+        "url": "https://x402.orth.sh/agentmail/v0/inboxes",
+        "method": "POST",
+        "priceDisplay": "$2.00",
+        "priceUsd": 2,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "base",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "2000000",
+            "payTo": "0xaA4a75114b5BdA671844ae10256d2B048dF8fdc3"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "send-sms",
+    "name": "Send SMS",
+    "provider": "Textbelt",
+    "kind": "api",
+    "category": "communication",
+    "subcategory": "sms-phone",
+    "description": "Send a single outbound SMS text message to one phone number (E.164 format). Pay-per-message via x402 (USDC on Base or Solana). One operation served via multiple gateways: Textbelt (real delivery), Spraay (sandbox/mock), and a Twilio REST proxy (needs own Twilio key).",
+    "pricing": {
+      "headline": "$0.020",
+      "amount": 0.02,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "RED",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "poll",
+      "auth": "none",
+      "callShape": "POST https://api.paysponge.com/x402/purchase/svc_d6kszbre4qwg5n4n4/text (Textbelt) with JSON {phone, message}",
+      "inputExample": {
+        "phone": "+12368670354",
+        "message": "your text here"
+      },
+      "outputShape": "body.success, body.textId, body.quotaRemaining",
+      "quirks": [
+        "Phone must be E.164 format (e.g. +12368670354).",
+        "FIELD-NAME TRAP: the three gateways use DIFFERENT field names — Textbelt {phone, message}, Spraay {to, body}, Twilio {To, From, Body}. Do not assume a single shape.",
+        "Spraay backend is a SANDBOX/MOCK: returns 200 + status:queued but _gateway.live=false and note 'SMS queued. Production integrates with Twilio/Vonage' -> NO real delivery despite the 200.",
+        "httpay/Twilio backend's registry URL is a broken literal '{*path}' path-template; real endpoint is /twilio/Messages.json and it requires a user-supplied Twilio account credential (not keyless) — recommend dropping it.",
+        "All backends pay $0.02 USDC (gateway fee) except httpay which is $0.002; Base eip155:8453 and Solana both accepted on Spraay/Textbelt.",
+        "Synchronous response; for Textbelt, poll GET .../status/{textId} for delivery state. Spraay has no poll URL (queued is final).",
+        "DELIVERY CONFIRMED 2026-06-11: real SMS received via Textbelt/paysponge ($0.02, 200). Field names {phone, message} confirmed.",
+        "The spraay.app backend is a MOCK (does not actually send) — use the paysponge/Textbelt backend.",
+        "Synchronous: returns {success:true, quotaRemaining} immediately. ⚠ success=ACCEPTED, not delivered: a 2026-06-23 test to a Canadian (+1 236) number returned success but did NOT arrive (Textbelt region/sandbox limitation; no textId returned by the gateway to check delivery status). Treat as best-effort; verify US delivery. Outward → needsApproval gated."
+      ],
+      "guide": "Send a single outbound SMS text message to one phone number (E.164 format). Pay-per-message via x402 (USDC on Base or Solana). One operation served via multiple gateways: Textbelt (real delivery), Spraay (sandbox/mock), and a Twilio REST proxy (needs own Twilio key). POST to the chosen gateway with a JSON body. Default (Textbelt via paysponge): body {phone, message} (field names UNVERIFIED via proxy). Spraay (mock): body {to, body}. Pay the x402 fee (USDC on Base or Solana). Output: Spraay (verified-shape, mock): { id, status } where status='queued'. Textbelt native: { success, textId, quotaRemaining } (textId used to poll .../status/{textId}). Twilio proxy: Twilio Message resource { sid, status, to, from, body, ... }.",
+      "costObservedUsd": 0.02,
+      "needsApproval": true
+    },
+    "endpoints": [
+      {
+        "provider": "Textbelt",
+        "url": "https://api.paysponge.com/x402/purchase/svc_d6kszbre4qwg5n4n4/text",
+        "method": "POST",
+        "priceDisplay": "$0.020",
+        "priceUsd": 0.02,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "20000",
+            "payTo": "0x6302D9e6DBB22fEC3c350551568Bb39B4b35Ad57"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "20000",
+            "payTo": "9246XrsAEKH6hAyEQe5PvdpUL1p5Ktj9c7ySnwQn6ois"
+          }
+        ],
+        "status": "active",
+        "needsApproval": true,
+        "async": false
+      },
+      {
+        "provider": "gateway.spraay",
+        "url": "https://gateway.spraay.app/api/v1/notify/sms",
+        "method": "POST",
+        "priceDisplay": "$0.020",
+        "priceUsd": 0.02,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "20000",
+            "payTo": "0xAd62f03C7514bb8c51f1eA70C2b75C37404695c8"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "20000",
+            "payTo": "8WhWE8YgY5QBWyLowEHuaZiWdwDM3SrgDk36xYBNvYNS"
+          }
+        ],
+        "status": "hidden",
+        "needsApproval": true,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "agentphone-number",
+    "name": "AgentPhone Number",
+    "provider": "AgentPhone",
+    "kind": "api",
+    "category": "communication",
+    "subcategory": "sms-phone",
+    "description": "Provision a real phone number for an AI agent over x402 (AgentPhone). Returns a number_id + phone number you can then use to send SMS/iMessage and place AI voice calls (those actions are separate AgentPhone services). First-party AgentPhone gateway on Base/Solana, keyless x402.",
+    "pricing": {
+      "headline": "$0.010",
+      "amount": 0.01,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "RED",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://api.agentphone.ai/x402/v1/numbers with JSON body {} (optionally {country, areaCode, agentId}). Provisions a real phone number.",
+      "inputExample": {
+        "country": "US"
+      },
+      "outputShape": "body.{id (use as number_id), phoneNumber, country, status, type, agentId, createdAt}. Save id as the number_id for AgentPhone SMS/calls.",
+      "quirks": [
+        "Re-verified 2026-06-10: POST with a minimal body provisions a real US SMS number ($0.01, 200). Returns id (number_id) + phoneNumber (e.g. +1...).",
+        "This creates a REAL, billable phone number — needsApproval true. Reuse the returned id (number_id) across SMS/call actions rather than provisioning repeatedly.",
+        "The x402 backend transparently proxies api.paysponge.com. Keyless x402 on Base (also Solana)."
+      ],
+      "guide": "POST https://api.agentphone.ai/x402/v1/numbers with a JSON body {\"country\":\"US\"} (or {} for default) to provision a phone number. Keyless x402 (~$0.01 USDC on Base). The response JSON has id (the number_id) and phoneNumber — save the id to send SMS or place calls via the AgentPhone messaging/call services. This provisions a REAL number, so treat it as an approved, billable action.",
+      "costObservedUsd": 0.01,
+      "needsApproval": true
+    },
+    "endpoints": [
+      {
+        "provider": "AgentPhone",
+        "url": "https://api.agentphone.ai/x402/v1/numbers",
+        "method": "POST",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0x354D30b316AAC919e8c19dfFCC350fBe295a96ec"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "10000",
+            "payTo": "9hw9Py9uMGtXRNpABZjifcK1t3suwzjyri9L9QYKg6zZ"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "agentphone-messaging-calls",
+    "name": "AgentPhone Messaging & Calls",
+    "provider": "AgentPhone",
+    "kind": "api",
+    "category": "communication",
+    "subcategory": "sms-phone",
+    "description": "Phone infrastructure for AI agents over x402. Set up an AI agent (free), provision a real phone number ($0.01), then send SMS/iMessage messages ($0.02), place AI-driven outbound or in-browser voice calls (up to $0.50), and read inbound messages, call recordings and transcripts (wallet-scoped). Served via the first-party AgentPhone x402 gateway on Base/Solana. (The gateway exposes the callable action endpoints; account-management/usage/webhook routes from the full OpenAPI are not x402-exposed.)",
+    "pricing": {
+      "headline": "$0.020",
+      "amount": 0.02,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "RED",
+    "verified": false,
+    "registryStatus": "hidden",
+    "hiddenReason": "needs-input",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "usage": {
+      "status": "broken",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://api.agentphone.ai/x402/v1/messages with WRAPPED body {\"body\":{to_number, body, from_number}} (the message text goes in the inner body.body string).",
+      "inputExample": {
+        "body": {
+          "to_number": "+15551234567",
+          "body": "hello",
+          "from_number": "+1..."
+        }
+      },
+      "quirks": [
+        "SCHEMA (discovered 2026-06-10): the x402 gateway wraps the message under a top-level key — send {\"body\":{\"to_number\":\"+1...\",\"body\":\"<text>\",\"from_number\":\"<your provisioned number>\"}}. A flat body, or body as {text}, returns 422 (charge-then-validate, ~$0.02 each).",
+        "PREREQUISITES (all FREE via x402): 1) provision a number (POST /x402/v1/numbers, $0.01); 2) create an agent with enableMessaging:true (POST /x402/v1/agents, $0, returns agent id); 3) attach the number (POST /x402/v1/agents/{agent_id}/numbers {numberId}, $0). The from_number must be attached to an agent, else send returns 400 'not assigned to any agent'.",
+        "HARD BLOCKER (verified 2026-06-10): outbound SMS returns 403 'Outbound SMS is not enabled for this account. Complete 10DLC registration first.' — 10DLC is US carrier A2P brand/campaign registration, an account-level compliance step done OUTSIDE x402 (manual, multi-day). Until completed for the AgentPhone account, outbound SMS cannot be sent via x402.",
+        "CALLS (/x402/v1/calls, /calls/web): ~$0.50, use the x402 permit2 'upto' dynamic scheme (not standard exact) and likely need similar voice-account setup — UNVERIFIED (not attempted, to avoid a $0.50 charge-then-error)."
+      ],
+      "guide": "AgentPhone messaging/calls over x402. Flow: provision a number (POST /x402/v1/numbers, $0.01), create a messaging agent (POST /x402/v1/agents {name,enableMessaging:true}, free), attach the number (POST /x402/v1/agents/{agent_id}/numbers {numberId}, free), then send SMS via POST /x402/v1/messages with body {\"body\":{to_number,body,from_number}}. NOTE: outbound SMS is currently BLOCKED by 10DLC carrier registration (403, must be completed in the AgentPhone account, off-x402). Voice calls use a $0.50 permit2 scheme and are unverified.",
+      "costObservedUsd": 0,
+      "needsApproval": true
+    },
+    "endpoints": [
+      {
+        "provider": "AgentPhone",
+        "url": "https://api.agentphone.ai/x402/v1/messages",
+        "method": "POST",
+        "priceDisplay": "$0.020",
+        "priceUsd": 0.02,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "20000",
+            "payTo": "0x354D30b316AAC919e8c19dfFCC350fBe295a96ec"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "20000",
+            "payTo": "9hw9Py9uMGtXRNpABZjifcK1t3suwzjyri9L9QYKg6zZ"
+          }
+        ],
+        "status": "hidden",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "AgentPhone",
+        "url": "https://api.agentphone.ai/x402/v1/calls",
+        "method": "POST",
+        "priceDisplay": "$0.500",
+        "priceUsd": 0.5,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "upto",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "500000",
+            "payTo": "0x354D30b316AAC919e8c19dfFCC350fBe295a96ec"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "AgentPhone",
+        "url": "https://api.agentphone.ai/x402/v1/calls/web",
+        "method": "POST",
+        "priceDisplay": "$0.500",
+        "priceUsd": 0.5,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "upto",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "500000",
+            "payTo": "0x354D30b316AAC919e8c19dfFCC350fBe295a96ec"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "AgentPhone",
+        "url": "https://api.agentphone.ai/x402/v1/numbers/{number_id}/messages",
+        "method": "GET",
+        "priceDisplay": "Varies",
+        "priceUsd": 0.02,
+        "networks": [],
+        "accepts": [],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "AgentPhone",
+        "url": "https://api.agentphone.ai/x402/v1/calls/{call_id}/recording",
+        "method": "GET",
+        "priceDisplay": "Varies",
+        "priceUsd": 0.02,
+        "networks": [],
+        "accepts": [],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "AgentPhone",
+        "url": "https://api.agentphone.ai/x402/v1/calls/{call_id}/transcript",
+        "method": "GET",
+        "priceDisplay": "Varies",
+        "priceUsd": 0.02,
+        "networks": [],
+        "accepts": [],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "ai-phone-call",
+    "name": "AI Phone Call",
+    "provider": "StablePhone",
+    "kind": "api",
+    "category": "communication",
+    "subcategory": "video-voice-calls",
+    "description": "Place an outbound AI voice phone call. You provide the destination number and a natural-language task describing what the AI agent should accomplish; the call is queued and a call_id is returned to track status/transcript. Offered via two gateways (StablePhone and BlockRun) for the same underlying capability.",
+    "pricing": {
+      "headline": "$0.540",
+      "amount": 0.54,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "RED",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "poll",
+      "auth": "none",
+      "callShape": "POST https://stablephone.dev/api/call with JSON {phone_number, task, first_sentence?}",
+      "inputExample": {
+        "phone_number": "+12368670354",
+        "task": "This is an automated verification call from MasterKey. Briefly greet the recipient, state this is an automated test call, then say goodbye and hang up.",
+        "first_sentence": "Hi, this is an automated call from MasterKey.",
+        "max_duration": 2,
+        "voicemail_action": "hangup"
+      },
+      "outputShape": "body.success, body.call_id, body.message (\"Call successfully queued\"). Async: the call is placed after queueing.",
+      "quirks": [
+        "REGISTRY FIX: the BlockRun backend was stored as GET http://blockrun.ai/api/v1/voice/call — the real endpoint is POST https://blockrun.ai/api/v1/voice/call (per BlockRun OpenAPI). The GET-with-query-params shape (to/task/from/voice/...) was wrong.",
+        "FIELD-NAME TRAP: StablePhone uses phone_number; BlockRun uses to. They are NOT interchangeable across gateways.",
+        "StablePhone phone_number must match ^\\+1\\d{10}$ (US/Canada only, +1 then 10 digits). task is 1-4000 chars. from is OPTIONAL.",
+        "BlockRun requires from (caller ID) — you must FIRST buy a wallet-owned number via POST /api/v1/phone/numbers/buy ($5, 30-day lease). task min length is 10 (vs 1 for StablePhone). to accepts any-country E.164.",
+        "BlockRun model enum is base|enhanced|turbo; StablePhone model enum is base|turbo (no enhanced). StablePhone adds record, transfer_phone_number, voicemail_action(hangup|leave_message|ignore), voicemail_message, metadata. BlockRun adds language, interruption_threshold(50-500ms).",
+        "StablePhone returns 403 if number is on the Do-Not-Call (DNC) list — do NOT retry DNC numbers.",
+        "Async: success is a QUEUED ack, not call completion. Status/transcript via GET /api/call/:id (StablePhone) is SIWX-gated to the paying wallet; the pay call itself needs no auth.",
+        "StablePhone accepts x402 (Base) AND MPP; BlockRun is x402-only. sol.blockrun.ai is the Solana payment mirror of the same BlockRun endpoint.",
+        "Prior human-confirmed delivery on StablePhone (2026-06-09): recipient received a real inbound call + SMS, confirming end-to-end delivery (not just a 200).",
+        "DELIVERY CONFIRMED 2026-06-11: real AI phone call received ($0.54, 200, call queued then placed).",
+        "task = natural-language instructions for what the AI should say; first_sentence = opening line. Default provider StablePhone.",
+        "Async: submit returns {call_id}; poll SIWX GET /api/call/{call_id} until status=completed; transcript/recording_url in body. Verified live call 2026-06-23. Outward → needsApproval gated."
+      ],
+      "guide": "Place an outbound AI voice phone call. You provide the destination number and a natural-language task describing what the AI agent should accomplish; the call is queued and a call_id is returned to track status/transcript. Offered via two gateways (StablePhone and BlockRun) for the same underlying capability. DEFAULT (StablePhone): POST https://stablephone.dev/api/call with JSON {phone_number, task, ...optional}. Pays $0.54 USDC via x402 (Base) or MPP. ALT (BlockRun): POST https://blockrun.ai/api/v1/voice/call with JSON {to, task, from} where from MUST be a wallet-owned number (buy via /api/v1/phone/numbers/buy first); x402 only. Output: StablePhone 2xx: .success (true), .call_id, .message ('Call successfully queued.'). Call is QUEUED not completed synchronously — track via SIWX-gated GET /api/call/:id (only paying wallet can poll).",
+      "costObservedUsd": 0.54,
+      "needsApproval": true
+    },
+    "endpoints": [
+      {
+        "provider": "StablePhone",
+        "url": "https://stablephone.dev/api/call",
+        "method": "POST",
+        "priceDisplay": "$0.540",
+        "priceUsd": 0.54,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "540000",
+            "payTo": "0xD219dB8179Bb9C1899eF87f39eebA9D1070c6801"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "540000",
+            "payTo": "CvJc3pWFbx84XHiy18uZUNW1y9zdGMy1muHozCYiBsxj"
+          }
+        ],
+        "status": "active",
+        "needsApproval": true,
+        "async": true
+      },
+      {
+        "provider": "BlockRun",
+        "url": "https://blockrun.ai/api/v1/voice/call",
+        "method": "POST",
+        "priceDisplay": "$0.540",
+        "priceUsd": 0.54,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "540000",
+            "payTo": "0xe9030014F5DAe217d0A152f02A043567b16c1aBf"
+          }
+        ],
+        "status": "active",
+        "needsApproval": true,
+        "async": false
+      },
+      {
+        "provider": "BlockRun",
+        "url": "https://sol.blockrun.ai/api/v1/voice/call",
+        "method": "POST",
+        "priceDisplay": "$0.540",
+        "priceUsd": 0.54,
+        "networks": [
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "540000",
+            "payTo": "AQqnMFBwGZEoti85aTVRy8XYpKrho7GaMDx9ZB3CEeKA"
+          }
+        ],
+        "status": "active",
+        "needsApproval": true,
+        "async": false
+      }
+    ]
+  }
+]

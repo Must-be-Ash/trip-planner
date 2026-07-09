@@ -1,0 +1,132 @@
+{
+  "capability": "apify",
+  "source": "apify-direct-x402",
+  "confirmGate": "GREEN",
+  "note": "Direct x402 on api.apify.com — offline-core, NOT via any MCP. 13,898 x402-enabled actors, all PAY_PER_EVENT.",
+  "auth": "x402 via X402-PAYMENT-SIGNATURE header (USDC; treat as Base, confirm chain from the 402 challenge)",
+  "runEndpoints": {
+    "syncGetDatasetItems": "POST https://api.apify.com/v2/actors/{actorId}/run-sync-get-dataset-items",
+    "sync": "POST https://api.apify.com/v2/actors/{actorId}/run-sync",
+    "async": "POST https://api.apify.com/v2/actors/{actorId}/runs"
+  },
+  "actorIdFormat": "username~actorName (tilde, not slash)",
+  "costControl": {
+    "maxTotalChargeUsd": "query param, mandatory hard USD ceiling, e.g. ?maxTotalChargeUsd=1.00",
+    "maxItems": "query param for dataset-priced actors",
+    "note": "Cost is PAY_PER_EVENT (not fixed). ALWAYS set maxTotalChargeUsd. If a cap would exceed ~$1, soft-confirm with the user."
+  },
+  "discovery": "GET https://api.apify.com/v2/store?allowsAgenticUsers=true&search=<kw>&responseFormat=agent (runtime lookup; not needed given the baked actors below)",
+  "errorCodes": [
+    "x402-payment-required (missing header)",
+    "x402-agentic-payment-insufficient-amount",
+    "x402-agentic-payment-unauthorized",
+    "unsupported-actor-pricing-model-for-agentic-payments"
+  ],
+  "actors": [
+    {
+      "need": "Booking.com listings + prices",
+      "actorId": "voyager~booking-scraper",
+      "fills": "OTA lodging breadth beyond Amadeus GDS"
+    },
+    {
+      "need": "Booking.com listings (fast)",
+      "actorId": "voyager~fast-booking-scraper",
+      "fills": "faster Booking.com discovery"
+    },
+    {
+      "need": "Booking.com reviews",
+      "actorId": "voyager~booking-reviews-scraper",
+      "fills": "real guest reviews at scale"
+    },
+    {
+      "need": "Airbnb stays",
+      "actorId": "tri_angle~airbnb-scraper",
+      "fills": "non-hotel lodging (Airbnb gap)"
+    },
+    {
+      "need": "Airbnb reviews",
+      "actorId": "tri_angle~airbnb-reviews-scraper",
+      "fills": "Airbnb guest reviews"
+    },
+    {
+      "need": "Hotel review aggregator",
+      "actorId": "tri_angle~hotel-review-aggregator",
+      "fills": "cross-source hotel review truth"
+    },
+    {
+      "need": "Google Maps places",
+      "actorId": "compass~crawler-google-places",
+      "fills": "POIs, hours, ratings"
+    },
+    {
+      "need": "Google Maps extractor",
+      "actorId": "compass~google-maps-extractor",
+      "fills": "place extraction"
+    },
+    {
+      "need": "Google Maps reviews (text at scale)",
+      "actorId": "compass~Google-Maps-Reviews-Scraper",
+      "fills": "review text -> LLM scores sentiment free"
+    },
+    {
+      "need": "Tripadvisor",
+      "actorId": "maxcopell~tripadvisor",
+      "fills": "attractions/restaurants + reviews"
+    },
+    {
+      "need": "TikTok by keyword/hashtag",
+      "actorId": "clockworks~tiktok-hashtag-scraper",
+      "fills": "TikTok discovery (no known URL needed)"
+    },
+    {
+      "need": "TikTok scraper",
+      "actorId": "clockworks~tiktok-scraper",
+      "fills": "TikTok posts/videos"
+    },
+    {
+      "need": "TikTok by location",
+      "actorId": "apidojo~tiktok-location-scraper",
+      "fills": "geo-tagged TikTok (what is happening at a place)"
+    },
+    {
+      "need": "Instagram by hashtag",
+      "actorId": "apify~instagram-hashtag-scraper",
+      "fills": "Instagram discovery gap"
+    },
+    {
+      "need": "Instagram scraper",
+      "actorId": "apify~instagram-scraper",
+      "fills": "IG posts/profiles"
+    },
+    {
+      "need": "Instagram reels",
+      "actorId": "apify~instagram-reel-scraper",
+      "fills": "IG reels (destination inspo)"
+    },
+    {
+      "need": "YouTube videos",
+      "actorId": "streamers~youtube-scraper",
+      "fills": "travel vlogs (3 days in X)"
+    },
+    {
+      "need": "YouTube transcripts",
+      "actorId": "pintostudio~youtube-transcript-scraper",
+      "fills": "vlog transcripts to read"
+    },
+    {
+      "need": "Reddit",
+      "actorId": "trudax~reddit-scraper-lite",
+      "fills": "social layer redundancy"
+    },
+    {
+      "need": "X/Twitter",
+      "actorId": "apidojo~tweet-scraper",
+      "fills": "social layer redundancy"
+    },
+    {
+      "need": "Google Flights (redundancy)",
+      "actorId": "johnvc~Google-Flights-Data-Scraper-Flight-and-Price-Search",
+      "fills": "backup to StableTravel flight search"
+    }
+  ]
+}

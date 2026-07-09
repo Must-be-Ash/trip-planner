@@ -1,0 +1,986 @@
+[
+  {
+    "id": "channel3-commerce-product-search",
+    "name": "Channel3 Commerce Product Search",
+    "provider": "stableproduct",
+    "kind": "api",
+    "category": "ecommerce",
+    "subcategory": "storefront-commerce-apis",
+    "description": "Channel3-backed product catalog search. Accepts a text query and/or an image (image_url or base64_image) plus rich filters (brand_ids, gender, condition, age, price min/max, availability, website_ids, category_ids and their exclude_* counterparts) and a config block (language, country, currency, keyword_search_only). Returns compact product cards with merchant buy-offers (trychannel3.com affiliate links). $0.01 USDC flat per call.",
+    "pricing": {
+      "headline": "$0.010",
+      "amount": 0.01,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://stableproduct.dev/api/channel3/search with JSON body {\"query\":\"...\"}; Content-Type: application/json. Pay $0.01 USDC via x402 (Base) or MPP. GET returns 405 (POST-only). Optional: limit (1-30, default 20), image_url/base64_image for visual search, filters{...}, config{language,country,currency,keyword_search_only}, page_token (use next_page_token to paginate), include_raw:true to also get Channel3's full upstream response under {data,raw}.",
+      "inputExample": {
+        "query": "red shoes",
+        "limit": 3
+      },
+      "outputShape": "{ products: [ { id, title, brands:[{id,name}], main_image_url, categories:[string], price:{price,compare_at_price,currency}, availability, best_offer:{url,domain,price:{price,compare_at_price,currency},availability,max_commission_rate}, offers:[{url,domain,price{...},availability,max_commission_rate}] } ], next_page_token }",
+      "quirks": [
+        "POST-ONLY: a GET returns HTTP 405 (Allow: OPTIONS, POST). Registry historically lists GET — it is wrong.",
+        "RESPONSE IS AN OBJECT, NOT AN ARRAY: current endpoint returns {products:[...], next_page_token}. The prior 'top-level JSON ARRAY' quirk is WRONG for /api/channel3/search (it may only describe the legacy /v0/search path).",
+        "Body field is `query` (string). Empty {} is accepted/payable but useless; always send query and/or an image.",
+        "Visual search: pass exactly one of image_url (URI) or base64_image (there is also a dedicated /api/channel3/image-search route).",
+        "Flat $0.01 USDC on Base (eip155:8453 USDC); registry may advertise price as 'Varies' — it is fixed.",
+        "best_offer.url / offers[].url are buy.trychannel3.com affiliate buy-links; purchase happens OFF-platform, not via this endpoint (no checkout here).",
+        "Trimmed cards by default; pass include_raw:true to also receive Channel3's full upstream payload as {data,raw}. offer fields are limited to url, domain, price, availability, max_commission_rate.",
+        "Pagination via next_page_token -> page_token. limit max is 30.",
+        "filters use category/brand/website IDs (use the brands/categories/websites lookup routes to resolve slugs->IDs); do not pass display paths.",
+        "Two registered backends are the same op via current vs legacy path; v0 additionally accepts an optional `customer` object."
+      ],
+      "guide": "Channel3-backed product catalog search. Accepts a text query and/or an image (image_url or base64_image) plus rich filters (brand_ids, gender, condition, age, price min/max, availability, website_ids, category_ids and their exclude_* counterparts) and a config block (language, country, currency, keyword_search_only). Returns compact product cards with merchant buy-offers (trychannel3.com affiliate links). $0.01 USDC flat per call. POST https://stableproduct.dev/api/channel3/search with JSON body {\"query\":\"...\"}; Content-Type: application/json. Pay $0.01 USDC via x402 (Base) or MPP. GET returns 405 (POST-only). Optional: limit (1-30, default 20), image_url/base64_image for visual search, filters{...}, config{language,country,currency,keyword_search_only}, page_token (use next_page_token to paginate), include_raw:true to also get Channel3's full upstream response under {data,raw}. Output: { products: [ { id, title, brands:[{id,name}], main_image_url, categories:[string], price:{price,compare_at_price,currency}, availability, best_offer:{url,domain,price:{price,compare_at_price,currency},availability,max_commission_rate}, offers:[{url,domain,price{...},availability,max_commission_rate}] } ], next_page_token }",
+      "costObservedUsd": 0.01,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stableproduct",
+        "url": "https://stableproduct.dev/api/channel3/search",
+        "method": "POST",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0xd9F3261C9feA20A99D0708815010280c549e8ebF"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "stableproduct",
+        "url": "https://stableproduct.dev/api/channel3/v0/search",
+        "method": "POST",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0xd9F3261C9feA20A99D0708815010280c549e8ebF"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "stableninja-retail-products",
+    "name": "StableNinja Retail Products",
+    "provider": "StableNinja",
+    "kind": "api",
+    "category": "ecommerce",
+    "subcategory": "storefront-commerce-apis",
+    "description": "Retail product data from major stores (Wayfair, Walmart) — product details by ID/SKU. Pay-per-call x402.",
+    "pricing": {
+      "headline": "$0.010",
+      "amount": 0.01,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://stableninja.dev/api/walmart/product-details?product_id=<walmartItemId>&domain=us (x402, USDC on Base, $0.01)",
+      "inputExample": {
+        "product_id": "10450114",
+        "domain": "us"
+      },
+      "outputShape": "body.status (\"OK\"), body.data.{title,brand,price,price_display,currency,availability,rating,review_count,image,images[],url,categories[],specifications[]}, body.parameters echoes the request",
+      "quirks": [
+        "Input is via query string, NOT a JSON body. Required: product_id (Walmart item id, e.g. 10450114). Optional: domain (us|ca, default us).",
+        "The registry inputSchema is null; the real schema is only discoverable by base64-decoding the 402 payment-required response header (bazaar extension contains the queryParams JSON schema).",
+        "Price is $0.01 USDC on Base (eip155:8453) despite registry priceDisplay 'Varies'.",
+        "Endpoint also accepts HEAD/DELETE per schema but GET is the read call.",
+        "Use the Walmart us_item_id (the numeric id in a walmart.com/ip/.../<id> URL), not the SKU/UPC."
+      ],
+      "guide": "Call GET https://stableninja.dev/api/walmart/product-details with query params product_id (a Walmart numeric item id, e.g. the id at the end of a walmart.com/ip/... URL) and optional domain=us|ca. Pay via x402 (USDC on Base, ~$0.01). The product data is a plain synchronous JSON response at body.data — title, brand, price/price_display, availability, rating, review_count, images[], categories[], and specifications[]. body.status will be \"OK\" on success and body.parameters echoes your request. No auth/sign-in needed.",
+      "costObservedUsd": 0.01,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "stableninja",
+        "url": "https://stableninja.dev/api/wayfair/product-details",
+        "method": "GET",
+        "priceDisplay": "Varies",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0xc0CCF68a8e61A4d25EEcFcaCd486e673e900De0A"
+          }
+        ],
+        "status": "hidden",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "stableninja",
+        "url": "https://stableninja.dev/api/walmart/product-details",
+        "method": "GET",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0xc0CCF68a8e61A4d25EEcFcaCd486e673e900De0A"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "stablemerch-custom-merch",
+    "name": "StableMerch Custom Merch",
+    "provider": "StableMerch",
+    "kind": "api",
+    "category": "ecommerce",
+    "subcategory": "storefront-commerce-apis",
+    "description": "Create custom shirts/mugs from an image and ship them via Printify. Preview→prepare→commit flow: free SIWX draft + preview, then the single paid x402 commit produces a real shipped order (irreversible).",
+    "pricing": {
+      "headline": "Free",
+      "amount": 0,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "RED",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "siwx",
+      "callShape": "GET /api/catalog (free) → POST /api/drafts (SIWX) → preview → prepare-order (SIWX) → commit (x402, ships goods)",
+      "inputExample": {
+        "product_slug": "mug",
+        "image_url": "https://example.com/art.png",
+        "client_request_id": "demo-1"
+      },
+      "outputShape": "JSON body (see provider doc).",
+      "quirks": [
+        "GET /api/catalog and POST /api/drafts are FREE (SIWX); show preview_urls before anything else.",
+        "commit is the ONLY paid step and it SHIPS A PHYSICAL PRODUCT — irreversible. Requires explicit user OK + shipping address.",
+        "Never collect shipping/contact or call commit before the user approves the preview.",
+        "APPROVAL-GATED: this is an OUTWARD/irreversible action (real charge / order / shipment). Shape is from the provider OpenAPI/discovery and was NOT QA-executed (we do not place real bookings/purchases as tests). The needsApproval gate fires before any real execution."
+      ],
+      "guide": "StableMerch. 1) GET /api/catalog (free). 2) POST /api/drafts (SIWX) {client_request_id, product_slug, image_url, options} → preview_urls (render them). 3) POST /api/drafts/{id}/prepare-order (SIWX) {address_to} → order_ready. 4) POST /api/drafts/{id}/commit (x402) → ships. Only commit costs money and it's irreversible — defer to explicit user approval.",
+      "costObservedUsd": 0,
+      "needsApproval": true
+    },
+    "endpoints": [
+      {
+        "provider": "stablemerch",
+        "url": "https://stablemerch.dev/api/catalog",
+        "method": "GET",
+        "priceDisplay": "Free",
+        "priceUsd": 0,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "0",
+            "payTo": "0x0000000000000000000000000000000000000000"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "stablemerch",
+        "url": "https://stablemerch.dev/api/drafts",
+        "method": "POST",
+        "priceDisplay": "Free",
+        "priceUsd": 0,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "0",
+            "payTo": "0x0000000000000000000000000000000000000000"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "stablemerch",
+        "url": "https://stablemerch.dev/api/drafts/DRAFT_ID/prepare-order",
+        "method": "POST",
+        "priceDisplay": "Free",
+        "priceUsd": 0,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "0",
+            "payTo": "0x0000000000000000000000000000000000000000"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "stablemerch",
+        "url": "https://stablemerch.dev/api/drafts/DRAFT_ID/commit",
+        "method": "POST",
+        "priceDisplay": "Free",
+        "priceUsd": 0,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "50000000",
+            "payTo": "0xCA3CfFdc216443a95Fcde1d52a32645a34C7B5F0"
+          }
+        ],
+        "status": "active",
+        "needsApproval": true,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "stablegiftcards-search",
+    "name": "StableGiftCards Search",
+    "provider": "StableGiftCards",
+    "kind": "api",
+    "category": "payments-billing",
+    "subcategory": "payment-processing",
+    "description": "Search the Bitrefill catalog (1,500+ gift-card, top-up, and eSIM brands across 180+ countries) by name, country, type, or category. SIWX-gated and FREE (no USDC charged).",
+    "pricing": {
+      "headline": "Free",
+      "amount": 0,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "siwx",
+      "callShape": "POST https://stablegiftcards.dev/api/search with JSON body {query, country?, product_type?, category?, in_stock?, page?, per_page?} + SIWX wallet signature (no x402 payment). 'query' defaults to '*'. 'country' must be uppercase ISO Alpha-2 (US, IT, BR). 'product_type' enum: 'giftcard' | 'esim'. 'per_page' max 500 (default 25).",
+      "inputExample": {
+        "query": "Netflix",
+        "country": "US",
+        "per_page": 2
+      },
+      "outputShape": "products[].{id, name, country_code, country_name, currency, categories[], recipient_type, image, description, termsAndConditions, in_stock, packages[].{id, value, price, amount}, range?.{min,max,step,price_rate}}, total",
+      "quirks": [
+        "Auth is SIWX, NOT x402 — returns the SIWX challenge until signed; once signed it is FREE (no USDC). Use --siwx.",
+        "Use the product 'id' (e.g. 'netflix-usa') as product_id for /api/product and /api/buy.",
+        "packages[].id is product-prefixed with a '<&>' delimiter, e.g. 'netflix-usa<&>30'. For buying, /api/buy wants the bare packages[].value ('30'), NOT this id.",
+        "packages[].price is an internal minor unit (e.g. 48643 for a $30 card); packages[].amount is the real human value (30).",
+        "country must be UPPERCASE 2-letter ISO; lowercase or 3-letter is rejected.",
+        "Returns 'range' instead of fixed 'packages' for variable-amount products.",
+        "SIWX free read (no payment) — verified 2026-06-11."
+      ],
+      "guide": "Search the Bitrefill catalog (1,500+ gift-card, top-up, and eSIM brands across 180+ countries) by name, country, type, or category. SIWX-gated and FREE (no USDC charged). POST https://stablegiftcards.dev/api/search with JSON body {query, country?, product_type?, category?, in_stock?, page?, per_page?} + SIWX wallet signature (no x402 payment). 'query' defaults to '*'. 'country' must be uppercase ISO Alpha-2 (US, IT, BR). 'product_type' enum: 'giftcard' | 'esim'. 'per_page' max 500 (default 25). Output: products[].{id, name, country_code, country_name, currency, categories[], recipient_type, image, description, termsAndConditions, in_stock, packages[].{id, value, price, amount}, range?.{min,max,step,price_rate}}, total",
+      "costObservedUsd": 0,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "StableGiftCards",
+        "url": "https://stablegiftcards.dev/api/search",
+        "method": "POST",
+        "priceDisplay": "Free",
+        "priceUsd": 0,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "0",
+            "payTo": "0x0000000000000000000000000000000000000000"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "stablegiftcards-product-details",
+    "name": "StableGiftCards Product Details",
+    "provider": "StableGiftCards",
+    "kind": "api",
+    "category": "payments-billing",
+    "subcategory": "payment-processing",
+    "description": "Get full details and available denominations/packages for a single Bitrefill product by id. SIWX-gated and FREE (no USDC charged).",
+    "pricing": {
+      "headline": "Free",
+      "amount": 0,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "siwx",
+      "callShape": "POST https://stablegiftcards.dev/api/product with JSON body {product_id} (required, the 'id' from /api/search results) + SIWX wallet signature (no x402 payment).",
+      "inputExample": {
+        "product_id": "netflix-usa"
+      },
+      "outputShape": "{id, name, country_code, country_name, currency, categories[], recipient_type, image, description, termsAndConditions, in_stock, packages[].{id, value, price, amount}, range?.{min,max,step,price_rate}}",
+      "quirks": [
+        "Auth is SIWX, NOT x402 — free once signed. Use --siwx.",
+        "Required field is snake_case product_id; use the 'id' from /api/search (e.g. 'netflix-usa').",
+        "packages[].value is the buy-time package_id (e.g. '30'); packages[].id ('netflix-usa<&>30') is NOT what /api/buy wants.",
+        "packages[].price is an internal minor unit; packages[].amount is the human value.",
+        "Variable-amount products return 'range' (min/max/step) instead of fixed 'packages'.",
+        "SIWX free read (no payment) — verified 2026-06-11."
+      ],
+      "guide": "Get full details and available denominations/packages for a single Bitrefill product by id. SIWX-gated and FREE (no USDC charged). POST https://stablegiftcards.dev/api/product with JSON body {product_id} (required, the 'id' from /api/search results) + SIWX wallet signature (no x402 payment). Output: {id, name, country_code, country_name, currency, categories[], recipient_type, image, description, termsAndConditions, in_stock, packages[].{id, value, price, amount}, range?.{min,max,step,price_rate}}",
+      "costObservedUsd": 0,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "StableGiftCards",
+        "url": "https://stablegiftcards.dev/api/product",
+        "method": "POST",
+        "priceDisplay": "Free",
+        "priceUsd": 0,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "0",
+            "payTo": "0x0000000000000000000000000000000000000000"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "stablegiftcards-buy",
+    "name": "StableGiftCards Buy",
+    "provider": "StableGiftCards",
+    "kind": "api",
+    "category": "payments-billing",
+    "subcategory": "payment-processing",
+    "description": "Purchase gift cards, top-ups, or eSIMs from Bitrefill. PAID via x402 with a DYNAMIC price equal to the product cost in USDC (0-500 USD). On success returns invoice_id, tx_hash, amount_usdc, and orders with redemption codes (or status 'pending' to be polled via /api/invoice). OUTWARD/irreversible — actually spends real money buying a real product.",
+    "pricing": {
+      "headline": "$500.00",
+      "amount": 500,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "RED",
+    "verified": false,
+    "registryStatus": "hidden",
+    "hiddenReason": "broken",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "broken",
+      "resultPull": "poll",
+      "auth": "none",
+      "callShape": "POST https://stablegiftcards.dev/api/buy with JSON body {cart_items: [{product_id, package_id, quantity?, phone_number?, email?}]}. x402-protected: first call returns 402 with the USDC price; pay via x402 to complete. cart_items: 1-15 items. package_id is the packages[].value from /api/product (string or number). For phone top-ups include phone_number on the item.",
+      "inputExample": {
+        "cart_items": [
+          {
+            "product_id": "netflix-usa",
+            "package_id": "30"
+          }
+        ]
+      },
+      "outputShape": "{invoice_id, tx_hash, amount_usdc, orders[].{product_id, product_name, value, status, code?, pin?, link?}}",
+      "quirks": [
+        "OUTWARD / IRREVERSIBLE: this buys a real gift card and charges the FULL product price in USDC (dynamic, up to $500), far beyond a flat x402 fee. NEVER auto-call. NOT exercised during remediation — documented from OpenAPI/guidance only.",
+        "Auth is x402 (the ONLY paid route on this origin); all other endpoints are free SIWX.",
+        "package_id = the bare packages[].value (e.g. '30'), NOT packages[].id ('netflix-usa<&>30').",
+        "Use a generous client timeout (60s+); response waits briefly for fast deliveries. DO NOT retry on client-side timeout — the x402 payment is already captured and retrying double-charges.",
+        "Orders may return status 'pending' if Bitrefill hasn't delivered; poll POST /api/invoice with the returned invoice_id to retrieve codes.",
+        "Max 15 cart items per order.",
+        "APPROVAL-GATED: this is an OUTWARD/irreversible action (real charge / order / shipment). Shape is from the provider OpenAPI/discovery and was NOT QA-executed (we do not place real bookings/purchases as tests). The needsApproval gate fires before any real execution.",
+        "BROKEN (MASTERKEY_ASSETS.md): 2026-06-08 charged $10 ($5×2) but Bitrefill returned 403 not_available, no code, no refund. Charge-then-fail — do NOT expose/retry."
+      ],
+      "guide": "Purchase gift cards, top-ups, or eSIMs from Bitrefill. PAID via x402 with a DYNAMIC price equal to the product cost in USDC (0-500 USD). On success returns invoice_id, tx_hash, amount_usdc, and orders with redemption codes (or status 'pending' to be polled via /api/invoice). OUTWARD/irreversible — actually spends real money buying a real product. POST https://stablegiftcards.dev/api/buy with JSON body {cart_items: [{product_id, package_id, quantity?, phone_number?, email?}]}. x402-protected: first call returns 402 with the USDC price; pay via x402 to complete. cart_items: 1-15 items. package_id is the packages[].value from /api/product (string or number). For phone top-ups include phone_number on the item. Output: {invoice_id, tx_hash, amount_usdc, orders[].{product_id, product_name, value, status, code?, pin?, link?}}",
+      "costObservedUsd": 0,
+      "needsApproval": true
+    },
+    "endpoints": [
+      {
+        "provider": "StableGiftCards",
+        "url": "https://stablegiftcards.dev/api/buy",
+        "method": "POST",
+        "priceDisplay": "$500.00",
+        "priceUsd": 500,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "500000000",
+            "payTo": "0x71c1e15c80e14Ce9F163bF8d9BFb90930BF782d5"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "stablegiftcards-invoice-status",
+    "name": "StableGiftCards Invoice Status",
+    "provider": "StableGiftCards",
+    "kind": "api",
+    "category": "payments-billing",
+    "subcategory": "payment-processing",
+    "description": "Check the status of a previously placed order and retrieve redemption codes/PINs/links once Bitrefill has delivered. Read-only poll for an invoice_id minted by /api/buy. SIWX-gated and FREE (no USDC charged).",
+    "pricing": {
+      "headline": "Free",
+      "amount": 0,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "siwx",
+      "callShape": "POST https://stablegiftcards.dev/api/invoice with JSON body {invoice_id} (required) + SIWX wallet signature (no x402 payment).",
+      "inputExample": {
+        "invoice_id": "<uuid-from-/api/buy>"
+      },
+      "outputShape": "{invoice_id, status, payment_status, orders[].{product_id, product_name, value, status, code?, pin?, link?}}",
+      "quirks": [
+        "Auth is SIWX, NOT x402 — free once signed. Use --siwx.",
+        "Required body field is snake_case invoice_id (string). {invoiceId:...} or empty body returns 400.",
+        "Unknown/invalid invoice_id returns HTTP 500 wrapping the upstream Bitrefill 404 ('Invoice not found', error_code not_found). A 500 here means a bad/nonexistent id, NOT a dead endpoint — verified live.",
+        "Read-only status/code-retrieval; it cannot be driven to a 200 standalone — you need a real invoice_id minted by POST /api/buy first. The 200-with-codes path was not produced in QA (no real invoice on hand).",
+        "This is NOT the purchase endpoint — /api/buy is. This only polls an already-placed order.",
+        "SIWX free read (no payment) — verified 2026-06-11."
+      ],
+      "guide": "Check the status of a previously placed order and retrieve redemption codes/PINs/links once Bitrefill has delivered. Read-only poll for an invoice_id minted by /api/buy. SIWX-gated and FREE (no USDC charged). POST https://stablegiftcards.dev/api/invoice with JSON body {invoice_id} (required) + SIWX wallet signature (no x402 payment). Output: {invoice_id, status, payment_status, orders[].{product_id, product_name, value, status, code?, pin?, link?}}",
+      "costObservedUsd": 0,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "StableGiftCards",
+        "url": "https://stablegiftcards.dev/api/invoice",
+        "method": "POST",
+        "priceDisplay": "Free",
+        "priceUsd": 0,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "0",
+            "payTo": "0x0000000000000000000000000000000000000000"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "laso-finance-order-usa-prepaid-card",
+    "name": "Laso Finance Order USA Prepaid Card",
+    "provider": "Laso Finance",
+    "kind": "api",
+    "category": "payments-billing",
+    "subcategory": "payment-processing",
+    "description": "Create and fund a real US-issued USD prepaid debit card. The x402 payment EQUALS the card value: amount=5 charges 5 USDC on Base/Solana and loads a $5 card (min $5, max $1000). Returns a card_id with status='pending'; poll /get-card-data with the id_token to retrieve the card number/CVV/expiry once ready.",
+    "pricing": {
+      "headline": "$5.00",
+      "amount": 5,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "RED",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "poll",
+      "auth": "none",
+      "callShape": "GET https://laso.finance/get-card?amount=5&format=json — x402-paid (the charge = the amount). amount required (number 5-1000). format optional: 'json' (default, agent-friendly) or 'html' (browser redirect page). No Bearer token needed for this call — the x402 payment authenticates + identifies you, and the response itself returns fresh auth credentials.",
+      "inputExample": {
+        "amount": 5,
+        "format": "json"
+      },
+      "outputShape": "auth.{id_token,refresh_token,expires_in}, callable_base_url, user_id, card.{card_id, usd_amount, country('US'), timestamp, timestamp_readable, status('pending')}",
+      "quirks": [
+        "NOT CALLED (outward / irreversible): this provisions a REAL funded US debit card with REAL money. The x402 charge equals the card value, so amount=5 actually spends $5 (5000000 base units USDC), amount=1000 spends $1000. Requires deliberate human approval.",
+        "THE PRICE IS THE PRODUCT: there is no flat fee — the registry's $5 is the MINIMUM card value, not a service fee. Pricing is dynamic 5-1000 USD.",
+        "Pass &format=json so an agent gets JSON; default mimeType is text/html (browser redirect view).",
+        "Card returns status='pending' with a card_id (e.g. O-01KTN62...). The card number/CVV/expiry are NOT in this response — poll GET /get-card-data?card_id=<id> using the returned auth.id_token as Bearer token.",
+        "US-ONLY: USD card, US merchants only, physical goods must ship to a US address. For non-US use /order-intl-card instead.",
+        "Prepaid cards are not accepted at all merchants — check GET /search-merchants first.",
+        "Card + token are bound to the paying wallet (user_id); no separate SIWX/sign-in needed for this paid call.",
+        "VERIFIED via prior purchase 2026-06-08 (MASTERKEY_ASSETS.md): bought card_id O-01KTN62GBAKT1VERAFMC962NYN, $5 US balance. GET laso.finance/get-card?amount=N — the amount is the card VALUE loaded (recoverable), NOT a fee. Outward/irreversible (real money onto a real card) → needsApproval."
+      ],
+      "guide": "Create and fund a real US-issued USD prepaid debit card. The x402 payment EQUALS the card value: amount=5 charges 5 USDC on Base/Solana and loads a $5 card (min $5, max $1000). Returns a card_id with status='pending'; poll /get-card-data with the id_token to retrieve the card number/CVV/expiry once ready. GET https://laso.finance/get-card?amount=5&format=json — x402-paid (the charge = the amount). amount required (number 5-1000). format optional: 'json' (default, agent-friendly) or 'html' (browser redirect page). No Bearer token needed for this call — the x402 payment authenticates + identifies you, and the response itself returns fresh auth credentials. Output: auth.{id_token,refresh_token,expires_in}, callable_base_url, user_id, card.{card_id, usd_amount, country('US'), timestamp, timestamp_readable, status('pending')}",
+      "costObservedUsd": 5,
+      "needsApproval": true
+    },
+    "endpoints": [
+      {
+        "provider": "Laso Finance",
+        "url": "https://laso.finance/get-card",
+        "method": "GET",
+        "priceDisplay": "$5.00",
+        "priceUsd": 5,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "5000000",
+            "payTo": "0x3291e96b3bff7ed56e3ca8364273c5b4654b2b37"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "5000000",
+            "payTo": "3MZVk97x9SeRxbYpc3jhzRfU2fyA3emYutnqfn9kNfYX"
+          }
+        ],
+        "status": "active",
+        "needsApproval": true,
+        "async": true
+      }
+    ]
+  },
+  {
+    "id": "laso-finance-order-international-prepaid-card",
+    "name": "Laso Finance Order International Prepaid Card",
+    "provider": "Laso Finance",
+    "kind": "api",
+    "category": "payments-billing",
+    "subcategory": "payment-processing",
+    "description": "Order a real international (non-US) prepaid debit card, admin-fulfilled within ~24h. The x402 payment is the on-card USD amount PLUS a 3.8% fee (min $100, max $1000 on-card). Returns a queued order; poll /get-card-data (card_type 'Non-Reloadable International') with the id_token until the card is fulfilled and details are ready.",
+    "pricing": {
+      "headline": "$100.00",
+      "amount": 100,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "RED",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "poll",
+      "auth": "none",
+      "callShape": "GET https://laso.finance/order-intl-card?amount=100 — x402-paid. amount required (number, on-card USD, min 100 max 1000); the actual charge = amount + 3.8% fee. No body. Like /get-card, the x402 payment authenticates you and the response returns fresh auth credentials.",
+      "inputExample": {
+        "amount": 100
+      },
+      "outputShape": "auth.{id_token,refresh_token,expires_in}, callable_base_url, user_id, intl_card_order.{on_card_usd_amount, charged_usd_amount, status('queued'), timestamp}, message",
+      "quirks": [
+        "NOT CALLED (outward / irreversible): provisions a REAL funded international debit card with REAL money. Charge = on-card amount + 3.8% fee, so amount=100 charges ~$103.80. Requires deliberate human approval.",
+        "MIN is $100 (NOT $5 like the US card) and max $1000 on-card. The registry's $5 price for this backend is WRONG — real minimum charge is ~$103.80.",
+        "OpenAPI marks requiresPayment:false but the description explicitly states an x402 payment of amount+3.8% is charged — treat it as PAID (the discover index lists it among paywalled routes).",
+        "Admin-fulfilled (NOT instant): order returns status='queued'. After fulfillment the card is REISSUED with a new card_id (issuer's tx id); the original card_id still resolves via queued_order_card_id in /get-card-data.",
+        "Poll GET /get-card-data?card_type=Non-Reloadable International (or by card_id) using the returned id_token; details appear when status='complete'.",
+        "A queued order can be cancelled via POST /cancel-intl-order before fulfillment.",
+        "Use /search-merchants?card_type=Non-Reloadable International to check acceptance.",
+        "APPROVAL-GATED: this is an OUTWARD/irreversible action (real charge / order / shipment). Shape is from the provider OpenAPI/discovery and was NOT QA-executed (we do not place real bookings/purchases as tests). The needsApproval gate fires before any real execution."
+      ],
+      "guide": "Order a real international (non-US) prepaid debit card, admin-fulfilled within ~24h. The x402 payment is the on-card USD amount PLUS a 3.8% fee (min $100, max $1000 on-card). Returns a queued order; poll /get-card-data (card_type 'Non-Reloadable International') with the id_token until the card is fulfilled and details are ready. GET https://laso.finance/order-intl-card?amount=100 — x402-paid. amount required (number, on-card USD, min 100 max 1000); the actual charge = amount + 3.8% fee. No body. Like /get-card, the x402 payment authenticates you and the response returns fresh auth credentials. Output: auth.{id_token,refresh_token,expires_in}, callable_base_url, user_id, intl_card_order.{on_card_usd_amount, charged_usd_amount, status('queued'), timestamp}, message",
+      "costObservedUsd": 0,
+      "needsApproval": true
+    },
+    "endpoints": [
+      {
+        "provider": "Laso Finance",
+        "url": "https://laso.finance/order-intl-card",
+        "method": "GET",
+        "priceDisplay": "$100.00",
+        "priceUsd": 100,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "103800000",
+            "payTo": "0x3291e96b3bff7ed56e3ca8364273c5b4654b2b37"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "103800000",
+            "payTo": "3MZVk97x9SeRxbYpc3jhzRfU2fyA3emYutnqfn9kNfYX"
+          }
+        ],
+        "status": "active",
+        "needsApproval": true,
+        "async": true
+      }
+    ]
+  },
+  {
+    "id": "laso-finance-auth",
+    "name": "Laso Finance Auth",
+    "provider": "Laso Finance",
+    "kind": "api",
+    "category": "payments-billing",
+    "subcategory": "payment-processing",
+    "description": "Obtain Laso Finance auth credentials by proving wallet ownership (SIWX / CAIP-122). Returns a 1h Firebase id_token used as a Bearer token for every other Laso endpoint, plus a refresh_token, the callable_base_url, and your user_id (lowercase wallet address). This is the required first step before any read (search-merchants, get-card-data) or before reading card details after ordering.",
+    "pricing": {
+      "headline": "Free",
+      "amount": 0,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://laso.finance/auth — free, no x402 payment. Authenticated via SIWX: send a base64-encoded CAIP-122 SIGN-IN-WITH-X header proving wallet ownership (agentcash fetch handles this automatically). No query params, no body.",
+      "inputExample": {},
+      "outputShape": "auth.id_token, auth.refresh_token, auth.expires_in (seconds, e.g. '3600'), callable_base_url, user_id",
+      "quirks": [
+        "FREE / SIWX-only: no x402 payment, just a wallet signature (agentcash fetch supplies the SIGN-IN-WITH-X header).",
+        "auth.id_token is a 1h Firebase JWT. Use it as `Authorization: Bearer <id_token>` for ALL other Laso endpoints — they 401 'Missing or invalid Authorization header' without it.",
+        "agentcash fetch does NOT auto-attach the Bearer token to subsequent calls — you must capture id_token here and pass it manually in the Authorization header.",
+        "Renew with POST /auth (grant_type=refresh_token) using auth.refresh_token before the token expires.",
+        "user_id is your lowercase wallet address; all card/balance data is scoped to this identity.",
+        "The paid card-ordering endpoints (/get-card, /order-intl-card) ALSO return fresh auth credentials, so you never need to pay just to get a token."
+      ],
+      "guide": "Obtain Laso Finance auth credentials by proving wallet ownership (SIWX / CAIP-122). Returns a 1h Firebase id_token used as a Bearer token for every other Laso endpoint, plus a refresh_token, the callable_base_url, and your user_id (lowercase wallet address). This is the required first step before any read (search-merchants, get-card-data) or before reading card details after ordering. GET https://laso.finance/auth — free, no x402 payment. Authenticated via SIWX: send a base64-encoded CAIP-122 SIGN-IN-WITH-X header proving wallet ownership (agentcash fetch handles this automatically). No query params, no body. Output: auth.id_token, auth.refresh_token, auth.expires_in (seconds, e.g. '3600'), callable_base_url, user_id",
+      "costObservedUsd": 0,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "Laso Finance",
+        "url": "https://laso.finance/auth",
+        "method": "GET",
+        "priceDisplay": "Free",
+        "priceUsd": 0,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "1000",
+            "payTo": "0x3291e96b3bff7ed56e3ca8364273c5b4654b2b37"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "1000",
+            "payTo": "3MZVk97x9SeRxbYpc3jhzRfU2fyA3emYutnqfn9kNfYX"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "laso-finance-get-card-data",
+    "name": "Laso Finance Get Card Data",
+    "provider": "Laso Finance",
+    "kind": "api",
+    "category": "payments-billing",
+    "subcategory": "payment-processing",
+    "description": "Retrieve details for the caller's Laso prepaid card(s). With a card_id, returns that single card including the card number, CVV, and expiry once status is 'ready' (US) / 'complete' (intl). Without card_id, lists all of the caller's cards of a given card_type. This is the polling endpoint to fetch the actual card credentials after ordering via /get-card or /order-intl-card.",
+    "pricing": {
+      "headline": "Free",
+      "amount": 0,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "hidden",
+    "hiddenReason": "needs-review",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "poll",
+      "auth": "none",
+      "callShape": "GET https://laso.finance/get-card-data?card_id=<id>&card_type=<...> — all params optional, no body. Requires header `Authorization: Bearer <id_token from /auth>`. Omit card_id to list all cards (returns {cards:[...]}); pass card_id to get one card (returns the single-card object).",
+      "inputExample": {},
+      "outputShape": "List mode: cards[].{card_id, card_type, usd_amount, status, country?, card_details?{card_number,exp_month,exp_year,cvv,available_balance}, transactions[]}. Single mode (with card_id): same fields at top level, no `cards` wrapper.",
+      "quirks": [
+        "FREE read, but REQUIRES `Authorization: Bearer <id_token>` from GET /auth first — 401 'Missing or invalid Authorization header' otherwise (agentcash fetch does not attach it automatically).",
+        "Response is polymorphic: NO card_id -> {cards:[...]} array; WITH card_id -> a single card object (no `cards` wrapper).",
+        "card_details (card_number/cvv/expiry/available_balance) is only present when status='ready' (US) or 'complete' (international); freshly ordered cards return status='pending'/'queued' with no details — poll until ready.",
+        "card_type filter (list mode) defaults to 'Non-Reloadable U.S.'; pass 'Non-Reloadable International' to see intl cards.",
+        "International cards carry extra fields (label, charged_usd_amount, fees_paid, state, queued_order_card_id) and a different transaction shape (merchant/status vs is_credit). After intl admin fulfillment the card is reissued with a new card_id; querying the ORIGINAL card_id still resolves via queued_order_card_id.",
+        "Empty result for a wallet with no cards is {cards:[]} (verified)."
+      ],
+      "guide": "Retrieve details for the caller's Laso prepaid card(s). With a card_id, returns that single card including the card number, CVV, and expiry once status is 'ready' (US) / 'complete' (intl). Without card_id, lists all of the caller's cards of a given card_type. This is the polling endpoint to fetch the actual card credentials after ordering via /get-card or /order-intl-card. GET https://laso.finance/get-card-data?card_id=<id>&card_type=<...> — all params optional, no body. Requires header `Authorization: Bearer <id_token from /auth>`. Omit card_id to list all cards (returns {cards:[...]}); pass card_id to get one card (returns the single-card object). Output: List mode: cards[].{card_id, card_type, usd_amount, status, country?, card_details?{card_number,exp_month,exp_year,cvv,available_balance}, transactions[]}. Single mode (with card_id): same fields at top level, no `cards` wrapper.",
+      "costObservedUsd": 0,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "Laso Finance",
+        "url": "https://laso.finance/get-card-data",
+        "method": "GET",
+        "priceDisplay": "Free",
+        "priceUsd": 0,
+        "networks": [],
+        "accepts": [],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "laso-finance-merchant-acceptance-search",
+    "name": "Laso Finance Merchant Acceptance Search",
+    "provider": "Laso Finance",
+    "kind": "api",
+    "category": "payments-billing",
+    "subcategory": "payment-processing",
+    "description": "Search Laso's crowdsourced merchant database to check whether a Laso prepaid card is accepted at a given merchant before relying on it. Returns matching merchants with an acceptance status (accepted / not_accepted / unknown), website URL, description, and usage notes.",
+    "pricing": {
+      "headline": "Free",
+      "amount": 0,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "hidden",
+    "hiddenReason": "needs-review",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://laso.finance/search-merchants?q=<merchant>&card_type=<Non-Reloadable U.S.|Non-Reloadable International> — query params in URL, no body. Requires header `Authorization: Bearer <id_token from /auth>`. card_type optional (defaults to 'Non-Reloadable U.S.').",
+      "inputExample": {
+        "q": "amazon"
+      },
+      "outputShape": "merchants[].{name, url, status('accepted'|'not_accepted'|'unknown'), description, notes}, query, count, card_type, note",
+      "quirks": [
+        "FREE read, but REQUIRES `Authorization: Bearer <id_token>` from GET /auth first — returns 401 'Missing or invalid Authorization header' otherwise (agentcash fetch does not attach it automatically).",
+        "Required query param `q` = merchant name (e.g. 'amazon', 'netflix').",
+        "card_type enum is exactly 'Non-Reloadable U.S.' or 'Non-Reloadable International' (note the trailing period and capitalization); defaults to 'Non-Reloadable U.S.'.",
+        "status='unknown' does NOT mean the card will fail — the DB only covers merchants users have previously tried (see the `note` field). Returns many fuzzy matches (37 for 'amazon').",
+        "Some merchants carry `notes` advising indirect use (e.g. load funds via Amazon Reload, then spend from the Amazon balance)."
+      ],
+      "guide": "Search Laso's crowdsourced merchant database to check whether a Laso prepaid card is accepted at a given merchant before relying on it. Returns matching merchants with an acceptance status (accepted / not_accepted / unknown), website URL, description, and usage notes. GET https://laso.finance/search-merchants?q=<merchant>&card_type=<Non-Reloadable U.S.|Non-Reloadable International> — query params in URL, no body. Requires header `Authorization: Bearer <id_token from /auth>`. card_type optional (defaults to 'Non-Reloadable U.S.'). Output: merchants[].{name, url, status('accepted'|'not_accepted'|'unknown'), description, notes}, query, count, card_type, note",
+      "costObservedUsd": 0,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "Laso Finance",
+        "url": "https://laso.finance/search-merchants",
+        "method": "GET",
+        "priceDisplay": "Free",
+        "priceUsd": 0,
+        "networks": [],
+        "accepts": [],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  }
+]

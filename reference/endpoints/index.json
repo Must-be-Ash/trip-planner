@@ -1,0 +1,1245 @@
+{
+  "generatedFrom": "MasterKey registry by-subcat + Bazaar routing + Apify direct x402",
+  "registryPath": "/Users/ashnouruzi/services/masterkey/data/registry/by-subcat",
+  "capabilities": {
+    "flights": [
+      {
+        "id": "stabletravel-google-flights-search",
+        "name": "StableTravel Google Flights Search",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.020",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "stabletravel-google-flights-booking",
+        "name": "StableTravel Google Flights Booking",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.020",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "stabletravel-amadeus-flight-search-get",
+        "name": "StableTravel Amadeus Flight Search (GET)",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.054",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "stabletravel-award-seats-search-seats-aero",
+        "name": "StableTravel Award Seats Search (Seats.aero)",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.020",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "stabletravel-award-trip-detail-seats-aero",
+        "name": "StableTravel Award Trip Detail (Seats.aero)",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.020",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "stabletravel-award-availability-sweep-seats-aero",
+        "name": "StableTravel Award Availability Sweep (Seats.aero)",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.040",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "stabletravel-amadeus-flight-seatmap",
+        "name": "StableTravel Amadeus Flight Seatmap",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.032",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "stabletravel-amadeus-flight-status",
+        "name": "StableTravel Amadeus Flight Status",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.0054",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "stabletravel-amadeus-check-in-links",
+        "name": "StableTravel Amadeus Check-in Links",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.0054",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "stabletravel-flightaware-flight-by-ident",
+        "name": "StableTravel FlightAware Flight by Ident",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.010",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "stabletravel-flightaware-airport-delays-specific",
+        "name": "StableTravel FlightAware Airport Delays (specific)",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.020",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "stabletravel-flightaware-disruption-counts-by-type",
+        "name": "StableTravel FlightAware Disruption Counts by Type",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.010",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "stabletravel-reference-airport-routes",
+        "name": "StableTravel Reference Airport Routes",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.0054",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "stabletravel-reference-locations-search",
+        "name": "StableTravel Reference Locations Search",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.0054",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "flight-delay-predictor",
+        "name": "Flight Delay Predictor",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.010",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      }
+    ],
+    "lodging": [
+      {
+        "id": "stabletravel-hotel-autocomplete",
+        "name": "StableTravel Hotel Autocomplete",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.0054",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "stabletravel-hotel-list-by-city",
+        "name": "StableTravel Hotel List by City",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.032",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "stabletravel-hotel-list-by-geocode",
+        "name": "StableTravel Hotel List by Geocode",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.032",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "stabletravel-hotel-offers-search",
+        "name": "StableTravel Hotel Offers Search",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.032",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "stabletravel-hotel-offers-by-hotel",
+        "name": "StableTravel Hotel Offers by Hotel",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.032",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "stabletravel-hotel-offer-detail",
+        "name": "StableTravel Hotel Offer Detail",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.032",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "stabletravel-hotel-booking",
+        "name": "StableTravel Hotel Booking",
+        "verified": true,
+        "confirmGate": "RED",
+        "priceDisplay": "$0.0022",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "stabletravel-activities-search",
+        "name": "StableTravel Activities Search",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.054",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "stabletravel-transfers-search",
+        "name": "StableTravel Transfers Search",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.0032",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "stabletravel-transfers-book",
+        "name": "StableTravel Transfers Book",
+        "verified": true,
+        "confirmGate": "RED",
+        "priceDisplay": "$0.0022",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "stabletravel-transfers-cancel",
+        "name": "StableTravel Transfers Cancel",
+        "verified": true,
+        "confirmGate": "RED",
+        "priceDisplay": "$0.0022",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      }
+    ],
+    "ground-transport": [
+      {
+        "id": "nyc-transit-live-subway-nearest",
+        "name": "NYC Transit Live Subway Nearest",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.020",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "nyc-transit-live-bus-nearest",
+        "name": "NYC Transit Live Bus Nearest",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.020",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "japan-transit-station-search",
+        "name": "Japan Transit Station Search",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.0010",
+        "networks": [
+          "Base",
+          "Polygon",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "japan-transit-station-status",
+        "name": "Japan Transit Station Status",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.0050",
+        "networks": [
+          "Base",
+          "Polygon",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "waze-traffic",
+        "name": "Waze Traffic",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.010",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "keyronne-directions-travel-times",
+        "name": "Directions + Travel Times (keyronne)",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.010",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "bazaar"
+      },
+      {
+        "id": "relaystation-route",
+        "name": "Relaystation Route (OSRM mirror)",
+        "verified": false,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.010",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "bazaar"
+      }
+    ],
+    "places-reviews": [
+      {
+        "id": "x402node-geocoding-forward",
+        "name": "x402node Geocoding Forward",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.0080",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "google-maps-text-search-stableenrich",
+        "name": "Google Maps Text Search (StableEnrich)",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.020",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "google-maps-nearby-search-stableenrich",
+        "name": "Google Maps Nearby Search (StableEnrich)",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.020",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "google-maps-place-details-stableenrich",
+        "name": "Google Maps Place Details (StableEnrich)",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.020",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "tripadvisor-location-search",
+        "name": "Tripadvisor Location Search",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.010",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "tripadvisor-nearby-search",
+        "name": "Tripadvisor Nearby Search",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.010",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "tripadvisor-location-details",
+        "name": "Tripadvisor Location Details",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.010",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "tripadvisor-location-reviews",
+        "name": "Tripadvisor Location Reviews",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.010",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "tripadvisor-location-photos",
+        "name": "Tripadvisor Location Photos",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.010",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "serper-maps",
+        "name": "Serper Maps",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.0060",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "serper-places",
+        "name": "Serper Places",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.0020",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      }
+    ],
+    "social-sentiment": [
+      {
+        "id": "reddit-search-stableenrich",
+        "name": "Reddit Search (StableEnrich)",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.020",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "reddit-post-comments-stableenrich",
+        "name": "Reddit Post Comments (StableEnrich)",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.020",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "twit-sh-tweet-search",
+        "name": "twit.sh Tweet Search",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.0050",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "scrape-creators-tiktok-video",
+        "name": "Scrape Creators TikTok Video",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.020",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "social-trend-predictor",
+        "name": "Social Trend Predictor",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.010",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      }
+    ],
+    "web-research": [
+      {
+        "id": "tavily-search",
+        "name": "Tavily Search",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.010",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "parallel-search",
+        "name": "Parallel Search",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.010",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "parallel-extract",
+        "name": "Parallel Extract",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.010",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "parallel-deep-research-task",
+        "name": "Parallel Deep Research Task",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.100",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "perplexity-search",
+        "name": "Perplexity Search",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.010",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "perplexity-sonar-deep-research-async",
+        "name": "Perplexity Sonar Deep Research — async",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.010",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "exa",
+        "name": "Exa",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.0070",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "exa-find-similar",
+        "name": "Exa Find Similar",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.010",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "exa-answer",
+        "name": "Exa Answer",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.010",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "exa-contents",
+        "name": "Exa Contents",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.0010",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "perplexica-ai-search",
+        "name": "Perplexica AI Search",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.0050",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "honcho-agent-memory",
+        "name": "Honcho Agent Memory",
+        "verified": true,
+        "confirmGate": "RED",
+        "priceDisplay": "$0.0010",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      }
+    ],
+    "weather": [
+      {
+        "id": "hugen-weather-forecast",
+        "name": "Hugen Weather Forecast",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.010",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "hugen-weather-current",
+        "name": "Hugen Weather Current",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.010",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "x402-deployer-weather",
+        "name": "x402-deployer Weather",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.0050",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "open-meteo-weather",
+        "name": "Open-Meteo Weather",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.010",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "2s-io-weather",
+        "name": "2s.io Weather",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.0012",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "openweather",
+        "name": "OpenWeather",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.0020",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "japan-weather-jma",
+        "name": "Japan Weather (JMA)",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.0030",
+        "networks": [
+          "Base",
+          "Polygon",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "precip-ai",
+        "name": "Precip AI",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.100",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      }
+    ],
+    "news-safety": [
+      {
+        "id": "stableenrich-news",
+        "name": "StableEnrich News",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.040",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "serper-news",
+        "name": "Serper News",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.0020",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "httpay-news-headlines",
+        "name": "httpay News Headlines",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.0050",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      }
+    ],
+    "fx-budget": [
+      {
+        "id": "fx-price",
+        "name": "Fx Price",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "Free",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "fx-symbols",
+        "name": "FX Symbols",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "Free",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      }
+    ],
+    "prepare-buy": [
+      {
+        "id": "channel3-commerce-product-search",
+        "name": "Channel3 Commerce Product Search",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.010",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "stableninja-retail-products",
+        "name": "StableNinja Retail Products",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "Varies",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "stablemerch-custom-merch",
+        "name": "StableMerch Custom Merch",
+        "verified": true,
+        "confirmGate": "RED",
+        "priceDisplay": "Free",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "stablegiftcards-search",
+        "name": "StableGiftCards Search",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "Free",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "stablegiftcards-product-details",
+        "name": "StableGiftCards Product Details",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "Free",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "stablegiftcards-buy",
+        "name": "StableGiftCards Buy",
+        "verified": false,
+        "confirmGate": "RED",
+        "priceDisplay": "$500.00",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "hidden"
+      },
+      {
+        "id": "stablegiftcards-invoice-status",
+        "name": "StableGiftCards Invoice Status",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "Free",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "laso-finance-order-usa-prepaid-card",
+        "name": "Laso Finance Order USA Prepaid Card",
+        "verified": true,
+        "confirmGate": "RED",
+        "priceDisplay": "$5.00",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "laso-finance-order-international-prepaid-card",
+        "name": "Laso Finance Order International Prepaid Card",
+        "verified": true,
+        "confirmGate": "RED",
+        "priceDisplay": "$100.00",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "laso-finance-auth",
+        "name": "Laso Finance Auth",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "Free",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "laso-finance-get-card-data",
+        "name": "Laso Finance Get Card Data",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "Free",
+        "networks": [],
+        "registryStatus": "hidden"
+      },
+      {
+        "id": "laso-finance-merchant-acceptance-search",
+        "name": "Laso Finance Merchant Acceptance Search",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "Free",
+        "networks": [],
+        "registryStatus": "hidden"
+      }
+    ],
+    "deliverables": [
+      {
+        "id": "gpt-image-2-generate",
+        "name": "GPT Image 2 Generate",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.010",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "nano-banana-2",
+        "name": "Nano Banana 2",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.050",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "nano-banana-pro-generate",
+        "name": "Nano Banana Pro Generate",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.130",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "flux-2-pro-generate",
+        "name": "FLUX.2 Pro Generate",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.030",
+        "networks": [
+          "Base",
+          "Solana",
+          "eip155:4326"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "makespdf-markdown-to-pdf",
+        "name": "MakesPDF Markdown to PDF",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.010",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "html-to-pdf-raw-html",
+        "name": "HTML to PDF (raw HTML)",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.0050",
+        "networks": [
+          "Solana",
+          "Base",
+          "Polygon"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "makespdf-template-render",
+        "name": "MakesPDF Template Render",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.020",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "stableupload-file-upload",
+        "name": "StableUpload File Upload",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.0050",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "text-to-speech-elevenlabs",
+        "name": "Text-to-Speech (ElevenLabs)",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.0010",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "openai-tts",
+        "name": "OpenAI TTS",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.010",
+        "networks": [
+          "Base",
+          "eip155:4326",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "voices-free",
+        "name": "Voices (free)",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "Free",
+        "networks": [
+          "Base"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "stableemail-send",
+        "name": "StableEmail Send",
+        "verified": true,
+        "confirmGate": "RED",
+        "priceDisplay": "$0.020",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "agentmail-send-email",
+        "name": "AgentMail Send Email",
+        "verified": true,
+        "confirmGate": "RED",
+        "priceDisplay": "$0.010",
+        "networks": [
+          "Base",
+          "Solana",
+          "Avalanche",
+          "eip155:196",
+          "Polygon"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "agentmail-create-inbox",
+        "name": "AgentMail Create Inbox",
+        "verified": true,
+        "confirmGate": "RED",
+        "priceDisplay": "$2.00",
+        "networks": [
+          "Base",
+          "Solana",
+          "Avalanche",
+          "eip155:196",
+          "Polygon"
+        ],
+        "registryStatus": "hidden"
+      },
+      {
+        "id": "send-sms",
+        "name": "Send SMS",
+        "verified": true,
+        "confirmGate": "RED",
+        "priceDisplay": "$0.020",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "agentphone-number",
+        "name": "AgentPhone Number",
+        "verified": true,
+        "confirmGate": "RED",
+        "priceDisplay": "$0.010",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      },
+      {
+        "id": "agentphone-messaging-calls",
+        "name": "AgentPhone Messaging & Calls",
+        "verified": false,
+        "confirmGate": "RED",
+        "priceDisplay": "$0.020",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "hidden"
+      },
+      {
+        "id": "ai-phone-call",
+        "name": "AI Phone Call",
+        "verified": true,
+        "confirmGate": "RED",
+        "priceDisplay": "$0.540",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "active"
+      }
+    ],
+    "apify": {
+      "note": "Direct x402 on api.apify.com — offline-core, NOT via any MCP. 13,898 x402-enabled actors, all PAY_PER_EVENT.",
+      "confirmGate": "GREEN",
+      "actorCount": 21,
+      "auth": "x402 via X402-PAYMENT-SIGNATURE header (USDC; treat as Base, confirm chain from the 402 challenge)"
+    }
+  }
+}

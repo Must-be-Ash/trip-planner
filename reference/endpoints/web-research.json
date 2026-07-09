@@ -1,0 +1,1252 @@
+[
+  {
+    "id": "tavily-search",
+    "name": "Tavily Search",
+    "provider": "Tavily",
+    "kind": "api",
+    "category": "search",
+    "subcategory": "web-search-apis",
+    "description": "Tavily AI web search. POST a query and get ranked web results with relevance scores; optionally an LLM-synthesized answer, raw page content, and images. Supports topic (general/news/finance), date/time filtering, and domain include/exclude lists.",
+    "pricing": {
+      "headline": "$0.010",
+      "amount": 0.01,
+      "currency": "USD",
+      "unit": "per search"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST JSON {query (required, 1-1000 chars), max_results?, topic?, search_depth?, include_answer?, include_raw_content?, include_images?, time_range?, start_date?, end_date?, include_domains?[], exclude_domains?[]}. Only `query` is required.",
+      "inputExample": {
+        "query": "what is x402 protocol",
+        "max_results": 3
+      },
+      "outputShape": "results[].{url,title,content,score,raw_content}, answer, follow_up_questions, images[], query, response_time, request_id",
+      "quirks": [
+        "Only `query` is required; all other fields optional.",
+        "answer is null by default — pass include_answer:true to get an AI-synthesized answer.",
+        "raw_content (per-result) is null by default — pass include_raw_content:true for full page text.",
+        "images[] is empty by default — pass include_images:true to populate.",
+        "On x402.tavily.com search_depth is fixed to 'advanced' (enum has only that value); the Orthogonal proxy exposes the full Tavily depth enum (advanced/basic/fast/ultra-fast) plus extra fields (chunks_per_source, country, auto_parameters, include_favicon, include_image_descriptions).",
+        "max_results accepts the string 'auto' or an integer 1-50.",
+        "x402.tavily.com uses x402 v2 (network eip155:8453); Orthogonal proxy uses x402 v1 (network 'base'). Same USDC asset, same $0.01.",
+        "content snippets are truncated with a [+N chars] marker in the default (non-raw) response."
+      ],
+      "guide": "Tavily AI web search. POST a query and get ranked web results with relevance scores; optionally an LLM-synthesized answer, raw page content, and images. Supports topic (general/news/finance), date/time filtering, and domain include/exclude lists. POST JSON {query (required, 1-1000 chars), max_results?, topic?, search_depth?, include_answer?, include_raw_content?, include_images?, time_range?, start_date?, end_date?, include_domains?[], exclude_domains?[]}. Only `query` is required. Output: results[].{url,title,content,score,raw_content}, answer, follow_up_questions, images[], query, response_time, request_id",
+      "costObservedUsd": 0.01,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "Tavily",
+        "url": "https://x402.tavily.com/search",
+        "method": "POST",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0xecf4097841c0e680b80e3297c630164ca12ef409"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "signalfuse",
+        "url": "https://api.signalfuse.co/v1/gateway/search/tavily",
+        "method": "POST",
+        "priceDisplay": "$0.012",
+        "priceUsd": 0.012,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "12000",
+            "payTo": "0xf080a1Aab08650946acDa41410a7eDC14f7Be035"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "Orthogonal",
+        "url": "https://x402.orth.sh/tavily/search",
+        "method": "POST",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "base",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0x7f1E8AdA9F03B292865dDF4D9737319aF6963a86"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "parallel-search",
+    "name": "Parallel Search",
+    "provider": "Parallel",
+    "kind": "api",
+    "category": "search",
+    "subcategory": "web-search-apis",
+    "description": "Parallel web search built for AI agents — high-quality structured results with excerpts. First-party parallelmpp.dev gateway, keyless pay-per-call x402 on Base (also supports MPP/Stripe upstream, but we use x402).",
+    "pricing": {
+      "headline": "$0.010",
+      "amount": 0.01,
+      "currency": "USD",
+      "unit": "per search"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://parallelmpp.dev/api/search with JSON body {query, mode}",
+      "inputExample": {
+        "query": "AI agent payments 2026",
+        "mode": "one-shot"
+      },
+      "outputShape": "body.search_id; body.results[].{url,title,publish_date,excerpts[]}. excerpts hold the relevant text snippets.",
+      "quirks": [
+        "Required field is `query`. Optional `mode`: 'one-shot' (comprehensive, default) or 'fast' (lower latency).",
+        "First-party parallelmpp.dev endpoint, keyless x402 (~$0.01 USDC on Base). Re-verified working 2026-06-10 (200, returned results[] with excerpts).",
+        "The gateway rotates the x402 payTo per request — the live 402 challenge is authoritative (payProvider re-probes at call time).",
+        "60 req/min per IP rate limit; handle 429 with Retry-After."
+      ],
+      "guide": "POST https://parallelmpp.dev/api/search with a JSON body {\"query\":\"<search>\", \"mode\":\"one-shot\"}. Keyless x402 (~$0.01 USDC on Base). The response is synchronous JSON: read body.results[] (each has url, title, publish_date, and excerpts[] of relevant text). Use 'fast' mode for lower latency.",
+      "costObservedUsd": 0.01,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "Parallel",
+        "url": "https://parallelmpp.dev/api/search",
+        "method": "POST",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0x82944121ff534aade8f2cf54a5a3f95cf685b87a"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "parallel-extract",
+    "name": "Parallel Extract",
+    "provider": "Parallel",
+    "kind": "api",
+    "category": "search",
+    "subcategory": "web-search-apis",
+    "description": "Parallel content extraction — pull structured facts/excerpts from one or more URLs against an objective. First-party parallelmpp.dev gateway, keyless pay-per-call x402 on Base.",
+    "pricing": {
+      "headline": "$0.010",
+      "amount": 0.01,
+      "currency": "USD",
+      "unit": "per search"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://parallelmpp.dev/api/extract with JSON body {urls:[...], objective}",
+      "inputExample": {
+        "urls": [
+          "https://example.com"
+        ],
+        "objective": "Extract key facts"
+      },
+      "outputShape": "body.extract_id; body.results[].{url,title,publish_date,excerpts[]}. excerpts hold the extracted content relevant to the objective.",
+      "quirks": [
+        "Required field is `urls` (array). Optional `objective` (what to extract). Price is ~$0.01 per URL (minimum $0.01) — passing many urls scales the cost.",
+        "First-party parallelmpp.dev endpoint, keyless x402 on Base. Re-verified working 2026-06-10 (200).",
+        "The gateway rotates the x402 payTo per request — the live 402 challenge is authoritative."
+      ],
+      "guide": "POST https://parallelmpp.dev/api/extract with a JSON body {\"urls\":[\"<url>\"],\"objective\":\"<what to pull>\"}. Keyless x402 (~$0.01 per URL on Base). The response is synchronous JSON: read body.results[].excerpts for the extracted content. Use this to pull facts from pages you already have URLs for.",
+      "costObservedUsd": 0.01,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "Parallel",
+        "url": "https://parallelmpp.dev/api/extract",
+        "method": "POST",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0x947f3e432939c8b6b4a611354a6fd93cae5be5a5"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "parallel-deep-research-task",
+    "name": "Parallel Deep Research Task",
+    "provider": "Parallel",
+    "kind": "api",
+    "category": "search",
+    "subcategory": "web-search-apis",
+    "description": "Parallel deep async research task — submit a research objective, get a thorough multi-source report. Async (1-5+ min, poll for results). First-party parallelmpp.dev gateway, keyless pay-per-call x402 on Base.",
+    "pricing": {
+      "headline": "$0.100",
+      "amount": 0.1,
+      "currency": "USD",
+      "unit": "per search"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "poll",
+      "auth": "none",
+      "callShape": "POST https://parallelmpp.dev/api/task with JSON body {input, processor}; returns {run_id}. Then poll GET https://parallelmpp.dev/api/task/{run_id} (free) until status==='completed'.",
+      "inputExample": {
+        "input": "Overview of the x402 payment protocol",
+        "processor": "pro"
+      },
+      "outputShape": "Submit returns {run_id, status:'queued'}. Poll GET /api/task/{run_id} (free) → eventually {status:'completed', output/result:...}.",
+      "quirks": [
+        "ASYNC: the POST only QUEUES the task (returns run_id, status 'queued'). You MUST poll GET https://parallelmpp.dev/api/task/{run_id} (FREE, no payment) until status==='completed' — can take 1-5+ minutes. Use exponential backoff (10s,20s,30s, cap 60s).",
+        "processor: 'pro' (~$0.10, re-verified 2026-06-10) or 'ultra' (~$0.30, deeper). Price is dynamic by processor.",
+        "Save the run_id — it is persistent, so results can be fetched later if you time out.",
+        "First-party parallelmpp.dev, keyless x402 on Base. payTo rotates per request (live 402 authoritative)."
+      ],
+      "guide": "POST https://parallelmpp.dev/api/task with {\"input\":\"<research objective>\",\"processor\":\"pro\"} (pro ~$0.10, ultra ~$0.30 for deeper). Keyless x402 on Base. It returns a run_id and queues the job — then poll GET https://parallelmpp.dev/api/task/{run_id} (free) until status is 'completed' to get the report (1-5+ min; back off your polling). Save the run_id so you can retrieve results later if needed.",
+      "costObservedUsd": 0.1,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "Parallel",
+        "url": "https://parallelmpp.dev/api/task",
+        "method": "POST",
+        "priceDisplay": "$0.100",
+        "priceUsd": 0.1,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "100000",
+            "payTo": "0xeee08d914397ab3273b6f6fd7fb24c547c0453f5"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": true
+      }
+    ]
+  },
+  {
+    "id": "perplexity-search",
+    "name": "Perplexity Search",
+    "provider": "Perplexity",
+    "kind": "api",
+    "category": "search",
+    "subcategory": "web-search-apis",
+    "description": "Web search returning ranked results with snippets, powered by Perplexity.",
+    "pricing": {
+      "headline": "$0.010",
+      "amount": 0.01,
+      "currency": "USD",
+      "unit": "per search"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://pplx.x402.paysponge.com/search with JSON body (x402)",
+      "inputExample": {
+        "query": "what is bitcoin",
+        "max_results": 3
+      },
+      "outputShape": "body.results",
+      "quirks": [
+        "Served via Sponge's x402 gateway (*.x402.paysponge.com) — a single x402 payment proxies the upstream provider. No API key. Base or Solana USDC."
+      ],
+      "guide": "Web search returning ranked results with snippets, powered by Perplexity. Served via Sponge's x402 gateway (*.x402.paysponge.com) — a single x402 payment proxies the upstream provider. No API key. Base or Solana USDC.",
+      "costObservedUsd": 0.01
+    },
+    "endpoints": [
+      {
+        "provider": "Sponge",
+        "url": "https://pplx.x402.paysponge.com/search",
+        "method": "POST",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0x6302D9e6DBB22fEC3c350551568Bb39B4b35Ad57"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "10000",
+            "payTo": "9246XrsAEKH6hAyEQe5PvdpUL1p5Ktj9c7ySnwQn6ois"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "perplexity-sonar-deep-research-async",
+    "name": "Perplexity Sonar Deep Research — async",
+    "provider": "Perplexity",
+    "kind": "api",
+    "category": "search",
+    "subcategory": "web-search-apis",
+    "description": "Submit an async deep-research job (sonar-deep-research). Returns a job id; poll for the report.",
+    "pricing": {
+      "headline": "$0.010",
+      "amount": 0.01,
+      "currency": "USD",
+      "unit": "per search"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "poll",
+      "auth": "none",
+      "callShape": "POST https://pplx.x402.paysponge.com/v1/async/sonar with JSON body (x402)",
+      "inputExample": {
+        "request": {
+          "model": "sonar-deep-research",
+          "messages": [
+            {
+              "role": "user",
+              "content": "What is Bitcoin? One sentence."
+            }
+          ]
+        }
+      },
+      "outputShape": "body",
+      "quirks": [
+        "Served via Sponge's x402 gateway (*.x402.paysponge.com) — a single x402 payment proxies the upstream provider. No API key. Base or Solana USDC.",
+        "Async: only sonar-deep-research is allowed; body must be { request: {model, messages} }. Submit returns a job id; result via poll.",
+        "model MUST be \"sonar-deep-research\" (the async endpoint rejects other models).",
+        "Body is wrapped: {\"request\":{model,messages}}. NOT a bare chat body.",
+        "⚠ Charges $0.01 even on a 400 (charge-before-validate) — get the shape right first.",
+        "Async: submit returns {id, status:\"CREATED\"}; poll x402 GET /v1/async/sonar/{id} (settles $0) until status=\"COMPLETED\", result at body.response. Verified 2026-06-23."
+      ],
+      "guide": "Submit an async deep-research job (sonar-deep-research). Returns a job id; poll for the report. Served via Sponge's x402 gateway (*.x402.paysponge.com) — a single x402 payment proxies the upstream provider. No API key. Base or Solana USDC.",
+      "costObservedUsd": 0.01
+    },
+    "endpoints": [
+      {
+        "provider": "Sponge",
+        "url": "https://pplx.x402.paysponge.com/v1/async/sonar",
+        "method": "POST",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0x6302D9e6DBB22fEC3c350551568Bb39B4b35Ad57"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "10000",
+            "payTo": "9246XrsAEKH6hAyEQe5PvdpUL1p5Ktj9c7ySnwQn6ois"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": true
+      }
+    ]
+  },
+  {
+    "id": "exa",
+    "name": "Exa",
+    "provider": "Exa",
+    "kind": "api",
+    "category": "search",
+    "subcategory": "ai-semantic-search",
+    "description": "Exa neural + keyword web search built for AI — semantic search by meaning, returning ranked results (title/url/score) with optional page text. Defaults to the first-party api.exa.ai; also available via the BlockRun and StableEnrich aggregator gateways. Keyless pay-per-call x402. (For synthesized answers with citations, see Exa Answer.)",
+    "pricing": {
+      "headline": "$0.0070",
+      "amount": 0.007,
+      "currency": "USD",
+      "unit": "per search"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://api.exa.ai/search with JSON body {query} (optionally numResults, type:'neural'|'keyword'|'auto', category). Returns body.results[].",
+      "inputExample": {
+        "query": "latest research on AI agent memory",
+        "numResults": 5
+      },
+      "outputShape": "body.results[].{id,title,url,publishedDate,author,score}; body.requestId. (Add {\"contents\":{\"text\":true}} to also get body.results[].text page content.)",
+      "quirks": [
+        "Required field is `query` (a search phrase or natural-language description). Optional: numResults (default ~10), type ('neural'|'keyword'|'auto'), category, includeDomains/excludeDomains, startPublishedDate.",
+        "This is the SEARCH endpoint → returns ranked results[] (id/title/url/score), NOT a synthesized answer. For a direct answer-with-citations use the Exa Answer service instead.",
+        "DEFAULT provider is the first-party api.exa.ai/search (~$0.007). Aggregator routes blockrun.ai/api/v1/exa/search and stableenrich.dev/api/exa/search (~$0.01) are also available — pin one with backendProviderId 'blockrun' or 'stableenrich'. All take {query} and return the same results[] shape. api.exa.ai re-verified working 2026-06-10 (200).",
+        "To fetch full page text in one call, pass {\"contents\":{\"text\":true}}; results[].text is then populated (may raise the price)."
+      ],
+      "guide": "POST https://api.exa.ai/search (first-party, the default) with a JSON body {\"query\":\"<search phrase>\", \"numResults\":5}. It is keyless x402 (~$0.007 USDC on Base — no API key). The response is synchronous JSON: read body.results[] (each has title, url, publishedDate, score). To also pull page text, add {\"contents\":{\"text\":true}}. For a synthesized answer with citations instead of raw results, use the Exa Answer service.",
+      "costObservedUsd": 0.007,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "exa",
+        "url": "https://api.exa.ai/search",
+        "method": "POST",
+        "priceDisplay": "$0.0070",
+        "priceUsd": 0.007,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "7000",
+            "payTo": "0x6d6E695b09861467c7d462f5AAF31cF3540B9192"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "BlockRun",
+        "url": "https://blockrun.ai/api/v1/exa/search",
+        "method": "POST",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0xe9030014F5DAe217d0A152f02A043567b16c1aBf"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "StableEnrich",
+        "url": "https://stableenrich.dev/api/exa/search",
+        "method": "POST",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0x325bdF6F7efAB24a2210c48c1b64cAb2eAe1d430"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "exa-find-similar",
+    "name": "Exa Find Similar",
+    "provider": "Exa",
+    "kind": "api",
+    "category": "search",
+    "subcategory": "ai-semantic-search",
+    "description": "Exa find-similar — give a URL and get semantically similar pages from across the web. Served via the BlockRun and StableEnrich gateways. Keyless pay-per-call x402.",
+    "pricing": {
+      "headline": "$0.010",
+      "amount": 0.01,
+      "currency": "USD",
+      "unit": "per search"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://blockrun.ai/api/v1/exa/find-similar with JSON body {url}",
+      "inputExample": {
+        "url": "https://en.wikipedia.org/wiki/Paris"
+      },
+      "outputShape": "body.results[].{id,title,url,author,score}; body.requestId. Each result is a page similar to the input url, with a relevance score.",
+      "quirks": [
+        "Required field is `url` (a single page URL) — NOT `query`. Returns pages semantically similar to that url.",
+        "No first-party api.exa.ai find-similar endpoint is published here, so this is served via the BlockRun (default) and StableEnrich aggregators (~$0.01). Pin with backendProviderId 'stableenrich' if desired.",
+        "Keyless x402 (~$0.01 USDC on Base). BlockRun route re-verified working 2026-06-10 (200, returned scored results[])."
+      ],
+      "guide": "POST https://blockrun.ai/api/v1/exa/find-similar with a JSON body {\"url\": \"<a page url>\"}. Keyless x402 (~$0.01 USDC on Base). The response is synchronous JSON: read body.results[] (each has title, url, and a similarity score). Use this to discover pages related to one you already have.",
+      "costObservedUsd": 0.01,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "BlockRun",
+        "url": "https://blockrun.ai/api/v1/exa/find-similar",
+        "method": "POST",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0xe9030014F5DAe217d0A152f02A043567b16c1aBf"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "StableEnrich",
+        "url": "https://stableenrich.dev/api/exa/find-similar",
+        "method": "POST",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0x325bdF6F7efAB24a2210c48c1b64cAb2eAe1d430"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "exa-answer",
+    "name": "Exa Answer",
+    "provider": "Exa",
+    "kind": "api",
+    "category": "search",
+    "subcategory": "ai-semantic-search",
+    "description": "Exa Answer — ask a natural-language question and get a synthesized, cited answer (not raw search results), powered by Exa neural search over the live web. Keyless pay-per-call x402 via the BlockRun and StableEnrich gateways.",
+    "pricing": {
+      "headline": "$0.010",
+      "amount": 0.01,
+      "currency": "USD",
+      "unit": "per search"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://blockrun.ai/api/v1/exa/answer with JSON body {query}",
+      "inputExample": {
+        "query": "What is the capital of France?"
+      },
+      "outputShape": "body.answer (synthesized answer string with inline [n] citation markers); body.citations[].{title,url,publishedDate,image,favicon}; body.costDollars.total; body.requestId",
+      "quirks": [
+        "Required field is `query` (a natural-language question). Returns a synthesized answer, NOT raw results — for ranked search results use the Exa Search service instead.",
+        "Answer text contains inline [1][2] citation markers that index into body.citations[]",
+        "No first-party api.exa.ai/answer endpoint is published, so this is served via the BlockRun (default) and StableEnrich aggregators (~$0.01). Pin with backendProviderId 'stableenrich' if desired.",
+        "Keyless x402 (~$0.01 USDC on Base). BlockRun route re-verified working 2026-06-10 (200, returned answer + citations)."
+      ],
+      "guide": "POST https://blockrun.ai/api/v1/exa/answer with a JSON body {\"query\": \"<your natural-language question>\"}. Keyless x402, ~$0.01 USDC on Base. The response is synchronous: read body.answer for the synthesized answer (with inline [n] markers) and body.citations[] for the supporting sources (title + url). Use this for direct factual answers with citations rather than raw search results.",
+      "costObservedUsd": 0.01,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "BlockRun",
+        "url": "https://blockrun.ai/api/v1/exa/answer",
+        "method": "POST",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0xe9030014F5DAe217d0A152f02A043567b16c1aBf"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "StableEnrich",
+        "url": "https://stableenrich.dev/api/exa/answer",
+        "method": "POST",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0x325bdF6F7efAB24a2210c48c1b64cAb2eAe1d430"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "exa-contents",
+    "name": "Exa Contents",
+    "provider": "Exa",
+    "kind": "api",
+    "category": "search",
+    "subcategory": "ai-semantic-search",
+    "description": "Exa content retrieval — fetch the cleaned page text (and highlights/summary) for one or more URLs. Defaults to the first-party api.exa.ai; also via BlockRun and StableEnrich. Keyless pay-per-call x402.",
+    "pricing": {
+      "headline": "$0.0010",
+      "amount": 0.001,
+      "currency": "USD",
+      "unit": "per search"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://api.exa.ai/contents with JSON body {urls:[\"<url>\",...], text:true} (or {ids:[...]}). Returns body.results[] with page text.",
+      "inputExample": {
+        "urls": [
+          "https://en.wikipedia.org/wiki/Paris"
+        ],
+        "text": true
+      },
+      "outputShape": "body.results[].{id,title,url,author,text}; body.requestId. text holds the cleaned page content. Optionally request highlights/summary too.",
+      "quirks": [
+        "Required field is `urls` (an array of page URLs) — NOT `query`. You can also pass `ids` (Exa result ids). Pass text:true (and optionally highlights/summary:true) to choose what content comes back.",
+        "Pricing is per page per content type (~$0.001 each on first-party) — fetching many urls or multiple content types scales the cost.",
+        "DEFAULT provider is first-party api.exa.ai/contents (~$0.001). Aggregator routes blockrun.ai/api/v1/exa/contents and stableenrich.dev/api/exa/contents (~$0.002) also available via backendProviderId. api.exa.ai re-verified working 2026-06-10 (200, returned results[].text)."
+      ],
+      "guide": "POST https://api.exa.ai/contents (first-party, the default) with a JSON body {\"urls\":[\"<page url>\"],\"text\":true}. Keyless x402 (~$0.001 per page on Base). The response is synchronous JSON: read body.results[].text for the cleaned page content. Use this to pull the full text of pages you already have URLs for (e.g. from an Exa Search result).",
+      "costObservedUsd": 0.001,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "Exa",
+        "url": "https://api.exa.ai/contents",
+        "method": "POST",
+        "priceDisplay": "$0.0010",
+        "priceUsd": 0.001,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "1000",
+            "payTo": "0x6d6E695b09861467c7d462f5AAF31cF3540B9192"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "BlockRun",
+        "url": "https://blockrun.ai/api/v1/exa/contents",
+        "method": "POST",
+        "priceDisplay": "$0.0020",
+        "priceUsd": 0.002,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "2000",
+            "payTo": "0xe9030014F5DAe217d0A152f02A043567b16c1aBf"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "StableEnrich",
+        "url": "https://stableenrich.dev/api/exa/contents",
+        "method": "POST",
+        "priceDisplay": "$0.0020",
+        "priceUsd": 0.002,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "2000",
+            "payTo": "0x325bdF6F7efAB24a2210c48c1b64cAb2eAe1d430"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "perplexica-ai-search",
+    "name": "Perplexica AI Search",
+    "provider": "Perplexica",
+    "kind": "model",
+    "category": "search",
+    "subcategory": "ai-semantic-search",
+    "description": "Perplexica open-source AI answer engine — semantic web search with grounded, cited answers. Pay-per-call x402.",
+    "pricing": {
+      "headline": "$0.0050",
+      "amount": 0.005,
+      "currency": "USD",
+      "unit": "per search"
+    },
+    "confirmGate": "GREEN",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://intel.asrai.me/search with JSON body {query}",
+      "inputExample": {
+        "query": "What is the capital of France?"
+      },
+      "outputShape": "body.message (the grounded answer text with [n] citation markers), body.sources[] (array of source objects; may be empty)",
+      "quirks": [],
+      "guide": "POST a JSON body with a single \"query\" field (your natural-language question) to https://intel.asrai.me/search. Payment is x402 USDC on Base, ~$0.005 per call, settled automatically. The response is a plain sync JSON object: read body.message for the grounded answer (citation markers like [1] embedded inline) and body.sources[] for the cited URLs (note sources[] can come back empty even when the answer is good).",
+      "costObservedUsd": 0.005,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "intel.asrai",
+        "url": "https://intel.asrai.me/search",
+        "method": "POST",
+        "priceDisplay": "$0.0050",
+        "priceUsd": 0.005,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "base",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "5000",
+            "payTo": "0xf8384c55677dcB6FA28eE6641260298C22c47Ad1"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      }
+    ]
+  },
+  {
+    "id": "honcho-agent-memory",
+    "name": "Honcho Agent Memory",
+    "provider": "Honcho",
+    "kind": "api",
+    "category": "search",
+    "subcategory": "ai-semantic-search",
+    "description": "Honcho is persistent memory + reasoning for AI agents: store every conversation turn, then query a peer's memory in natural language and get reasoned context back — not a similarity search over chunks. It continuously builds a representation of each user/peer (markdown summary + fact card) and can return LLM-ready session context. Keyless pay-per-call over x402: storing messages is $2/1M tokens ($0.001 floor), memory queries are $0.001–$0.50 by reasoning depth, and all reads (search, context, representations, cards, session/peer listing) are free with a SIWX wallet identity. Each wallet owns a private workspace.",
+    "pricing": {
+      "headline": "$0.0010",
+      "amount": 0.001,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "RED",
+    "verified": true,
+    "registryStatus": "active",
+    "modality": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "json",
+        "text"
+      ]
+    },
+    "usage": {
+      "status": "verified",
+      "resultPull": "sync",
+      "auth": "siwx",
+      "callShape": "POST https://agentcash.honcho.dev/api/honcho/<op> with JSON body. Paid ops (messages, chat) use x402 on Base; all other ops are free with a SIWX wallet identity.",
+      "inputExample": {
+        "session": "conversation-123",
+        "messages": [
+          {
+            "peer": "user-alice",
+            "content": "I prefer concise answers and love hiking."
+          },
+          {
+            "peer": "Assistant",
+            "content": "Noted."
+          }
+        ]
+      },
+      "outputShape": "Per-op JSON — messages[] for store/search/list, body.content for chat, {representation} / {peer_card} / {messages,summary,...} for the reads.",
+      "quirks": [
+        "One wallet = one private workspace. Paid endpoints derive the workspace from the PAYER wallet; SIWX endpoints from the SIGNING wallet. Use the same wallet for paid stores and SIWX reads so they share one workspace. Never send a workspace field.",
+        "Auto-provisioning: sessions and peers are created on first reference (by /messages or /sessions/peers/add). There is no explicit create call.",
+        "representation, card, and session summaries are generated ASYNCHRONOUSLY by Honcho's reasoning — they return empty string / null immediately after a store (verified) and fill in later. This is expected, not an error.",
+        "chat DOES reason over freshly-stored messages even before representation/card exist (verified: an accurate synthesis returned seconds after storing).",
+        "Paid ops advertise both x402 and MPP (Tempo); only the x402 route is used here. The 402 challenge is a standard, decodable x402 v2 payload (this resolved the earlier 'no decodable accepts' block)."
+      ],
+      "guide": "Memory loop: (1) after each turn, POST /api/honcho/messages with {session, messages:[{peer,content}...]} — keyless x402 on Base, ~$0.001 for a short turn; it auto-creates the session and peers. (2) When personalization helps, POST /api/honcho/chat with {peer, query, reasoning_level} to get a reasoned answer from that peer's memory ($0.001–$0.50 by depth; 'low' $0.01 default). (3) Reads are free with a SIWX identity: /search (semantic), /context (LLM-ready bundle), /representation and /card (learned profile — async, may be empty at first), and the /sessions + /peers listings. Reuse one wallet so everything lands in the same private workspace.",
+      "costObservedUsd": 0.011,
+      "needsApproval": false
+    },
+    "endpoints": [
+      {
+        "provider": "Honcho",
+        "name": "Store Messages",
+        "url": "https://agentcash.honcho.dev/api/honcho/messages",
+        "method": "POST",
+        "priceDisplay": "$0.0010",
+        "priceUsd": 0.001,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "base",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "1000",
+            "payTo": "0xf7ff980480F48743E44befFA38D13C7A938F2e04"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "Honcho",
+        "name": "Query Memory (Chat)",
+        "url": "https://agentcash.honcho.dev/api/honcho/chat",
+        "method": "POST",
+        "priceDisplay": "$0.01",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "base",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0xf7ff980480F48743E44befFA38D13C7A938F2e04"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "Honcho",
+        "name": "Semantic Search",
+        "url": "https://agentcash.honcho.dev/api/honcho/search",
+        "method": "POST",
+        "priceDisplay": "Free",
+        "priceUsd": 0.001,
+        "networks": [],
+        "accepts": [],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "Honcho",
+        "name": "List Messages",
+        "url": "https://agentcash.honcho.dev/api/honcho/messages/list",
+        "method": "POST",
+        "priceDisplay": "Free",
+        "priceUsd": 0.001,
+        "networks": [],
+        "accepts": [],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "Honcho",
+        "name": "Get Session Context",
+        "url": "https://agentcash.honcho.dev/api/honcho/context",
+        "method": "POST",
+        "priceDisplay": "Free",
+        "priceUsd": 0.001,
+        "networks": [],
+        "accepts": [],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "Honcho",
+        "name": "Get Peer Representation",
+        "url": "https://agentcash.honcho.dev/api/honcho/representation",
+        "method": "POST",
+        "priceDisplay": "Free",
+        "priceUsd": 0.001,
+        "networks": [],
+        "accepts": [],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "Honcho",
+        "name": "Get Peer Card",
+        "url": "https://agentcash.honcho.dev/api/honcho/card",
+        "method": "POST",
+        "priceDisplay": "Free",
+        "priceUsd": 0.001,
+        "networks": [],
+        "accepts": [],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "Honcho",
+        "name": "Set Peer Card",
+        "url": "https://agentcash.honcho.dev/api/honcho/card/set",
+        "method": "POST",
+        "priceDisplay": "Free",
+        "priceUsd": 0.001,
+        "networks": [],
+        "accepts": [],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "Honcho",
+        "name": "Get Session Summaries",
+        "url": "https://agentcash.honcho.dev/api/honcho/sessions/summaries",
+        "method": "POST",
+        "priceDisplay": "Free",
+        "priceUsd": 0.001,
+        "networks": [],
+        "accepts": [],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "Honcho",
+        "name": "List Peers",
+        "url": "https://agentcash.honcho.dev/api/honcho/peers",
+        "method": "POST",
+        "priceDisplay": "Free",
+        "priceUsd": 0.001,
+        "networks": [],
+        "accepts": [],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "Honcho",
+        "name": "List Peer's Sessions",
+        "url": "https://agentcash.honcho.dev/api/honcho/peers/sessions",
+        "method": "POST",
+        "priceDisplay": "Free",
+        "priceUsd": 0.001,
+        "networks": [],
+        "accepts": [],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "Honcho",
+        "name": "List Sessions",
+        "url": "https://agentcash.honcho.dev/api/honcho/sessions",
+        "method": "POST",
+        "priceDisplay": "Free",
+        "priceUsd": 0.001,
+        "networks": [],
+        "accepts": [],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "Honcho",
+        "name": "List Session Peers",
+        "url": "https://agentcash.honcho.dev/api/honcho/sessions/peers",
+        "method": "POST",
+        "priceDisplay": "Free",
+        "priceUsd": 0.001,
+        "networks": [],
+        "accepts": [],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "Honcho",
+        "name": "Add Peers to Session",
+        "url": "https://agentcash.honcho.dev/api/honcho/sessions/peers/add",
+        "method": "POST",
+        "priceDisplay": "Free",
+        "priceUsd": 0.001,
+        "networks": [],
+        "accepts": [],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "Honcho",
+        "name": "Remove Peers from Session",
+        "url": "https://agentcash.honcho.dev/api/honcho/sessions/peers/remove",
+        "method": "POST",
+        "priceDisplay": "Free",
+        "priceUsd": 0.001,
+        "networks": [],
+        "accepts": [],
+        "status": "active",
+        "needsApproval": false,
+        "async": false
+      },
+      {
+        "provider": "Honcho",
+        "name": "Delete Session",
+        "url": "https://agentcash.honcho.dev/api/honcho/sessions/delete",
+        "method": "POST",
+        "priceDisplay": "Free",
+        "priceUsd": 0.001,
+        "networks": [],
+        "accepts": [],
+        "status": "active",
+        "needsApproval": true,
+        "async": false
+      }
+    ]
+  }
+]

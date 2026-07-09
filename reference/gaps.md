@@ -1,0 +1,49 @@
+# gaps.md — what the catalog still can't do (hunt-list + fallbacks)
+
+A "gap" is **data or an action the model genuinely lacks** — NOT something the base model already does.
+Translating a menu photo, scoring review sentiment, knowing plug types, currency arithmetic → **not gaps**
+(the model does them free; see `knowledge.md` §0). For each real gap: use the fallback, or hunt an x402
+endpoint and add it via `scripts/build-catalog.mjs` (registry) or as a baked constant (Bazaar/Apify-style).
+
+## Real gaps that remain
+- **Cash-fare flight BOOKING (order-create) — the one big gap.** `stabletravel-google-flights-booking` is
+  read-only deep-links; the Apify flight scrapers are data-only; Travala is hotels-only. **Fallback:** hand the
+  user the booking deep-link + `stabletravel-amadeus-check-in-links`. *Hunt: a bookable flight x402 endpoint.*
+- **Hourly + climate-normals weather; severe-weather / AQI / marine / UV.** Current catalog is current + daily
+  only. **Fallback:** daily forecast + model climate knowledge for "when to go".
+- **Official travel-advisory / visa / entry-requirements feed.** No authoritative source. **Fallback:**
+  `stableenrich-news` geo search + the model's knowledge (flag "verify with the consulate").
+- **Dedicated events / "what's on" + strike tracker** with dates/venues/tickets. **Fallback:** `stableenrich-news`
+  + `serper-news` keyword+location.
+- **In-flow retail CHECKOUT for gear** (adaptor/luggage) that ships to an address. `channel3-commerce-product-search`
+  gives buy-links only. **Fallback:** surface the buy-link; eSIM buy *is* solved (Bitrefill). *Hunt: an order+ship endpoint.*
+- **Restaurant reservations** (Resy endpoints are dead/need a linked account) and **rental car** search. **Fallback:**
+  surface booking links from places/activities search.
+- **Scheduled (timed) SMS/calls.** The *channel* is solved (AgentPhone SMS + AI call, user-confirmed), but there's
+  no timed-delivery primitive. **Fallback:** the agent fires the AgentPhone call/SMS at the right time itself.
+- **Static / navigable map RENDERING.** `gpt-image-2` makes an *illustrative* map; `keyronne` returns a polyline,
+  not an image. **Fallback:** illustrative image + the routing polyline/text. *Hunt: a static-maps tile API.*
+- **Calendar `.ics` invite; consumer parcel shipping rates/labels; general (non-JP) address validation** — only
+  needed if shipping physical goods. **Fallback:** none baked; hunt if the trip needs them.
+
+## Already solved (do NOT re-hunt these)
+- **Routing / distance / ETA** → `keyronne-directions-travel-times` ($0.01 Base) + `relaystation-route` (Bazaar,
+  `ground-transport.json`).
+- **TikTok/Instagram/YouTube keyword & location discovery** → Apify direct x402 (`apify.json`:
+  `clockworks~tiktok-hashtag-scraper`, `apidojo~tiktok-location-scraper`, `apify~instagram-hashtag-scraper`,
+  `streamers~youtube-scraper` + transcripts).
+- **OTA lodging breadth (Airbnb / Booking.com)** → Apify (`voyager~booking-scraper`, `tri_angle~airbnb-scraper`)
+  for discovery; book via Travala/StableTravel or the listing deep-link.
+- **Review sentiment aggregation** → fetch raw reviews (Tripadvisor, Google Maps, Apify review actors); the model
+  scores sentiment **free**.
+- **Timezone-by-coordinate; menu/sign photo OCR translation; retail/card FX with fees** → the model handles these
+  free (local-time inference, multimodal photo translation, applying a typical FX spread). Not endpoints.
+- **eSIM buy** → `stablegiftcards-buy` (Bitrefill), user-confirmed working.
+- **Card-required bookings paid in USDC** → the Laso card-funds-the-booking pattern (`wallet-payment.md`), or Travala.
+
+## How to add a hunted endpoint
+- If it's in the **MasterKey registry**: add its service id to the right capability in `SELECTION` inside
+  `scripts/build-catalog.mjs`, then re-run the script.
+- If it's a **Bazaar / direct x402** endpoint: bake it as a constant (like `MANUAL_ROUTING` / `APIFY` in the
+  build script) with its `accepts[]` from the 402 challenge, then re-run.
+- Update `VERSION` and note it in `knowledge.md`.
