@@ -29,7 +29,7 @@ const SKIP_LIVE = new Set([
   'agentphone-messaging-calls', 'ai-phone-call', 'stablemerch-custom-merch',
   'stabletravel-hotel-booking', 'stabletravel-transfers-book', 'stabletravel-transfers-cancel',
   'laso-finance-order-usa-prepaid-card', 'laso-finance-order-international-prepaid-card',
-  'stablegiftcards-buy', 'agentphone-number',
+  'stablegiftcards-buy', 'agentphone-number', 'purch-buy',
 ]);
 // Valid minimal bodies so a POST probe reaches the 402 (not a body-validation 400).
 const BODY = {

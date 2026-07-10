@@ -25,12 +25,24 @@ authoring. Each answer **unlocks a specific set of paid calls** — so you only 
 3. **Budget posture?** (shoestring / mid / no cap — book the best)
 4. **Home base + currency?** (confirm origin city/airport + home currency)
 
-## Call 3 — prep & deliverables (branch on trip type)
-1. **Handle prep too?** *(multi-select)* — check outlet/plug type & source an adaptor · buy a destination
-   eSIM/data plan · fund a prepaid card for the trip · generate a spoken phrasebook
-2. **Book, or just plan?** (plan only / book hotel+transfers when I approve / book everything bookable with my approval)
-3. **How do you want the final plan?** *(multi-select)* — hosted PDF itinerary · illustrated map + day-by-day
-   calendar image · emailed to me · SMS/phone reminders before the flight
+## Call 3 — prep & deliverables (ALWAYS ask; don't silently drop options)
+> Surface **all** of these — especially **gear-buy** and **reminders**, which are easy to forget. They're
+> valuable even for a "plan only" trip. Reason about the destination first (plug type/voltage, climate,
+> connectivity) so the gear suggestions are specific.
+1. **Want me to buy the travel gear you'll need?** *(multi-select — real purchases via Purch, confirm each)* —
+   power/plug adaptor (only if the plug type actually differs) · portable charger / power bank · pocket wifi or
+   other connectivity · packing/comfort items (cubes, walking shoes) · nothing, just tell me what to bring
+2. **Other prep?** *(multi-select)* — buy a destination **eSIM/data plan** · fund a **prepaid card** for the trip ·
+   generate a **spoken phrasebook** (audio you can play)
+3. **Reminders before you fly?** *(multi-select)* — **flight-reminder SMS** · an **AI wake-up call** before
+   departure · none
+4. **Book, or just plan?** (plan only / book hotel+transfers when I approve / book everything bookable with my approval)
+5. **How do you want the final plan?** *(multi-select)* — hosted PDF itinerary · illustrated map + day-by-day
+   calendar image · emailed to me
+
+> Note on gear: even when **no adaptor is needed** (e.g. US↔Japan are both Type A), still offer *other* useful
+> gear — don't skip the question. If the user says yes, use Purch (search → confirm exact item + total +
+> shipping address → buy). Plug/voltage/climate reasoning itself is free (no endpoint).
 
 ## Answer → which paid calls unlock
 | Answer | Unlocks (endpoints file) |
@@ -43,15 +55,15 @@ authoring. Each answer **unlocks a specific set of paid calls** — so you only 
 | **Judge good → social / hidden gems** | Reddit/X + Apify TikTok/IG/YouTube (`social-sentiment` + `apify`) |
 | **Budget posture** | sets confirm-gate ceilings + FX budgeting (`fx-budget`) |
 | **Home base + currency** | origin airport for flight search; FX pair (`fx-budget`) |
-| **Prep → adaptor** | gear search (`prepare-buy`; plug/voltage is free model reasoning) |
+| **Buy gear → any item** | `purch-search`/`purch-shop` (find) → `purch-buy` 🔴 buy+ship (`prepare-buy`; plug/voltage/climate reasoning is free) |
 | **Prep → eSIM** | Bitrefill eSIM buy 🔴 (`prepare-buy`) |
 | **Prep → prepaid card** | Laso card 🔴 (`prepare-buy`) — also enables card-funded bookings |
-| **Prep → phrasebook** | TTS 🟢 (`deliverables`; translate the phrases free) |
+| **Prep → phrasebook** | TTS 🟢 → host on StableUpload → deliver playable links + table in PDF (`deliverables`; translate the phrases free) |
+| **Reminders → SMS / wake-up call** | AgentPhone SMS + AI call 🔴 (`deliverables`); StablePhone/Textbelt fallback |
 | **Book → hotel/transfers** | `lodging` booking 🔴 (Travala or StableTravel + Laso card) |
 | **Deliver → PDF** | Markdown/HTML→PDF + StableUpload host (`deliverables`) |
 | **Deliver → map/calendar** | GPT Image 2 / Nano Banana (`deliverables`) |
 | **Deliver → email** | AgentMail/StableEmail 🔴 (`deliverables`; reuse owned inbox) |
-| **Deliver → reminders** | AgentPhone SMS + AI call 🔴 (`deliverables`) |
 
 ## Worked example
 > *"Can you plan a trip to Tokyo for me, I'm based in San Francisco."*

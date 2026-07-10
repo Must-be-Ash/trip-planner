@@ -1011,6 +1011,39 @@
         "priceDisplay": "Free",
         "networks": [],
         "registryStatus": "hidden"
+      },
+      {
+        "id": "purch-search",
+        "name": "Purch Product Search",
+        "verified": false,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.010",
+        "networks": [
+          "Solana"
+        ],
+        "registryStatus": "purch"
+      },
+      {
+        "id": "purch-shop",
+        "name": "Purch AI Shopping Assistant",
+        "verified": false,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.100",
+        "networks": [
+          "Solana"
+        ],
+        "registryStatus": "purch"
+      },
+      {
+        "id": "purch-buy",
+        "name": "Purch Buy + Ship",
+        "verified": false,
+        "confirmGate": "RED",
+        "priceDisplay": "= product total",
+        "networks": [
+          "Solana"
+        ],
+        "registryStatus": "purch"
       }
     ],
     "deliverables": [

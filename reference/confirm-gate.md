@@ -22,8 +22,10 @@ Anything **outward, irreversible, or that spends on a real good/reservation**. T
 `needsApproval: true` / `confirmGate: "RED"` in the catalog. The RED set:
 - **Bookings:** hotel (`stabletravel-hotel-booking`), transfer book/cancel (`stabletravel-transfers-book`,
   `stabletravel-transfers-cancel`), and any Travala `travala_book`/`travala_cancel_booking`.
-- **Purchases:** gift-card/eSIM buy (`stablegiftcards-buy`), prepaid-card funding (`laso-finance-order-usa-prepaid-card`,
-  `laso-finance-order-international-prepaid-card` — **the x402 charge equals the card value**), custom merch (`stablemerch-custom-merch`).
+- **Purchases:** travel-gear buy+ship (`purch-buy` — **x402 charge equals the product total incl. tax/shipping**;
+  needs shipping address + email), gift-card/eSIM buy (`stablegiftcards-buy`), prepaid-card funding
+  (`laso-finance-order-usa-prepaid-card`, `laso-finance-order-international-prepaid-card` — **the x402 charge
+  equals the card value**), custom merch (`stablemerch-custom-merch`).
 - **Sends / calls:** email (`agentmail-send-email`, `stableemail-send`), SMS (`send-sms`, and `agentphone-messaging-calls`
   → AgentPhone `/x402/v1/messages`), AI phone call (`ai-phone-call`, and `agentphone-messaging-calls` → `/x402/v1/calls`).
 - **Provisioning billable resources:** phone number (`agentphone-number`, `buy-phone-number`), paid inbox

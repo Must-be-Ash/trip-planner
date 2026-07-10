@@ -115,8 +115,14 @@ Pipeline: **autocomplete/list → offers-search → offer-detail → book**.
 - **Prepaid card (and the card-funds-booking trick):** `laso-finance-order-usa-prepaid-card` (🔴; x402 charge =
   card value) → `-get-card-data` (Bearer from `-auth`, free) for PAN/CVV; `-order-international-prepaid-card` for
   non-US; `-merchant-acceptance-search` to check acceptance first.
-- **Travel gear (discovery only):** `channel3-commerce-product-search` ($0.01) + `stableninja-retail-products`
-  ($0.01) return buy-links, **not** an in-flow order (see `gaps.md`). Plug/voltage is free model knowledge.
+- **Travel gear — search AND buy+ship (Purch):** `purch-search` ($0.01, keyword) or `purch-shop` ($0.10, NL
+  assistant) to find a real Amazon/Shopify product → **`purch-buy` (🔴, USDC = product total incl. tax/shipping)**
+  to actually order it to the user's address. Solana USDC. **Beats free + fills the old gap:** the agent doesn't
+  just link a product, it buys it. Flow: reason about what gear the destination needs (plug/voltage/climate —
+  free), search, show the pick + exact total + shipping address, confirm, then buy. **Even when no adaptor is
+  needed (e.g. US↔Japan both Type A), still proactively offer other useful gear** (power bank, pocket wifi,
+  packing cubes, walking shoes). `channel3-commerce-product-search` / `stableninja-retail-products` remain as
+  buy-link-only alternates.
 - **Custom merch:** `stablemerch-custom-merch` (🔴, ships a real product).
 
 ## §11. Deliverables (`deliverables.json`)
@@ -127,8 +133,17 @@ Pipeline: **autocomplete/list → offers-search → offer-detail → book**.
   ($0.005, full CSS). Output is binary (base64 via paid_fetch — strip prefix, decode).
 - **Shareable link:** `stableupload-file-upload` ($0.005–2.00) — host the PDF/image, hand over `publicUrl`.
   ⚠️ URLs expire (7d–6mo, renewable).
-- **Spoken phrasebook / narration:** `text-to-speech-elevenlabs` ($0.001+/char) → hosted MP3; `voices-free`
-  (free) to pick a voice; `openai-tts` alt. (Translate the phrases yourself — free.)
+- **Spoken phrasebook (a real, playable deliverable — do it fully):** this is *not* just "call TTS". Build it:
+  1. Pick ~8–12 essential phrases for the trip (greetings, please/thank-you, "how much?", "where is…?", allergy/
+     emergency, "check please", station/taxi). **Translate them yourself — free.** For each, produce **English +
+     native script + romaji** (e.g. すみません / *sumimasen* / "excuse me").
+  2. TTS the phrases with **`text-to-speech-elevenlabs`** using a **multilingual** model and the **native script**
+     (not romaji) so pronunciation is correct — OpenAI TTS mispronounces non-English (see `pitfalls.md`). One
+     combined MP3 narrating all phrases is usually best; `voices-free` (free) to pick a voice.
+  3. **Host the MP3 on `stableupload-file-upload`** and give the user a **playable link** — an un-hosted base64
+     blob is not a deliverable. Put the phrase **table (English/script/romaji)** in the PDF next to the audio link.
+  4. Tell the user what it is: "an audio file of key <language> phrases so you can *hear* the pronunciation, plus
+     a printable table in your PDF." (This is the piece the first run planned but never delivered — always host + link it.)
 - **Email the plan (🔴):** `agentmail-send-email` ($0.01, supports attachments — attach the PDF) — reuse the
   **owned inbox** (`wallet-payment.md`); `stableemail-send` ($0.02, keyless, no attach). Don't mint a new inbox.
 - **Reminders (🔴):** **AgentPhone** is the unified channel — `agentphone-number` (provision once) then SMS via

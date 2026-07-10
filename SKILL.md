@@ -68,10 +68,19 @@ Geocode if needed (`x402node-geocoding-forward`). Then, per `knowledge.md`:
   **FX** for the budget.
 Present the itinerary with sources; keep a running spend tally.
 
-### 3. Prepare (mixed)
-Plug/voltage note = free reasoning. Then (🔴, confirm each): buy a destination **eSIM** (Bitrefill), fund a
-**prepaid card** (Laso) if needed for bookings, and generate a **spoken phrasebook** (TTS 🟢 — translate the
-phrases yourself).
+### 3. Prepare (mixed) — offer the whole prep set, don't skip items
+First reason (free) about what the destination needs: plug type/voltage, climate, connectivity. Then, from the
+user's Call-3 choices:
+- **Buy the gear they need (🔴, via Purch):** `purch-search`/`purch-shop` to find a real product → show the pick
+  + exact total + shipping address → on confirm, `purch-buy` (ships it; USDC = product total). **Even if no
+  adaptor is needed (e.g. US↔Japan both Type A), still proactively offer other gear** (power bank, pocket wifi,
+  packing cubes, shoes) — don't silently skip it.
+- **eSIM** (🔴, Bitrefill) · **prepaid card** (🔴, Laso — also enables card-funded bookings).
+- **Spoken phrasebook** (🟢): translate ~8–12 key phrases yourself (English + native script + romaji), TTS them
+  with `text-to-speech-elevenlabs` (multilingual, native script), **host the MP3** and deliver the playable link
+  + the phrase table in the PDF. Tell the user it's audio to *hear* the pronunciation.
+- **Reminders** (🔴): if they asked, set up a flight-reminder **SMS** and/or an **AI wake-up call** via AgentPhone
+  (you fire it at the right time). Offer this even for a "plan only" trip.
 
 ### 4. Book (🔴 RED — confirm every one)
 Prefer **Travala** for hotels (USDC, no card) when its connector is present; else **StableTravel** hotel/transfer

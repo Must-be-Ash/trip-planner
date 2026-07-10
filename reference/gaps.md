@@ -15,8 +15,6 @@ endpoint and add it via `scripts/build-catalog.mjs` (registry) or as a baked con
   `stableenrich-news` geo search + the model's knowledge (flag "verify with the consulate").
 - **Dedicated events / "what's on" + strike tracker** with dates/venues/tickets. **Fallback:** `stableenrich-news`
   + `serper-news` keyword+location.
-- **In-flow retail CHECKOUT for gear** (adaptor/luggage) that ships to an address. `channel3-commerce-product-search`
-  gives buy-links only. **Fallback:** surface the buy-link; eSIM buy *is* solved (Bitrefill). *Hunt: an order+ship endpoint.*
 - **Restaurant reservations** (Resy endpoints are dead/need a linked account) and **rental car** search. **Fallback:**
   surface booking links from places/activities search.
 - **Scheduled (timed) SMS/calls.** The *channel* is solved (AgentPhone SMS + AI call, user-confirmed), but there's
@@ -27,6 +25,9 @@ endpoint and add it via `scripts/build-catalog.mjs` (registry) or as a baked con
   needed if shipping physical goods. **Fallback:** none baked; hunt if the trip needs them.
 
 ## Already solved (do NOT re-hunt these)
+- **In-flow gear CHECKOUT + ship** → **Purch** (`prepare-buy.json`: `purch-search`/`purch-shop` → `purch-buy`)
+  buys a real Amazon/Shopify product and ships it (USDC on Solana, charge = product total). Closes the old
+  buy-link-only gap.
 - **Routing / distance / ETA** → `keyronne-directions-travel-times` ($0.01 Base) + `relaystation-route` (Bazaar,
   `ground-transport.json`).
 - **TikTok/Instagram/YouTube keyword & location discovery** → Apify direct x402 (`apify.json`:

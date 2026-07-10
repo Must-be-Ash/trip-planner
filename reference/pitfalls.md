@@ -78,6 +78,15 @@ endpoints **charge even on a bad request**. The full per-endpoint quirks live in
 - **`agentphone-messaging-calls` (SMS)** — outbound SMS needs the AgentPhone account's **10DLC registration**
   (off-x402, one-time). User-confirmed resolved; if a fresh account, expect a 403 until 10DLC is done.
 
+## 8b. Purch (gear buy) + phrasebook TTS
+- **Purch is Solana USDC only.** `purch-search` $0.01, `purch-shop` $0.10 (NL assistant — use search unless the
+  query is loose), `purch-buy` **dynamic = product total incl. tax/shipping** (not a flat fee).
+- **`purch-buy` requires `shippingAddress` (name, line1, city, state, postalCode, country ISO-2) + `email`.**
+  Amazon: `asin` or `productUrl`. Shopify: `productUrl` + `variantId`. It's 🔴 — confirm item + total + address first.
+- **Phrasebook pronunciation trap:** OpenAI TTS mispronounces non-English. For a foreign-language phrasebook use
+  **`text-to-speech-elevenlabs` with a multilingual model + the native script** (not romaji). Then **host the MP3**
+  (`stableupload-file-upload`) and deliver the link — a base64 blob in the response is not a deliverable.
+
 ## 9. Read-only / not-what-it-says
 - **`stabletravel-google-flights-booking`** — read-only deep-links; does **not** book (see `gaps.md`).
 - **`channel3-commerce-product-search` / `stableninja-retail-products`** — return **buy-links**, not an in-flow

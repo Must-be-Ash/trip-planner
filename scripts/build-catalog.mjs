@@ -214,6 +214,86 @@ const MANUAL_ROUTING = [
 ];
 
 // ---------------------------------------------------------------------------
+// Purch — real gear PURCHASE + ship (Amazon/Shopify) via x402 on Solana. Not in the MasterKey registry;
+// hand-authored from api.purch.xyz OpenAPI. Fills the in-flow gear-checkout gap. Solana USDC only.
+// ---------------------------------------------------------------------------
+const USDC_SOL = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
+const PURCH_PAYTO_SOL = '8LiXrHC61irY8qwj6qevoiRXxYfrTgSaHVbm8rav6HT2';
+const MANUAL_COMMERCE = [
+  {
+    id: 'purch-search', name: 'Purch Product Search', provider: 'Purch', kind: 'api',
+    category: 'ecommerce', subcategory: 'storefront-commerce-apis',
+    description: 'Search real, buyable Amazon/Shopify products by keyword (with price filters). Returns products with title/price/ASIN so you can then BUY + ship one via /x402/buy.',
+    pricing: { headline: '$0.010', amount: 0.01, currency: 'USD', unit: 'per call' },
+    confirmGate: 'GREEN', status: 'active', registryStatus: 'purch', verified: false, source: 'purch',
+    usage: {
+      callShape: 'GET https://api.purch.xyz/x402/search?q=universal%20travel%20adapter&priceMin=10&priceMax=40',
+      inputExample: { q: 'universal travel adapter', priceMax: 40 },
+      outputShape: 'products[].{title, price, currency, asin, source(amazon|shopify), productUrl, imageUrl}, totalResults, page, hasMore',
+      quirks: ['Solana USDC only ($0.01).', 'Keyword search; use /x402/shop for natural-language assistant ($0.10).', 'Capture asin (Amazon) or productUrl+variantId (Shopify) to feed /x402/buy.'],
+      guide: 'Find a buyable product. GET with q (+ optional priceMin/priceMax). Pay ~$0.01 USDC on Solana. Take the asin/productUrl of the chosen item into purch-buy.',
+      resultPull: 'sync', auth: 'none',
+    },
+    endpoints: [{
+      provider: 'Purch', url: 'https://api.purch.xyz/x402/search', method: 'GET',
+      priceDisplay: '$0.010', priceUsd: 0.01, networks: ['Solana'],
+      accepts: [{ scheme: 'exact', network: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp', asset: USDC_SOL, amount: '10000', payTo: PURCH_PAYTO_SOL }],
+      status: 'active', needsApproval: false,
+    }],
+  },
+  {
+    id: 'purch-shop', name: 'Purch AI Shopping Assistant', provider: 'Purch', kind: 'api',
+    category: 'ecommerce', subcategory: 'storefront-commerce-apis',
+    description: 'Natural-language shopping assistant: describe the gear you need (e.g. "universal travel adapter for Japan under $30") and get a curated set of buyable products back.',
+    pricing: { headline: '$0.100', amount: 0.1, currency: 'USD', unit: 'per call' },
+    confirmGate: 'GREEN', status: 'active', registryStatus: 'purch', verified: false, source: 'purch',
+    usage: {
+      callShape: 'POST https://api.purch.xyz/x402/shop  body {"message":"universal travel adapter for Japan under $30","context":{"priceRange":{"max":30}}}',
+      inputExample: { message: 'comfortable walking shoes for a week in Tokyo under $120' },
+      outputShape: 'reply (assistant text), products[].{asin,title,price,currency,source}',
+      quirks: ['Solana USDC only ($0.10 — 10x a plain search).', 'Body requires `message`; optional `context.priceRange`/`preferences`.', 'Prefer purch-search ($0.01) when you already know the query.'],
+      guide: 'Use when the user describes gear loosely. POST {message, context?}; pay ~$0.10 USDC on Solana. Pick a product and feed its asin/productUrl into purch-buy.',
+      resultPull: 'sync', auth: 'none',
+    },
+    endpoints: [{
+      provider: 'Purch', url: 'https://api.purch.xyz/x402/shop', method: 'POST',
+      priceDisplay: '$0.100', priceUsd: 0.1, networks: ['Solana'],
+      accepts: [{ scheme: 'exact', network: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp', asset: USDC_SOL, amount: '100000', payTo: PURCH_PAYTO_SOL }],
+      status: 'active', needsApproval: false,
+    }],
+  },
+  {
+    id: 'purch-buy', name: 'Purch Buy + Ship', provider: 'Purch', kind: 'api',
+    category: 'ecommerce', subcategory: 'storefront-commerce-apis',
+    description: 'BUY a real Amazon/Shopify product and ship it to an address — paid in USDC. The x402 charge EQUALS the product total (incl. tax/shipping). Outward/irreversible: real purchase.',
+    pricing: { headline: '= product total', amount: null, currency: 'USD', unit: 'per order', dynamic: true },
+    confirmGate: 'RED', status: 'active', registryStatus: 'purch', verified: false, source: 'purch',
+    usage: {
+      callShape: 'POST https://api.purch.xyz/x402/buy  body {asin OR productUrl (+variantId for Shopify), shippingAddress:{name,line1,line2?,city,state,postalCode,country(ISO-2),phone?}, email}',
+      inputExample: { asin: 'B0CXYZ1234', shippingAddress: { name: 'Jane Doe', line1: '123 Main St', city: 'San Francisco', state: 'CA', postalCode: '94102', country: 'US' }, email: 'jane@example.com' },
+      outputShape: 'orderId, status, product.{title,imageUrl,price}, totalPrice',
+      quirks: [
+        'RED / needsApproval — this SPENDS REAL MONEY on a real good and ships it. Confirm the exact total + address + item with the user first.',
+        'The x402 402 quote (and the charge) EQUALS the product total incl. tax/shipping — not a flat fee.',
+        'shippingAddress + email are REQUIRED; Amazon needs asin OR productUrl; Shopify needs productUrl + variantId.',
+        'Solana USDC only. country is ISO 3166-1 alpha-2 (e.g. US, JP).',
+      ],
+      guide: 'Buy + ship a chosen product. Get the asin/productUrl from purch-search/shop, collect the shipping address + email from the user, show the confirm-gate summary (item + total + address), and only on explicit yes POST /x402/buy. The USDC charge equals the product total.',
+      resultPull: 'sync', auth: 'none', needsApproval: true,
+    },
+    endpoints: [{
+      provider: 'Purch', url: 'https://api.purch.xyz/x402/buy', method: 'POST',
+      priceDisplay: '= product total', priceUsd: null, networks: ['Solana'],
+      accepts: [{ scheme: 'exact', network: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp', asset: USDC_SOL, amount: 'dynamic', payTo: PURCH_PAYTO_SOL }],
+      status: 'active', needsApproval: true,
+    }],
+  },
+];
+
+// capability -> hand-authored (non-registry) services appended after the registry selection
+const MANUAL = { 'ground-transport': MANUAL_ROUTING, 'prepare-buy': MANUAL_COMMERCE };
+
+// ---------------------------------------------------------------------------
 // T1a — Apify direct-x402 scraper layer (§6.5). Not in the registry; hand-authored.
 // ---------------------------------------------------------------------------
 const APIFY = {
@@ -379,8 +459,8 @@ function main() {
       services.push(transform(svc, subcat));
     }
 
-    // T1b — append Bazaar routing endpoints to ground-transport
-    if (capability === 'ground-transport') services.push(...MANUAL_ROUTING);
+    // append hand-authored (non-registry) services: Bazaar routing (ground-transport), Purch (prepare-buy)
+    if (MANUAL[capability]) services.push(...MANUAL[capability]);
 
     fs.writeFileSync(path.join(OUT, `${capability}.json`), JSON.stringify(services, null, 2) + '\n');
     totalServices += services.length;
