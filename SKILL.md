@@ -56,6 +56,31 @@ Ask Call 1 (dates / length / who / cash-or-miles), Call 2 (vibe / how-to-judge-g
 currency), Call 3 (prep? / book-or-just-plan? / deliverables?). Each answer unlocks a specific set of paid calls.
 Then **echo the plan + the estimated x402 spend** and get a go-ahead before spending.
 
+### 1.5. Build a deliverables checklist — right after Call 3, before any spending
+The parallel nature of 10+ API calls makes it easy to drop an item that was agreed upon (this is exactly how the
+phrasebook got dropped once). So, **before Step 2**, translate the user's Call-3 answers into a numbered checklist
+in your response and keep it visible through the whole run. Rules:
+- **One line per agreed item**, tagged 🟢/🔴. Mark ✅ **only when the item is fully DONE for the user** — file
+  uploaded + public link confirmed, email sent, MP3 hosted — **not** when the API merely returned.
+- If an item **can't be completed** (endpoint down, a known gap in `gaps.md`, user declines), mark it ⚠️ with the
+  reason and tell the user — **never silently drop it, and never tick an item you didn't actually deliver.**
+- **Do not close the session until every box is ✅ or ⚠️.** The Step 6 receipt is this checklist, resolved.
+
+Example (adapt to what the user actually requested):
+```
+Deliverables checklist
+[ ] 1. Flights — 3-window price comparison (🟢)
+[ ] 2. Weather forecast for the dates (🟢)
+[ ] 3. Google Maps + Tripadvisor reviews (🟢)
+[ ] 4. Reddit/social signal (🟢)
+[ ] 5. Gear the user asked to buy (🔴 Purch — confirm each)
+[ ] 6. Illustrated tourism map image (🟢) → MUST upload to StableUpload
+[ ] 7. Spoken phrasebook — 8-12 phrases, native-script TTS, each MP3 hosted, table in PDF (🟢)
+[ ] 8. Reminders: flight SMS / AI wake-up call (🔴, if requested)
+[ ] 9. PDF itinerary incl. phrase table → MUST upload to StableUpload
+[ ] 10. Email to user (🔴 — with the hosted links)
+```
+
 ### 2. Plan (🟢 GREEN — auto, cheapest-first)
 Geocode if needed (`x402node-geocoding-forward`). Then, per `knowledge.md`:
 - **Flights:** `stabletravel-google-flights-search` → surface `price_insights` (60-day history → "book now vs
@@ -76,9 +101,14 @@ user's Call-3 choices:
   adaptor is needed (e.g. US↔Japan both Type A), still proactively offer other gear** (power bank, pocket wifi,
   packing cubes, shoes) — don't silently skip it.
 - **eSIM** (🔴, Bitrefill) · **prepaid card** (🔴, Laso — also enables card-funded bookings).
-- **Spoken phrasebook** (🟢): translate ~8–12 key phrases yourself (English + native script + romaji), TTS them
-  with `text-to-speech-elevenlabs` (multilingual, native script), **host the MP3** and deliver the playable link
-  + the phrase table in the PDF. Tell the user it's audio to *hear* the pronunciation.
+- **Spoken phrasebook** (🟢): translate **8–12 key phrases** yourself (English + destination native script +
+  romaji). TTS each phrase with `text-to-speech-elevenlabs` using the **native script as input** (e.g. `すみません`
+  not `sumimasen`) so ElevenLabs produces native-cadence pronunciation, not an anglicised reading. After each
+  call, **upload the MP3 to StableUpload** (short-10mb tier) and record the `publicUrl` — do NOT hand the user
+  a raw BlockRun URL, which may expire. Deliver a table (phrase / native script / romaji / when-to-use /
+  playable-link) **both in chat AND embedded in the PDF**. Tell the user each link is audio to *hear* the
+  pronunciation, not text to read. Mark phrasebook ✅ on the checklist only after all MP3s are hosted and the
+  table is in the PDF draft.
 - **Reminders** (🔴): if they asked, set up a flight-reminder **SMS** and/or an **AI wake-up call** via AgentPhone
   (you fire it at the right time). Offer this even for a "plan only" trip.
 
@@ -94,10 +124,11 @@ itinerary** (`makespdf-markdown-to-pdf`), **host** it (`stableupload-file-upload
 (🔴, confirm): **email** the plan (reuse the owned AgentMail inbox), and schedule an **AgentPhone** flight-reminder
 SMS + AI **wake-up call** (you fire it at the right time).
 
-### 6. Close — itemized receipt
-Show what was spent (data/generation total + each approved purchase) and the contrast: *"A free assistant gives a
-plausible plan; this one is grounded in live prices, real reviews, and JMA forecasts — and it's booked, the eSIM's
-bought, and the PDF's in your inbox."*
+### 6. Close — resolve the checklist + itemized receipt
+**Resolve the Step-1.5 checklist**: every item must be ✅ (with its hosted link/result) or ⚠️ (with the reason) —
+nothing left unmarked or silently dropped. Then show what was spent (data/generation total + each approved
+purchase) and the contrast: *"A free assistant gives a plausible plan; this one is grounded in live prices, real
+reviews, and JMA forecasts — and it's booked, the eSIM's bought, and the PDF's in your inbox."*
 
 ## How to use this folder
 - `reference/manifest.json` — route here first ("read this when…").

@@ -58,7 +58,7 @@ authoring. Each answer **unlocks a specific set of paid calls** — so you only 
 | **Buy gear → any item** | `purch-search`/`purch-shop` (find) → `purch-buy` 🔴 buy+ship (`prepare-buy`; plug/voltage/climate reasoning is free) |
 | **Prep → eSIM** | Bitrefill eSIM buy 🔴 (`prepare-buy`) |
 | **Prep → prepaid card** | Laso card 🔴 (`prepare-buy`) — also enables card-funded bookings |
-| **Prep → phrasebook** | TTS 🟢 → host on StableUpload → deliver playable links + table in PDF (`deliverables`; translate the phrases free) |
+| **Prep → phrasebook** | TTS 🟢 (8–12 phrases, **native-script input**, not romaji) → upload each MP3 to StableUpload short-10mb → deliver playable-link table in chat **and in the PDF** (`deliverables`; translation is free) |
 | **Reminders → SMS / wake-up call** | AgentPhone SMS + AI call 🔴 (`deliverables`); StablePhone/Textbelt fallback |
 | **Book → hotel/transfers** | `lodging` booking 🔴 (Travala or StableTravel + Laso card) |
 | **Deliver → PDF** | Markdown/HTML→PDF + StableUpload host (`deliverables`) |

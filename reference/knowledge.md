@@ -137,13 +137,17 @@ Pipeline: **autocomplete/list → offers-search → offer-detail → book**.
   1. Pick ~8–12 essential phrases for the trip (greetings, please/thank-you, "how much?", "where is…?", allergy/
      emergency, "check please", station/taxi). **Translate them yourself — free.** For each, produce **English +
      native script + romaji** (e.g. すみません / *sumimasen* / "excuse me").
-  2. TTS the phrases with **`text-to-speech-elevenlabs`** using a **multilingual** model and the **native script**
-     (not romaji) so pronunciation is correct — OpenAI TTS mispronounces non-English (see `pitfalls.md`). One
-     combined MP3 narrating all phrases is usually best; `voices-free` (free) to pick a voice.
-  3. **Host the MP3 on `stableupload-file-upload`** and give the user a **playable link** — an un-hosted base64
-     blob is not a deliverable. Put the phrase **table (English/script/romaji)** in the PDF next to the audio link.
-  4. Tell the user what it is: "an audio file of key <language> phrases so you can *hear* the pronunciation, plus
-     a printable table in your PDF." (This is the piece the first run planned but never delivered — always host + link it.)
+  2. TTS with **`text-to-speech-elevenlabs`** (multilingual model, **native-script input** — e.g. `すみません`, not
+     `sumimasen` — so pronunciation is native, not anglicised; OpenAI TTS mispronounces non-English, see
+     `pitfalls.md`). **Default: one MP3 per phrase** so each row gets its own tap-to-hear link (best for a
+     phrasebook). A single combined MP3 is a cheaper fallback (fewer TTS+host calls) when cost matters — mention
+     the tradeoff. `voices-free` (free) to pick a voice.
+  3. **Host each MP3 on `stableupload-file-upload`** (short-10mb tier) and record the `publicUrl` — an un-hosted
+     base64 blob or an expiring BlockRun URL is not a deliverable. 
+  4. Deliver a **table (English / native script / romaji / when-to-use / ▶ playable link)** both **in chat AND
+     embedded in the PDF**. Tell the user each link is audio to *hear* the pronunciation, not text to read. Only
+     tick the checklist item once every MP3 is hosted and the table is in the PDF. (This is the piece the first
+     run planned but never delivered.)
 - **Email the plan (🔴):** `agentmail-send-email` ($0.01, supports attachments — attach the PDF) — reuse the
   **owned inbox** (`wallet-payment.md`); `stableemail-send` ($0.02, keyless, no attach). Don't mint a new inbox.
 - **Reminders (🔴):** **AgentPhone** is the unified channel — `agentphone-number` (provision once) then SMS via
