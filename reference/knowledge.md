@@ -65,8 +65,14 @@ Pipeline: **autocomplete/list → offers-search → offer-detail → book**.
 - **Sequence the itinerary / "is this day feasible":** `keyronne-directions-travel-times` ($0.01, Base) — 2–10
   stops (names or coords), car/bike/foot, per-leg time+distance. **Beats free:** real travel times, not a guess.
   `relaystation-route` is the fallback. Returns a polyline, not a map image (see `gaps.md`).
-- **Live transit (only NYC + Japan):** `nyc-transit-live-subway-nearest` / `-bus-nearest` ($0.02, need lat/lon);
-  `japan-transit-station-search` ($0.001) / `-station-status` ($0.005, rail delays). Other cities → use routing.
+- **Worldwide directions + ETA incl. PUBLIC TRANSIT (Apify):** for real Google/Apple Maps routing in any city
+  (driving, walking, **transit**, turn-by-turn, ETA) use Apify (`apify.json`: `zen-studio~google-maps-directions-api`,
+  `xtracto~gmaps-direction-rute`, `zen-studio~apple-maps-directions-route-api`) and `seemuapps~google-distance-matrix-scraper`
+  for many-to-many travel times (day-feasibility). This goes beyond keyronne (OSM car/bike/foot) and covers the
+  cities without live-transit endpoints. ⚠️ Apify holds ~$1 then refunds ~97%+ within ~1h (see §Apify note below).
+- **Live real-time transit (only NYC + Japan):** `nyc-transit-live-subway-nearest` / `-bus-nearest` ($0.02, need
+  lat/lon); `japan-transit-station-search` ($0.001) / `-station-status` ($0.005, rail delays). Other cities →
+  keyronne (car/walk) or Apify Google Maps directions (transit).
 - **Traffic incidents:** `waze-traffic` ($0.01) for jams/alerts in an area (not turn-by-turn).
 
 ## §5. Places, ratings & review text (`places-reviews.json`)
@@ -160,3 +166,11 @@ Pipeline: **autocomplete/list → offers-search → offer-detail → book**.
 When several endpoints serve one need, prefer in this order: **(1) free** (fx, voices, gift-card search) →
 **(2) cheapest verified** → **(3) next verified** on failure → **(4) needs-review / Apify** only if nothing
 verified fits. Never call a `needsApproval: true` endpoint without going through `confirm-gate.md`.
+
+## §13. Apify billing — hold-then-refund (state this in spend estimates + receipts)
+Apify's direct x402 uses the **`exact`** scheme and **captures a flat ~$1.00 USDC upfront** (the
+`maxTotalChargeUsd` cap; default ~$1), then **auto-refunds the unused portion ~1 hour later — typically 97%+**
+(e.g. pay $1.00 → ~$0.98 back → **net ~$0.02**). An Apify call's *true* cost is only its actual usage — a few
+cents. **Always** set `maxTotalChargeUsd`. When estimating or reporting spend: show the ~$1 hold **and** say
+"≈97%+ auto-refunds within ~1h, so net is a few cents" — never present the raw $1 as the cost, and report Apify
+as **net (after refund)** in the final receipt with a one-line note that the refund lands within the hour.

@@ -28,8 +28,11 @@ endpoint and add it via `scripts/build-catalog.mjs` (registry) or as a baked con
 - **In-flow gear CHECKOUT + ship** → **Purch** (`prepare-buy.json`: `purch-search`/`purch-shop` → `purch-buy`)
   buys a real Amazon/Shopify product and ships it (USDC on Solana, charge = product total). Closes the old
   buy-link-only gap.
-- **Routing / distance / ETA** → `keyronne-directions-travel-times` ($0.01 Base) + `relaystation-route` (Bazaar,
-  `ground-transport.json`).
+- **Routing / distance / ETA / public transit** → `keyronne-directions-travel-times` ($0.01 Base, OSM
+  car/bike/foot) + `relaystation-route` (Bazaar, `ground-transport.json`), **plus Apify Google/Apple Maps
+  directions + distance-matrix** (`apify.json`: `zen-studio~google-maps-directions-api`, `xtracto~gmaps-direction-rute`,
+  `seemuapps~google-distance-matrix-scraper`) for worldwide routing **including public transit** in cities without
+  a live-transit endpoint. (Live real-time arrivals remain NYC + Japan only.)
 - **TikTok/Instagram/YouTube keyword & location discovery** → Apify direct x402 (`apify.json`:
   `clockworks~tiktok-hashtag-scraper`, `apidojo~tiktok-location-scraper`, `apify~instagram-hashtag-scraper`,
   `streamers~youtube-scraper` + transcripts).

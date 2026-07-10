@@ -44,7 +44,9 @@ points to rather than grepping the whole tree. You do **not** need any network t
    request correctly the first time. Always set `maxTotalChargeUsd` on Apify calls.
 7. **Default Base USDC, but any chain is fine.** Prefer Base where offered; use Solana-only endpoints too (all
    wallet paths support Solana). Read each endpoint's `accepts[]` to pick the chain/asset.
-8. **Track spend and show an itemized receipt** at the end — and make the free-vs-paid contrast explicit.
+8. **Track spend and show an itemized receipt** at the end — and make the free-vs-paid contrast explicit. For
+   **Apify** calls, the flat ~$1 hold auto-refunds ~97%+ within ~1h — report Apify **net-after-refund** (a few
+   cents), not the raw $1 hold (`knowledge.md` §13).
 
 ## The workflow
 

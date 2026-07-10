@@ -1269,10 +1269,10 @@
       }
     ],
     "apify": {
-      "note": "Direct x402 on api.apify.com — offline-core, NOT via any MCP. 13,898 x402-enabled actors, all PAY_PER_EVENT.",
+      "note": "Direct x402 on api.apify.com — offline-core, NOT via any MCP. 13,898 x402-enabled actors.",
       "confirmGate": "GREEN",
-      "actorCount": 21,
-      "auth": "x402 via X402-PAYMENT-SIGNATURE header (USDC; treat as Base, confirm chain from the 402 challenge)"
+      "actorCount": 25,
+      "auth": "x402 via X402-PAYMENT-SIGNATURE header (USDC; confirm chain from the 402 challenge)."
     }
   }
 }

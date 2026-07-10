@@ -299,9 +299,14 @@ const MANUAL = { 'ground-transport': MANUAL_ROUTING, 'prepare-buy': MANUAL_COMME
 const APIFY = {
   capability: 'apify',
   source: 'apify-direct-x402',
-  confirmGate: 'GREEN',            // read-only scrapes; but PAY_PER_EVENT -> maxTotalChargeUsd cap is mandatory
-  note: 'Direct x402 on api.apify.com — offline-core, NOT via any MCP. 13,898 x402-enabled actors, all PAY_PER_EVENT.',
-  auth: 'x402 via X402-PAYMENT-SIGNATURE header (USDC; treat as Base, confirm chain from the 402 challenge)',
+  confirmGate: 'GREEN',            // read-only scrapes
+  note: 'Direct x402 on api.apify.com — offline-core, NOT via any MCP. 13,898 x402-enabled actors.',
+  auth: 'x402 via X402-PAYMENT-SIGNATURE header (USDC; confirm chain from the 402 challenge).',
+  paymentModel: {
+    scheme: 'exact',
+    quirk: 'HOLD-THEN-REFUND: Apify captures a flat ~$1.00 USDC upfront (the maxTotalChargeUsd cap; default ~$1), then AUTO-REFUNDS the unused portion ~1 hour later. Typical refund is 97%+ — e.g. you pay $1.00, get ~$0.98 back, net ~$0.02. So the true cost is only actual usage, not $1.',
+    reporting: 'When estimating or reporting spend for an Apify call, show the ~$1 hold AND state that ~97%+ auto-refunds within ~1h so NET is a few cents. Do not alarm the user with the raw $1; and in the final receipt, report Apify as net (after-refund) with a note that the refund lands within an hour.',
+  },
   runEndpoints: {
     syncGetDatasetItems: 'POST https://api.apify.com/v2/actors/{actorId}/run-sync-get-dataset-items',
     sync: 'POST https://api.apify.com/v2/actors/{actorId}/run-sync',
@@ -309,13 +314,18 @@ const APIFY = {
   },
   actorIdFormat: 'username~actorName (tilde, not slash)',
   costControl: {
-    maxTotalChargeUsd: 'query param, mandatory hard USD ceiling, e.g. ?maxTotalChargeUsd=1.00',
+    maxTotalChargeUsd: 'query param that sets the upfront HOLD / hard ceiling, e.g. ?maxTotalChargeUsd=1.00 (default hold ~$1). Unused is auto-refunded ~1h later.',
     maxItems: 'query param for dataset-priced actors',
-    note: 'Cost is PAY_PER_EVENT (not fixed). ALWAYS set maxTotalChargeUsd. If a cap would exceed ~$1, soft-confirm with the user.',
+    note: 'ALWAYS set maxTotalChargeUsd (it caps the hold). Net cost = actual usage after the ~1h refund (usually a few cents).',
   },
   discovery: 'GET https://api.apify.com/v2/store?allowsAgenticUsers=true&search=<kw>&responseFormat=agent (runtime lookup; not needed given the baked actors below)',
   errorCodes: ['x402-payment-required (missing header)', 'x402-agentic-payment-insufficient-amount', 'x402-agentic-payment-unauthorized', 'unsupported-actor-pricing-model-for-agentic-payments'],
   actors: [
+    // Maps & routing (worldwide directions/ETA/transit — complements keyronne's OSM car/bike/foot routing)
+    { need: 'Google Maps directions + routes (multi-stop, ETA, transit modes)', actorId: 'zen-studio~google-maps-directions-api', fills: 'worldwide routing/ETA incl. public transit — beyond keyronne (OSM) and the NYC/Japan-only live transit' },
+    { need: 'Google Maps directions — routes, distance & ETA', actorId: 'xtracto~gmaps-direction-rute', fills: 'alt directions/ETA source' },
+    { need: 'Google distance matrix (many-to-many travel times)', actorId: 'seemuapps~google-distance-matrix-scraper', fills: 'multi-point day-feasibility / sequencing at scale' },
+    { need: 'Apple Maps directions (navigation, ETA, turn-by-turn)', actorId: 'zen-studio~apple-maps-directions-route-api', fills: 'Apple Maps routing alternative' },
     { need: 'Booking.com listings + prices', actorId: 'voyager~booking-scraper', fills: 'OTA lodging breadth beyond Amadeus GDS' },
     { need: 'Booking.com listings (fast)', actorId: 'voyager~fast-booking-scraper', fills: 'faster Booking.com discovery' },
     { need: 'Booking.com reviews', actorId: 'voyager~booking-reviews-scraper', fills: 'real guest reviews at scale' },

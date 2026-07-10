@@ -12,8 +12,10 @@ is agreed in `decision-guide.md`. This covers:
 - All lookups: flights search/status/award, hotel *search/offers* (not book), activities/transfers *search*,
   routing, places/reviews, weather, news, web/semantic research, FX, gift-card/eSIM *search*.
 - Generation/rendering: image (map/calendar), PDF, TTS, hosting the file.
-- **Apify scrapes** — read-only, but **PAY_PER_EVENT**, so the `maxTotalChargeUsd` cap is **mandatory** on
-  every Apify call. If a needed cap would exceed **~$1.00**, downgrade to a soft-confirm (tell the user the cap).
+- **Apify scrapes** — read-only (GREEN). Set `maxTotalChargeUsd` on **every** Apify call (it caps the upfront
+  hold). Apify's `exact` scheme **holds ~$1.00 upfront then auto-refunds ~97%+ within ~1h** (net ≈ a few cents),
+  so don't treat the $1 hold as spend — report it net-after-refund (see `knowledge.md` §13). If a needed cap
+  would exceed **~$1.00**, soft-confirm with the user first.
 
 Still: keep a running spend tally and respect the budget ceiling from `decision-guide.md` Call 2.
 

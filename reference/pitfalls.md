@@ -78,6 +78,13 @@ endpoints **charge even on a bad request**. The full per-endpoint quirks live in
 - **`agentphone-messaging-calls` (SMS)** — outbound SMS needs the AgentPhone account's **10DLC registration**
   (off-x402, one-time). User-confirmed resolved; if a fresh account, expect a 403 until 10DLC is done.
 
+## 8a. Apify billing — the $1 hold is NOT the cost
+Apify's `exact` x402 **captures a flat ~$1.00 USDC upfront**, then **auto-refunds ~97%+ within ~1 hour** (net ≈
+actual usage, usually a few cents). Always set `?maxTotalChargeUsd=` (caps the hold). Don't alarm the user with
+the raw $1 or count it as spend — report Apify **net-after-refund** and note the refund lands within the hour
+(`knowledge.md` §13). Apify also has **worldwide Google/Apple Maps directions + distance-matrix** actors — use
+them for transit/ETA in cities without a live-transit endpoint (keyronne is OSM car/bike/foot only).
+
 ## 8b. Purch (gear buy) + phrasebook TTS
 - **Purch is Solana USDC only.** `purch-search` $0.01, `purch-shop` $0.10 (NL assistant — use search unless the
   query is loose), `purch-buy` **dynamic = product total incl. tax/shipping** (not a flat fee).
