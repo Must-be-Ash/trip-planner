@@ -1,0 +1,78 @@
+[
+  {
+    "id": "stabletickets-events-search",
+    "name": "StableTickets — Ticketmaster Events Search",
+    "provider": "StableTickets",
+    "kind": "api",
+    "category": "events",
+    "subcategory": "events-tickets",
+    "description": "Search live Ticketmaster event inventory (concerts, sports, arts, festivals) by keyword, city/geo, date range, venue, or classification — with real dates, venue+geo, genre, ticket price ranges, and a buy URL. Fills the events/tickets gap.",
+    "pricing": {
+      "headline": "$0.010",
+      "amount": 0.01,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "status": "active",
+    "registryStatus": "bazaar",
+    "verified": true,
+    "source": "bazaar",
+    "usage": {
+      "status": "verified",
+      "verifiedAt": "2026-07-13",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "POST https://stabletickets.dev/api/events/search  body {keyword?, city?, countryCode?(ISO-2), startDateTime?(UTC ISO), endDateTime?, geoPoint?, venueId?, classificationName?, size?, sort?:\"date,asc\", locale:\"*\", includeTicketing:\"yes\"}. Required: locale + includeTicketing.",
+      "inputExample": {
+        "keyword": "concert",
+        "city": "New York",
+        "countryCode": "US",
+        "locale": "*",
+        "includeTicketing": "yes",
+        "size": 5,
+        "sort": "date,asc"
+      },
+      "outputShape": "data._embedded.events[].{name, url, dates.start.{localDate,localTime,dateTime,timezone}, priceRanges[].{currency,min,max}, classifications[].{segment.name,genre.name}, _embedded.venues[].{name,city.name,address.line1,location.{latitude,longitude}}, images[]}; pagination at data.page.{number,totalPages,totalElements} + data._links.next",
+      "quirks": [
+        "Ticketmaster-backed → best coverage US + major markets; sparse for deep-local/indie or many non-US cities (a Tokyo query may return little).",
+        "Required fields: locale (use \"*\") and includeTicketing (\"yes\"). Date bounds are UTC ISO (startDateTime/endDateTime).",
+        "Companion endpoints on the same host: /api/attractions/search (artists/teams), /api/venues/search, /api/classifications/search — all $0.01.",
+        "Paginated: read data.page.totalPages + follow data._links.next; default page size small."
+      ],
+      "guide": "Find real events + ticket prices on the trip dates. POST to /api/events/search with locale:\"*\", includeTicketing:\"yes\", plus keyword/city/countryCode and a startDateTime/endDateTime window. Read events from data._embedded.events[] (name, dates.start, priceRanges, venue, ticket url). Pay ~$0.01 USDC on Base or Solana. Best for US/major-market concerts, sports, arts; fall back to Apify/Reddit for indie/local events.",
+      "costObservedUsd": 0.01
+    },
+    "endpoints": [
+      {
+        "provider": "StableTickets",
+        "url": "https://stabletickets.dev/api/events/search",
+        "method": "POST",
+        "priceDisplay": "$0.010",
+        "priceUsd": 0.01,
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0xe6814E0172C9f15f2Ba2e09FE9D9f3751FA38B75"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "10000",
+            "payTo": "B7JydR7WRbWy5vjZjQoikyRhj6HXz6C7x7zzNFGQRFDb"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false
+      }
+    ]
+  }
+]

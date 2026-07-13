@@ -13,8 +13,8 @@ endpoint and add it via `scripts/build-catalog.mjs` (registry) or as a baked con
   only. **Fallback:** daily forecast + model climate knowledge for "when to go".
 - **Official travel-advisory / visa / entry-requirements feed.** No authoritative source. **Fallback:**
   `stableenrich-news` geo search + the model's knowledge (flag "verify with the consulate").
-- **Dedicated events / "what's on" + strike tracker** with dates/venues/tickets. **Fallback:** `stableenrich-news`
-  + `serper-news` keyword+location.
+- **Transit/airline STRIKE tracker** with dates (structured). **Fallback:** `stableenrich-news`/`serper-news`
+  keyword+location. (General concerts/sports/arts events + ticket prices are now solved — see below.)
 - **Restaurant reservations** (Resy endpoints are dead/need a linked account) and **rental car** search. **Fallback:**
   surface booking links from places/activities search.
 - **Scheduled (timed) SMS/calls.** The *channel* is solved (AgentPhone SMS + AI call, user-confirmed), but there's
@@ -25,6 +25,10 @@ endpoint and add it via `scripts/build-catalog.mjs` (registry) or as a baked con
   needed if shipping physical goods. **Fallback:** none baked; hunt if the trip needs them.
 
 ## Already solved (do NOT re-hunt these)
+- **Events / concerts / sports / tickets + prices** → **StableTickets** (`events.json`,
+  `stabletickets-events-search`, Ticketmaster, $0.01 Base/Solana). US/major-market coverage.
+- **Broad destination-currency FX** → **Otto AI** (`fx-budget.json`, `otto-ai-fx-rates`, live 12 + ECB ~30,
+  $0.001) alongside the free `fx-price`.
 - **In-flow gear CHECKOUT + ship** → **Purch** (`prepare-buy.json`: `purch-search`/`purch-shop` → `purch-buy`)
   buys a real Amazon/Shopify product and ships it (USDC on Solana, charge = product total). Closes the old
   buy-link-only gap.

@@ -878,6 +878,33 @@
           "Base"
         ],
         "registryStatus": "active"
+      },
+      {
+        "id": "otto-ai-fx-rates",
+        "name": "Otto AI — FX Rates",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.0010",
+        "networks": [
+          "Base",
+          "Polygon",
+          "Solana"
+        ],
+        "registryStatus": "bazaar"
+      }
+    ],
+    "events": [
+      {
+        "id": "stabletickets-events-search",
+        "name": "StableTickets — Ticketmaster Events Search",
+        "verified": true,
+        "confirmGate": "GREEN",
+        "priceDisplay": "$0.010",
+        "networks": [
+          "Base",
+          "Solana"
+        ],
+        "registryStatus": "bazaar"
       }
     ],
     "prepare-buy": [

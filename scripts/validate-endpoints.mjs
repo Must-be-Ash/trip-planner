@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 
 const DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'reference', 'endpoints');
 const FILES = ['flights', 'lodging', 'ground-transport', 'places-reviews', 'social-sentiment', 'web-research',
-  'weather', 'news-safety', 'fx-budget', 'prepare-buy', 'deliverables'];
+  'weather', 'news-safety', 'fx-budget', 'prepare-buy', 'deliverables', 'events'];
 
 // Not-a-paid-402 by design: free (200), SIWX+Bearer (401 w/o token), or known-flaky (needs-review).
 const EXPECT = {
@@ -35,6 +35,7 @@ const SKIP_LIVE = new Set([
 const BODY = {
   'text-to-speech-elevenlabs': { input: 'hi', model: 'elevenlabs/flash-v2.5', voice: 'sarah' },
   'nano-banana-2': { contents: [{ parts: [{ text: 'a red circle' }] }], generationConfig: { responseModalities: ['IMAGE'] } },
+  'stabletickets-events-search': { keyword: 'concert', locale: '*', includeTicketing: 'yes', size: 1 },
 };
 
 // Fill only real path params like "/:area" or "{id}" — leave suffixes like ":generateContent" intact.

@@ -24,6 +24,7 @@
     "places, POIs, geocoding, ratings & review text": "reference/endpoints/places-reviews.json",
     "real traveler chatter: Reddit / X / TikTok / trend signal": "reference/endpoints/social-sentiment.json",
     "deep web search, extraction, cited deep-research, semantic find-similar": "reference/endpoints/web-research.json",
+    "events, concerts, sports, festivals + ticket prices on the dates": "reference/endpoints/events.json",
     "weather: current + multi-day forecast for the dates": "reference/endpoints/weather.json",
     "local events, strikes, safety/advisories on the dates": "reference/endpoints/news-safety.json",
     "currency / FX for budgeting": "reference/endpoints/fx-budget.json",

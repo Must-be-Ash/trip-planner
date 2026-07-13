@@ -122,5 +122,81 @@
         "async": false
       }
     ]
+  },
+  {
+    "id": "otto-ai-fx-rates",
+    "name": "Otto AI — FX Rates",
+    "provider": "Otto AI",
+    "kind": "api",
+    "category": "data-intelligence",
+    "subcategory": "stocks-financial-data",
+    "description": "Foreign-exchange rates, base USD: LIVE near-real-time mid quotes for the 12 most-traded currencies (with market-open/stale flag) PLUS the official ECB daily reference table for ~30 currencies. Derive any home<->destination cross-rate for trip budgeting.",
+    "pricing": {
+      "headline": "$0.0010",
+      "amount": 0.001,
+      "currency": "USD",
+      "unit": "per call"
+    },
+    "confirmGate": "GREEN",
+    "status": "active",
+    "registryStatus": "bazaar",
+    "verified": true,
+    "source": "bazaar",
+    "usage": {
+      "status": "verified",
+      "verifiedAt": "2026-07-13",
+      "resultPull": "sync",
+      "auth": "none",
+      "callShape": "GET https://x402.ottoai.services/fx-rates  (no params)",
+      "inputExample": {},
+      "outputShape": "data.data.base (\"USD\"); data.data.live.{rates{EUR,GBP,JPY,CHF,CAD,AUD,NZD,CNY,HKD,SGD,SEK,KRW}, marketOpen, stale, staleSymbols[]}; data.data.reference.{date, rates{~30 incl JPY,THB,INR,MXN,BRL,ZAR,...}, source:\"ECB\"}; data.meta.validUntil",
+      "quirks": [
+        "Base is USD — to convert home<->destination, divide the two USD rates yourself (e.g. JPY per EUR = rates.JPY / rates.EUR). Arithmetic is free; do not pay a \"convert\" endpoint.",
+        "Rates are interbank MID (not retail/card/ATM) — apply a typical ~1-3% card spread when telling a traveler what they will actually pay (that reasoning is free).",
+        "Live table = 12 majors; ECB reference = ~30 currencies for the exotic ones Pyth may not carry. Respect meta.validUntil / live.stale.",
+        "Multi-chain: Base, Polygon, Solana USDC. Complements the FREE fx-price (Pyth) — use fx-price first, Otto for broader coverage."
+      ],
+      "guide": "GET the endpoint (no params); pay ~$0.001 USDC on Base/Polygon/Solana. Read majors from data.data.live.rates and the broader set from data.data.reference.rates (base USD). Compute the home<->destination cross-rate yourself and note it is a mid rate (add a card spread for real spend).",
+      "costObservedUsd": 0.001
+    },
+    "endpoints": [
+      {
+        "provider": "Otto AI",
+        "url": "https://x402.ottoai.services/fx-rates",
+        "method": "GET",
+        "priceDisplay": "$0.0010",
+        "priceUsd": 0.001,
+        "networks": [
+          "Base",
+          "Polygon",
+          "Solana"
+        ],
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "1000",
+            "payTo": "0x0E84dDEdAaE6A779c462C22a59F301EC31B6b808"
+          },
+          {
+            "scheme": "exact",
+            "network": "eip155:137",
+            "asset": "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
+            "amount": "1000",
+            "payTo": "0x0E84dDEdAaE6A779c462C22a59F301EC31B6b808"
+          },
+          {
+            "scheme": "exact",
+            "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "amount": "1000",
+            "payTo": "6XcSfqJHr9vNW2vbiRaMqUYVm7shDgLepca54wUTDPN5"
+          }
+        ],
+        "status": "active",
+        "needsApproval": false
+      }
+    ]
   }
 ]

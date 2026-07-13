@@ -117,6 +117,10 @@ const SELECTION = {
   'fx-budget': [
     ['stocks-financial-data', 'fx-price'],
     ['stocks-financial-data', 'fx-symbols'],
+    // + Otto AI FX appended from MANUAL_FX below (Bazaar; broad destination-currency coverage)
+  ],
+  events: [
+    // no registry services — Bazaar-sourced StableTickets appended from MANUAL_EVENTS below
   ],
   'prepare-buy': [
     ['storefront-commerce-apis', 'channel3-commerce-product-search'],
@@ -291,7 +295,82 @@ const MANUAL_COMMERCE = [
 ];
 
 // capability -> hand-authored (non-registry) services appended after the registry selection
-const MANUAL = { 'ground-transport': MANUAL_ROUTING, 'prepare-buy': MANUAL_COMMERCE };
+// Events / tickets — StableTickets (Ticketmaster) via x402. Bazaar-sourced, live-verified 2026-07-13.
+const MANUAL_EVENTS = [
+  {
+    id: 'stabletickets-events-search', name: 'StableTickets — Ticketmaster Events Search', provider: 'StableTickets', kind: 'api',
+    category: 'events', subcategory: 'events-tickets',
+    description: 'Search live Ticketmaster event inventory (concerts, sports, arts, festivals) by keyword, city/geo, date range, venue, or classification — with real dates, venue+geo, genre, ticket price ranges, and a buy URL. Fills the events/tickets gap.',
+    pricing: { headline: '$0.010', amount: 0.01, currency: 'USD', unit: 'per call' },
+    confirmGate: 'GREEN', status: 'active', registryStatus: 'bazaar', verified: true, source: 'bazaar',
+    usage: {
+      status: 'verified', verifiedAt: '2026-07-13', resultPull: 'sync', auth: 'none',
+      callShape: 'POST https://stabletickets.dev/api/events/search  body {keyword?, city?, countryCode?(ISO-2), startDateTime?(UTC ISO), endDateTime?, geoPoint?, venueId?, classificationName?, size?, sort?:"date,asc", locale:"*", includeTicketing:"yes"}. Required: locale + includeTicketing.',
+      inputExample: { keyword: 'concert', city: 'New York', countryCode: 'US', locale: '*', includeTicketing: 'yes', size: 5, sort: 'date,asc' },
+      outputShape: 'data._embedded.events[].{name, url, dates.start.{localDate,localTime,dateTime,timezone}, priceRanges[].{currency,min,max}, classifications[].{segment.name,genre.name}, _embedded.venues[].{name,city.name,address.line1,location.{latitude,longitude}}, images[]}; pagination at data.page.{number,totalPages,totalElements} + data._links.next',
+      quirks: [
+        'Ticketmaster-backed → best coverage US + major markets; sparse for deep-local/indie or many non-US cities (a Tokyo query may return little).',
+        'Required fields: locale (use "*") and includeTicketing ("yes"). Date bounds are UTC ISO (startDateTime/endDateTime).',
+        'Companion endpoints on the same host: /api/attractions/search (artists/teams), /api/venues/search, /api/classifications/search — all $0.01.',
+        'Paginated: read data.page.totalPages + follow data._links.next; default page size small.',
+      ],
+      guide: 'Find real events + ticket prices on the trip dates. POST to /api/events/search with locale:"*", includeTicketing:"yes", plus keyword/city/countryCode and a startDateTime/endDateTime window. Read events from data._embedded.events[] (name, dates.start, priceRanges, venue, ticket url). Pay ~$0.01 USDC on Base or Solana. Best for US/major-market concerts, sports, arts; fall back to Apify/Reddit for indie/local events.',
+      costObservedUsd: 0.01,
+    },
+    endpoints: [{
+      provider: 'StableTickets', url: 'https://stabletickets.dev/api/events/search', method: 'POST',
+      priceDisplay: '$0.010', priceUsd: 0.01, networks: ['Base', 'Solana'],
+      accepts: [
+        { scheme: 'exact', network: 'eip155:8453', asset: USDC_BASE, amount: '10000', payTo: '0xe6814E0172C9f15f2Ba2e09FE9D9f3751FA38B75' },
+        { scheme: 'exact', network: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp', asset: USDC_SOL, amount: '10000', payTo: 'B7JydR7WRbWy5vjZjQoikyRhj6HXz6C7x7zzNFGQRFDb' },
+      ],
+      status: 'active', needsApproval: false,
+    }],
+  },
+];
+
+// FX — Otto AI: live majors + ECB ~30-currency reference. Bazaar-sourced, live-verified 2026-07-13.
+// Complements the FREE fx-price (Pyth); use Otto when you need broad destination-currency coverage.
+const MANUAL_FX = [
+  {
+    id: 'otto-ai-fx-rates', name: 'Otto AI — FX Rates', provider: 'Otto AI', kind: 'api',
+    category: 'data-intelligence', subcategory: 'stocks-financial-data',
+    description: 'Foreign-exchange rates, base USD: LIVE near-real-time mid quotes for the 12 most-traded currencies (with market-open/stale flag) PLUS the official ECB daily reference table for ~30 currencies. Derive any home<->destination cross-rate for trip budgeting.',
+    pricing: { headline: '$0.0010', amount: 0.001, currency: 'USD', unit: 'per call' },
+    confirmGate: 'GREEN', status: 'active', registryStatus: 'bazaar', verified: true, source: 'bazaar',
+    usage: {
+      status: 'verified', verifiedAt: '2026-07-13', resultPull: 'sync', auth: 'none',
+      callShape: 'GET https://x402.ottoai.services/fx-rates  (no params)',
+      inputExample: {},
+      outputShape: 'data.data.base ("USD"); data.data.live.{rates{EUR,GBP,JPY,CHF,CAD,AUD,NZD,CNY,HKD,SGD,SEK,KRW}, marketOpen, stale, staleSymbols[]}; data.data.reference.{date, rates{~30 incl JPY,THB,INR,MXN,BRL,ZAR,...}, source:"ECB"}; data.meta.validUntil',
+      quirks: [
+        'Base is USD — to convert home<->destination, divide the two USD rates yourself (e.g. JPY per EUR = rates.JPY / rates.EUR). Arithmetic is free; do not pay a "convert" endpoint.',
+        'Rates are interbank MID (not retail/card/ATM) — apply a typical ~1-3% card spread when telling a traveler what they will actually pay (that reasoning is free).',
+        'Live table = 12 majors; ECB reference = ~30 currencies for the exotic ones Pyth may not carry. Respect meta.validUntil / live.stale.',
+        'Multi-chain: Base, Polygon, Solana USDC. Complements the FREE fx-price (Pyth) — use fx-price first, Otto for broader coverage.',
+      ],
+      guide: 'GET the endpoint (no params); pay ~$0.001 USDC on Base/Polygon/Solana. Read majors from data.data.live.rates and the broader set from data.data.reference.rates (base USD). Compute the home<->destination cross-rate yourself and note it is a mid rate (add a card spread for real spend).',
+      costObservedUsd: 0.001,
+    },
+    endpoints: [{
+      provider: 'Otto AI', url: 'https://x402.ottoai.services/fx-rates', method: 'GET',
+      priceDisplay: '$0.0010', priceUsd: 0.001, networks: ['Base', 'Polygon', 'Solana'],
+      accepts: [
+        { scheme: 'exact', network: 'eip155:8453', asset: USDC_BASE, amount: '1000', payTo: '0x0E84dDEdAaE6A779c462C22a59F301EC31B6b808' },
+        { scheme: 'exact', network: 'eip155:137', asset: '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359', amount: '1000', payTo: '0x0E84dDEdAaE6A779c462C22a59F301EC31B6b808' },
+        { scheme: 'exact', network: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp', asset: USDC_SOL, amount: '1000', payTo: '6XcSfqJHr9vNW2vbiRaMqUYVm7shDgLepca54wUTDPN5' },
+      ],
+      status: 'active', needsApproval: false,
+    }],
+  },
+];
+
+const MANUAL = {
+  'ground-transport': MANUAL_ROUTING,
+  'prepare-buy': MANUAL_COMMERCE,
+  'events': MANUAL_EVENTS,
+  'fx-budget': MANUAL_FX,
+};
 
 // ---------------------------------------------------------------------------
 // T1a — Apify direct-x402 scraper layer (§6.5). Not in the registry; hand-authored.

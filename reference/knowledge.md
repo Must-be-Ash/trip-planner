@@ -21,9 +21,11 @@ same job, pick the **cheapest verified** one; fall back to the next only on fail
 - **Place → coordinates:** `x402node-geocoding-forward` ($0.008, Base) when a downstream call needs lat/lon
   (weather-by-coord, routing, hotels-by-geocode, activities). Skip if you already have coords or the endpoint
   takes a city name.
-- **Currency for budgeting:** `fx-price` (**free**, Base) for a spot rate; `fx-symbols` (free) to find the
-  pair. Then do the conversion arithmetic yourself — do **not** pay a "convert" endpoint. It's interbank mid;
-  tell the user real card/ATM rates carry a ~1–3% spread (model knowledge, free).
+- **Currency for budgeting:** `fx-price` (**free**, Base, Pyth) for a spot rate; `fx-symbols` (free) for the
+  pair. For **broad destination-currency coverage** (exotic pairs Pyth may not carry — THB, IDR, INR, MXN, etc.)
+  use **`otto-ai-fx-rates`** ($0.001; live 12 majors + ECB ~30-currency table, base USD, Base/Polygon/Solana).
+  Do the conversion arithmetic yourself — do **not** pay a "convert" endpoint. All are interbank **mid**; tell
+  the user real card/ATM rates carry a ~1–3% spread (model knowledge, free).
 
 ## §2. Flights (`flights.json`) — the marquee "better than free" layer
 
@@ -105,6 +107,10 @@ Pipeline: **autocomplete/list → offers-search → offer-detail → book**.
 - **Local events / strikes / closures / advisories:** `stableenrich-news` ($0.04, geo+location targeted) — best
   for "anything disrupting my trip on these dates". Cheaper: `serper-news` ($0.002), `httpay-news-headlines` ($0.005).
   **Beats free:** current, date-scoped — not stale training data. No official gov-advisory feed (see `gaps.md`).
+- **Concerts / sports / arts + TICKET PRICES on the dates (`events.json`):** `stabletickets-events-search` ($0.01,
+  Base/Solana) — real Ticketmaster inventory with dates, venue+geo, genre, price ranges, and a buy URL. POST with
+  `locale:"*"`, `includeTicketing:"yes"` + keyword/city/countryCode + start/endDateTime window. Best for US/major
+  markets; for indie/local or many non-US cities, fall back to Apify (TikTok/IG) + Reddit + a web search.
 
 ## §9. Deep research / semantic (`web-research.json`)
 
