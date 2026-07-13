@@ -24,14 +24,14 @@
     "hotels (discover/price/book), activities, airport transfers": "reference/endpoints/lodging.json",
     "getting around: transit, traffic, point-to-point routing/ETAs": "reference/endpoints/ground-transport.json",
     "places, POIs, geocoding, ratings & review text": "reference/endpoints/places-reviews.json",
-    "real traveler chatter: Reddit / X / TikTok / trend signal": "reference/endpoints/social-sentiment.json",
+    "real traveler chatter (aggregated only): Apify hashtag/location scrapers — see apify.json; NOT one-by-one video/profile search (Reddit + raw X dropped)": "reference/endpoints/social-sentiment.json",
     "deep web search, extraction, cited deep-research, semantic find-similar": "reference/endpoints/web-research.json",
     "events, concerts, sports, festivals + ticket prices on the dates": "reference/endpoints/events.json",
     "weather: current + multi-day forecast for the dates": "reference/endpoints/weather.json",
     "local events, strikes, safety/advisories on the dates": "reference/endpoints/news-safety.json",
     "currency / FX for budgeting": "reference/endpoints/fx-budget.json",
     "prepare + buy: eSIM, prepaid card, gift cards, travel gear": "reference/endpoints/prepare-buy.json",
-    "deliverables: image (map/calendar), PDF, hosting, TTS, email, SMS, AI call": "reference/endpoints/deliverables.json",
+    "deliverables: image (map/calendar), PDF, hosting, TTS, email, AI call (no SMS)": "reference/endpoints/deliverables.json",
     "scale scraping: Airbnb/Booking.com, Google/Tripadvisor reviews, TikTok/IG/YouTube discovery": "reference/endpoints/apify.json"
   },
 

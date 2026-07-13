@@ -13,10 +13,15 @@ endpoints **charge even on a bad request**. The full per-endpoint quirks live in
   destination`. Partial body → 400 **and still charges $0.01**. (Also needs-review — label output as a prediction.)
 - **`perplexity-sonar-deep-research-async`** — charges $0.01 even on a 400. Body must be wrapped:
   `{"request":{model:"sonar-deep-research", messages}}` (not a bare chat body).
-- **`agentphone-messaging-calls` (SMS)** — body must be **wrapped**: `{"body":{to_number, body, from_number}}`.
-  A flat body or `{text}` → 422 **and still charges ~$0.02**.
 - **`stablegiftcards-buy`** — a prior QA buy was **charged then 403'd ("not_available") with no refund**. It's
   user-confirmed working now, but do a **small first buy** and poll `stablegiftcards-invoice-status` for the code.
+- **SMS / text reminders are NOT supported (decision 2026-07-13):** the skill sends no SMS. There is no reliable
+  keyless sender — Textbelt (`send-sms`, paysponge gateway) is a **real sender that delivered before** (QA
+  2026-06-11) but its **shared quota depletes to `quotaRemaining:0`** (charges $0.02 yet sends nothing) and it
+  doesn't deliver to non-US (+1 Canadian) numbers; **AgentPhone** SMS needs the account's US **10DLC**
+  registration (off-x402); **StablePhone has no SMS-send**; the Bazaar's only "send SMS" service (Spraay) is a
+  sandbox mock. `send-sms` and the AgentPhone endpoints are **removed from the catalog**. **Reminders = AI call
+  (`ai-phone-call`, StablePhone) + email only.** Do not add or call any SMS endpoint.
 
 ## 2. Field-name traps
 - **Flight tokens:** one-way (`type=2`) → `booking_token`; round-trip (`type=1`) → `departure_token`. Different
@@ -54,8 +59,21 @@ endpoints **charge even on a bad request**. The full per-endpoint quirks live in
 - **`parallel-deep-research-task`** — POST only **queues** (`run_id`, status "queued"); poll GET
   `/api/task/{run_id}` (**free**) until `completed` (1–5+ min; backoff 10→60s).
 - **`perplexity-sonar-deep-research-async`** — submit → poll `GET /v1/async/sonar/{id}` (settles $0) until COMPLETED.
-- **StableStudio images** (`gpt-image-2-generate`, `nano-banana-pro-*`, `flux-2-pro-*`) — async; poll
-  `/api/jobs/{id}` (SIWX, free). Prefer **`nano-banana-2`** when you want a **sync** image.
+- **StableStudio `gpt-image-2` is the PRIMARY image gen — poll is SIWX-gated, single-use nonce (verified
+  2026-07-13):** the x402 POST (`/api/generate/gpt-image-2/generate`, e.g. `{prompt, size:"1536x1024",
+  quality:"high"}`, high≈$0.17) returns `{jobId, pollUrl}`; the poll `GET /api/jobs/{jobId}` needs **SIWX**, not
+  payment. Each poll is a 3-step cycle: **(1)** GET → `402` with a `sign-in-with-x` challenge (fresh `nonce`,
+  ~5-min expiry, `chainId:"eip155:8453"`, `type:"eip191"`); **(2)** sign it with the **paying** wallet (Sponge
+  `generate_siwe` — pass the challenge's domain/uri/nonce/expiration; a *different* wallet → 403); **(3)** GET
+  again with header `Sign-In-With-X: base64(JSON{domain,address,uri,version,chainId,type,nonce,issuedAt,
+  expirationTime,statement,signature})`. **Nonce is single-use** (`siwx_nonce_used` if reused) → repeat all 3
+  steps for every poll until `status:"complete"` → `result.imageUrl`. Same SIWX flow for `nano-banana-pro-generate`.
+- **Image-service fallback order:** **StableStudio `gpt-image-2` (primary, handles complex prompts) → BlockRun
+  `gpt-image-2` (fallback: sync, returns URL inline, no SIWX, ≈$0.06) → StableStudio `nano-banana-pro`.** ⚠️
+  **BlockRun times out on long/dense prompts** — some renders return `202` + `poll_url` then fail with
+  `"Request timed out"` (`payment_status:not_charged`, so no charge); StableStudio rendered the *same* prompt fine.
+  Use BlockRun only as the quick fallback (simple prompts). If all fail, degrade to a themed CSS hero (don't spray
+  paid retries).
 - **`ai-phone-call`** — call is **queued**; transcript via SIWX poll `GET /api/call/{id}`.
 
 ## 7. Output-shape surprises
@@ -71,12 +89,10 @@ endpoints **charge even on a bad request**. The full per-endpoint quirks live in
 ## 8. Payment-rail quirks (chain/price)
 - **NYC transit** (`nyc-transit-live-*`) — plain x402 'exact' fails the paymentauth handshake; settled via **MPP
   on Tempo** in QA. If your wallet can't do MPP, this endpoint may not pay cleanly — have a fallback (routing).
-- **Price reality vs advertised:** `twit-sh-tweet-search` and `japan-transit-station-status` settled **cheaper**
-  than their advertised/OpenAPI price. Pay the **402 challenge amount**, not the doc number.
-- **Async settlement:** `twit-sh-tweet-search` returned `confirmed:false/txHash:null` but 200 with real data — the
+- **Price reality vs advertised:** `japan-transit-station-status` settled **cheaper** than its advertised/OpenAPI
+  price. Pay the **402 challenge amount**, not the doc number.
+- **Async settlement:** some endpoints return `confirmed:false/txHash:null` but 200 with real data — the
   **200 response is the success proof**; don't retry.
-- **`agentphone-messaging-calls` (SMS)** — outbound SMS needs the AgentPhone account's **10DLC registration**
-  (off-x402, one-time). User-confirmed resolved; if a fresh account, expect a 403 until 10DLC is done.
 
 ## 8a. Apify billing — the $1 hold is NOT the cost
 Apify's `exact` x402 **captures a flat ~$1.00 USDC upfront**, then **auto-refunds ~97%+ within ~1 hour** (net ≈
@@ -102,6 +118,6 @@ them for transit/ETA in cities without a live-transit endpoint (keyronne is OSM 
 
 ## 10. needs-review / hidden — use with care (avoid in a clean demo unless confirmed)
 - `flight-delay-predictor` (needs-review), `stablegiftcards-buy` (registry-hidden; user-confirmed),
-  `agentphone-messaging-calls` (registry-hidden; user-confirmed), `laso-finance-get-card-data` /
+  `laso-finance-get-card-data` /
   `-merchant-acceptance-search` (registry-hidden but needed for the card flow). These are marked
   `registryStatus` in the catalog — prefer verified+active endpoints when a choice exists.

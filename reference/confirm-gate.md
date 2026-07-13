@@ -28,10 +28,9 @@ Anything **outward, irreversible, or that spends on a real good/reservation**. T
   needs shipping address + email), gift-card/eSIM buy (`stablegiftcards-buy`), prepaid-card funding
   (`laso-finance-order-usa-prepaid-card`, `laso-finance-order-international-prepaid-card` — **the x402 charge
   equals the card value**), custom merch (`stablemerch-custom-merch`).
-- **Sends / calls:** email (`agentmail-send-email`, `stableemail-send`), SMS (`send-sms`, and `agentphone-messaging-calls`
-  → AgentPhone `/x402/v1/messages`), AI phone call (`ai-phone-call`, and `agentphone-messaging-calls` → `/x402/v1/calls`).
-- **Provisioning billable resources:** phone number (`agentphone-number`, `buy-phone-number`), paid inbox
-  (`agentmail-create-inbox`, $2).
+- **Sends / calls:** email (`agentmail-send-email`, `stableemail-send`), AI phone call (`ai-phone-call` → StablePhone). *(No SMS — not supported.)*
+- **Provisioning billable resources:** phone number (StablePhone `POST /api/number`, only if a custom caller-ID is
+  needed), paid inbox (`agentmail-create-inbox`, $2).
 - **Variable-cost data** that can run high: `honcho-agent-memory` query (up to $0.50).
 
 ## What a RED confirmation must show
@@ -65,6 +64,5 @@ Never put the user's real card in a payload without explicit, informed consent �
 
 ## Charge-then-fail awareness
 Some endpoints **charge even on a bad request** (see `pitfalls.md`): `x402-deployer-weather` (name string → 400,
-still charged), `stabletravel-transfers-search` (validation error → still ~$0.003), AgentPhone `/messages`
-(flat/unwrapped body → 422, still ~$0.02). Build the request correctly the first time; read `pitfalls.md` before
-calling these.
+still charged) and `stabletravel-transfers-search` (validation error → still ~$0.003). Build the request
+correctly the first time; read `pitfalls.md` before calling these.

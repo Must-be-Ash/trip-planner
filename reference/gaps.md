@@ -17,8 +17,9 @@ endpoint and add it via `scripts/build-catalog.mjs` (registry) or as a baked con
   keyword+location. (General concerts/sports/arts events + ticket prices are now solved — see below.)
 - **Restaurant reservations** (Resy endpoints are dead/need a linked account) and **rental car** search. **Fallback:**
   surface booking links from places/activities search.
-- **Scheduled (timed) SMS/calls.** The *channel* is solved (AgentPhone SMS + AI call, user-confirmed), but there's
-  no timed-delivery primitive. **Fallback:** the agent fires the AgentPhone call/SMS at the right time itself.
+- **Scheduled (timed) calls.** The *channel* is solved (StablePhone AI call + email), but there's no
+  timed-delivery primitive. **Fallback:** the agent fires the call/email at the right time itself. (**SMS is not
+  supported** — no reliable keyless sender; see `pitfalls.md`.)
 - **Static / navigable map RENDERING.** `gpt-image-2` makes an *illustrative* map; `keyronne` returns a polyline,
   not an image. **Fallback:** illustrative image + the routing polyline/text. *Hunt: a static-maps tile API.*
 - **Calendar `.ics` invite; consumer parcel shipping rates/labels; general (non-JP) address validation** — only

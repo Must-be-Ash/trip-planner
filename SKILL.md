@@ -6,7 +6,7 @@ description: >-
   hotels, build an itinerary, compare fares or decide when to buy, find where locals actually go, check
   weather/safety for travel dates, buy an eSIM or travel gear, book a hotel/transfer, or produce a
   PDF/illustrated itinerary + reminders. Brings its own pre-identified x402 endpoints (flights, lodging,
-  routing, reviews, social, weather, news, FX, eSIM, prepaid card, image/PDF/TTS, email, SMS, AI calls)
+  routing, reviews, social, weather, news, FX, eSIM, prepaid card, image/PDF/TTS, email, AI calls)
   and pays with whatever wallet the host has (Coinbase AgentKit/awal, Sponge, agentcash, or MasterKey MCP).
   Runs offline in Claude Code, Codex, or Cursor.
 ---
@@ -40,7 +40,7 @@ points to rather than grepping the whole tree. You do **not** need any network t
    off-Base your wallet can't reach, or a capability is a known gap (`reference/gaps.md`), say so and fall back —
    **never fabricate prices, availability, reviews, confirmations, or booking references.**
 6. **Read the endpoint's `usage` + `reference/pitfalls.md` before calling.** Several endpoints **charge even on a
-   bad request** (weather-by-name, transfers-search, delay-predictor, deep-research, AgentPhone SMS). Build the
+   bad request** (weather-by-name, transfers-search, delay-predictor, deep-research). Build the
    request correctly the first time. Always set `maxTotalChargeUsd` on Apify calls.
 7. **Default Base USDC, but any chain is fine.** Prefer Base where offered; use Solana-only endpoints too (all
    wallet paths support Solana). Read each endpoint's `accepts[]` to pick the chain/asset.
@@ -74,11 +74,11 @@ Deliverables checklist
 [ ] 1. Flights — 3-window price comparison (🟢)
 [ ] 2. Weather forecast for the dates (🟢) → styled cards in the page (icons, not numbers)
 [ ] 3. Google Maps + Tripadvisor reviews + coords for every spot (🟢)
-[ ] 4. Reddit/social signal (🟢)
+[ ] 4. Social signal — Apify TikTok/IG/YouTube + X (🟢; NOT Reddit — dropped)
 [ ] 5. Gear the user asked to buy (🔴 Purch — confirm each)
 [ ] 6. Illustrated hero map image (🟢) → hosted + embedded at top of the page
 [ ] 7. Spoken phrasebook — 8-12 phrases, native-script TTS, each MP3 hosted → audio players in the page
-[ ] 8. Reminders: flight SMS / AI wake-up call (🔴, if requested)
+[ ] 8. Reminders: AI wake-up call (🔴, if requested) — no SMS
 [ ] 9. Interactive HTML page (day tabs · pinned map · per-spot Open-in-Maps · weather cards · phrasebook audio · receipt) → hosted (text/html)
 [ ] 10. PDF companion (static: hero + all days + map links + phrase table) → hosted
 [ ] 11. Email to user (🔴 — both hosted links)
@@ -90,8 +90,13 @@ Geocode if needed (`x402node-geocoding-forward`). Then, per `knowledge.md`:
   wait"); award-seat search if the user has miles.
 - **Lodging:** hotel `-list-*` → `-offers-search` (capture `offers[].id`); widen with Apify Airbnb/Booking.com
   if the user wants OTA breadth.
-- **Local truth:** Tripadvisor/Google Maps reviews + Reddit/X + Apify TikTok/IG/YouTube; **you** summarize
-  sentiment (don't pay for it).
+- **Local truth:** Tripadvisor/Google Maps reviews + **Apify hashtag/location scrapers** for social signal
+  (`clockworks~tiktok-hashtag-scraper`, `apidojo~tiktok-location-scraper`, `apify~instagram-hashtag-scraper` — one
+  paid call returns *many* posts for a hashtag/place = **aggregated** "what everyone's talking about"); **you**
+  summarize sentiment (don't pay a sentiment step). **Use aggregated scrapers only — never search video-by-video
+  or profile-by-profile** (that burns money one item at a time chasing a single hit). **Dropped:** Reddit
+  (low-signal keyword search), raw X/Twitter (twit.sh), and StableSocial per-item search (`/video-search`,
+  `/creator-search`, `/brand-mentions` — not aggregated, not relevant here).
 - **Weather** for the dates; **routing** (`keyronne`) to sequence the days; **news** for strikes/closures;
   **FX** for the budget.
 Present the itinerary with sources; keep a running spend tally.
@@ -112,8 +117,10 @@ user's Call-3 choices:
   playable-link) **both in chat AND embedded in the PDF**. Tell the user each link is audio to *hear* the
   pronunciation, not text to read. Mark phrasebook ✅ on the checklist only after all MP3s are hosted and the
   table is in the PDF draft.
-- **Reminders** (🔴): if they asked, set up a flight-reminder **SMS** and/or an **AI wake-up call** via AgentPhone
-  (you fire it at the right time). Offer this even for a "plan only" trip.
+- **Reminders** (🔴): if they asked, set up an **AI wake-up call** before departure via **StablePhone**
+  (`ai-phone-call`, US/CA; `stable-family/stablephone.md`) — you fire it at the right time. Offer this even for a
+  "plan only" trip. **No SMS/text reminders** — SMS is intentionally not supported (no reliable keyless sender;
+  see `pitfalls.md`). Reminders are the **AI call** + the **email**.
 
 ### 4. Book (🔴 RED — confirm every one)
 Prefer **Travala** for hotels (USDC, no card) when its connector is present; else **StableTravel** hotel/transfer
@@ -131,14 +138,28 @@ nothing dropped):
   `:root` to the destination (echo the hero-map art). It renders day tabs, an interactive Leaflet pinned map +
   per-day "Open route", per-spot **Open-in-Maps**, gradient **weather cards** (icons, not numbers), a phrasebook
   table with inline **audio players**, per-spot **addresses**, and the x402 receipt. Generate the hero **map
-  image** (`gpt-image-2-generate` / `nano-banana-2`) and put it at the top — if you want numbers on it, prompt
-  the image model to **draw numbered markers matching the itinerary order** (bake them into the art; never
-  overlay numbers afterward). Host the `.html` (`stableupload-file-upload`, `contentType:text/html`).
+  image** and put it at the top — if you want numbers on it, prompt the image model to **draw numbered markers
+  matching the itinerary order** (bake them into the art; never overlay numbers afterward). Use a full, detailed
+  prompt — prompt complexity is not a problem to design around.
+  **Image gen — primary is StableStudio (handles complex prompts reliably; verified 2026-07-13):**
+  **`gpt-image-2` on StableStudio** (`gpt-image-2-generate`) — async: the x402 POST returns `{jobId, pollUrl}`;
+  poll `GET /api/jobs/{jobId}` until `status:"complete"` → `result.imageUrl` (~2–3 min at `quality:"high"`, ≈$0.17;
+  drop to medium/low for cheaper). **The poll is SIWX-gated with a single-use nonce** — each poll is a 3-step
+  cycle: GET (→ 402 `sign-in-with-x` challenge) → sign it with the **paying** wallet (host SIWE signer, e.g. Sponge
+  `generate_siwe`, matching domain/uri/nonce/expiration) → GET again with a base64-JSON `Sign-In-With-X` header
+  (exact shape in `pitfalls.md`). **Fallback → `gpt-image-2` on BlockRun** (sync, returns a URL inline, ≈$0.06, no
+  SIWX — but **times out on long/dense prompts**). Further fallback → **`nano-banana-pro`**
+  (`nano-banana-pro-generate`, StableStudio). If all fail, **degrade gracefully to a themed CSS hero** and note it.
+  Host the `.html` (`stableupload-file-upload`, `contentType:text/html`). (Tip: to host a styled PDF without a
+  giant base64 round-trip, render the *hosted* HTML with local headless Chrome `--print-to-pdf`, then upload the
+  file bytes.)
 - **PDF companion (offline):** render a *static* version of the same content (Markdown → `makespdf-markdown-to-pdf`,
   or static HTML → `html-to-pdf-raw-html`) — hero image + all days (with Open-in-Maps URLs as text) + phrasebook
   table + receipt. Host it and link it from the HTML page.
-Then (🔴, confirm): **email** both links (reuse the owned AgentMail inbox) and schedule an **AgentPhone**
-flight-reminder SMS + AI **wake-up call**. Reconcile against the Step-1.5 checklist before closing.
+Then (🔴, confirm): **email** both links (reuse the owned AgentMail inbox) and, if requested, schedule an AI
+**wake-up call** (StablePhone). **No SMS reminders** (not supported). **After sending the email, always tell the
+user to check their spam/junk folder if it isn't in their inbox** (AgentMail/SES sometimes lands there). Reconcile
+against the Step-1.5 checklist before closing.
 
 ### 6. Close — resolve the checklist + itemized receipt
 **Resolve the Step-1.5 checklist**: every item must be ✅ (with its hosted link/result) or ⚠️ (with the reason) —

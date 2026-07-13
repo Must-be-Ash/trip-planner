@@ -49,9 +49,9 @@ agentcash and MasterKey MCP handle SIWX automatically; with `awal`/AgentKit, sig
 ## Async endpoints (⏳ — submit → poll → read)
 For `resultPull: "poll"` / async run endpoints: submit, then poll the job/SIWX URL until complete, then read the
 result path. Applies to: `parallel-deep-research-task`, `perplexity-sonar-deep-research-async`, StableStudio image
-gen (`gpt-image-2-generate`, `nano-banana-pro-*`, `flux-2-pro-*` → poll `/api/jobs/{id}`, SIWX, free), Apify
+gen (`gpt-image-2-generate`, `nano-banana-pro-generate` → poll `/api/jobs/{id}`, SIWX, free), Apify
 async runs, and the AI phone-call transcript (`ai-phone-call` → SIWX poll `GET /api/call/{id}`). Prefer the sync
-variant when one exists (e.g. Nano Banana 2 is sync).
+variant when one exists (e.g. `gpt-image-2` on BlockRun is sync — returns the image URL inline).
 
 ## §owned-assets — reuse what the MasterKey wallet already owns
 If the agent runs with the **MasterKey wallet** (`0xdd138e963E5f381ee525AeC30Da47E2904A45F62` Base ·
@@ -61,7 +61,7 @@ If the agent runs with the **MasterKey wallet** (`0xdd138e963E5f381ee525AeC30Da4
   **Do NOT create a new inbox ($2 each).**
 - **Laso US prepaid card** (`O-01KTN62GBAKT1VERAFMC962NYN`, ~$5) — PAN/CVV via `laso-finance-get-card-data`.
 - **BlockRun US number `+1 816 750 6853`** — caller-ID for BlockRun voice; ⚠️ **lease expired 2026-07-09** — not
-  needed (AgentPhone provisions its own number, StablePhone brings one).
+  needed (StablePhone brings/leases its own number for calls).
 
 If the agent runs with a **different wallet**, provision fresh (confirm the spend) — none of the above is required.
 

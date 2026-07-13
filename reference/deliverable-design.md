@@ -36,7 +36,7 @@ the bytes, hand the user the `publicUrl`.
 - **Weather** — from the weather endpoints; map the condition/WMO code to an emoji for the cards:
   `0 ☀️ · 1–2 🌤️ · 3 ☁️ · 45/48 🌫️ · 51–67 🌦️ · 71–77 ❄️ · 80–82 🌧️ · 95–99 ⛈️`. Put the current temp + a
   5-day row with icons + hi/lo (+ precip%) — **never a raw number dump**.
-- **Hero image** — your generated pamphlet map (`gpt-image-2-generate` / `nano-banana`), hosted; put its
+- **Hero image** — your generated pamphlet map via `gpt-image-2` (**StableStudio** primary → **BlockRun** fallback → `nano-banana-pro` on StableStudio), hosted; put its
   `publicUrl` in `TRIP.heroImageUrl`. **If you want the map to show numbered stops, bake the numbers into the
   image at generation time** — prompt the model to draw numbered markers/pins in itinerary order (e.g. "a
   tourism-pamphlet illustrated map of Tokyo with numbered markers 1–8 at these neighborhoods…"). **Never overlay

@@ -34,8 +34,7 @@ authoring. Each answer **unlocks a specific set of paid calls** — so you only 
    other connectivity · packing/comfort items (cubes, walking shoes) · nothing, just tell me what to bring
 2. **Other prep?** *(multi-select)* — buy a destination **eSIM/data plan** · fund a **prepaid card** for the trip ·
    generate a **spoken phrasebook** (audio you can play)
-3. **Reminders before you fly?** *(multi-select)* — **flight-reminder SMS** · an **AI wake-up call** before
-   departure · none
+3. **Reminders before you fly?** — an **AI wake-up call** before departure · none. *(No SMS/text reminders — not supported.)*
 4. **Book, or just plan?** (plan only / book hotel+transfers when I approve / book everything bookable with my approval)
 5. **Delivery — where should I send it?** The full package is produced **by default** and you do NOT ask whether
    to make it: an **illustrated hero map**, an **interactive itinerary page** (day tabs, pinned map + Open-in-Maps,
@@ -55,14 +54,14 @@ authoring. Each answer **unlocks a specific set of paid calls** — so you only 
 | **Cash or miles → miles/both** | award-seat search (`flights`: Seats.aero) |
 | **Vibe** | steers `places-reviews` + `social-sentiment` + Apify queries |
 | **Judge good → ratings** | Tripadvisor/Google Maps reviews (`places-reviews`) |
-| **Judge good → social / hidden gems** | Reddit/X + Apify TikTok/IG/YouTube (`social-sentiment` + `apify`) |
+| **Judge good → social / hidden gems** | **Apify hashtag/location scrapers** — aggregated, many posts per hashtag/place in one call (`apify.json`); NOT per-video/per-profile search. Reddit, raw X/twit.sh, and StableSocial per-item search all dropped |
 | **Budget posture** | sets confirm-gate ceilings + FX budgeting (`fx-budget`) |
 | **Home base + currency** | origin airport for flight search; FX pair (`fx-budget`) |
 | **Buy gear → any item** | `purch-search`/`purch-shop` (find) → `purch-buy` 🔴 buy+ship (`prepare-buy`; plug/voltage/climate reasoning is free) |
 | **Prep → eSIM** | Bitrefill eSIM buy 🔴 (`prepare-buy`) |
 | **Prep → prepaid card** | Laso card 🔴 (`prepare-buy`) — also enables card-funded bookings |
 | **Prep → phrasebook** | TTS 🟢 (8–12 phrases, **native-script input**, not romaji) → upload each MP3 to StableUpload short-10mb → deliver playable-link table in chat **and in the PDF** (`deliverables`; translation is free) |
-| **Reminders → SMS / wake-up call** | AgentPhone SMS + AI call 🔴 (`deliverables`); StablePhone/Textbelt fallback |
+| **Reminders → wake-up call** | AI call via **StablePhone** 🔴 (`ai-phone-call`, `deliverables`). **No SMS** — not supported (no reliable keyless sender) |
 | **Book → hotel/transfers** | `lodging` booking 🔴 (Travala or StableTravel + Laso card) |
 | **Deliver (ALWAYS, by default)** | hero map image + interactive HTML page + PDF companion — `deliverables` + `deliverable-design.md` (never make the user ask for these) |
 | **Deliver → email** | AgentMail/StableEmail 🔴 (`deliverables`; reuse owned inbox) — ask only for the address |

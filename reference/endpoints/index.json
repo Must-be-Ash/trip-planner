@@ -555,17 +555,6 @@
         "registryStatus": "active"
       },
       {
-        "id": "twit-sh-tweet-search",
-        "name": "twit.sh Tweet Search",
-        "verified": true,
-        "confirmGate": "GREEN",
-        "priceDisplay": "$0.0050",
-        "networks": [
-          "Base"
-        ],
-        "registryStatus": "active"
-      },
-      {
         "id": "scrape-creators-tiktok-video",
         "name": "Scrape Creators TikTok Video",
         "verified": true,
@@ -1087,17 +1076,6 @@
         "registryStatus": "active"
       },
       {
-        "id": "nano-banana-2",
-        "name": "Nano Banana 2",
-        "verified": true,
-        "confirmGate": "GREEN",
-        "priceDisplay": "$0.050",
-        "networks": [
-          "Base"
-        ],
-        "registryStatus": "active"
-      },
-      {
         "id": "nano-banana-pro-generate",
         "name": "Nano Banana Pro Generate",
         "verified": true,
@@ -1106,19 +1084,6 @@
         "networks": [
           "Base",
           "Solana"
-        ],
-        "registryStatus": "active"
-      },
-      {
-        "id": "flux-2-pro-generate",
-        "name": "FLUX.2 Pro Generate",
-        "verified": true,
-        "confirmGate": "GREEN",
-        "priceDisplay": "$0.030",
-        "networks": [
-          "Base",
-          "Solana",
-          "eip155:4326"
         ],
         "registryStatus": "active"
       },
@@ -1243,42 +1208,6 @@
           "Avalanche",
           "eip155:196",
           "Polygon"
-        ],
-        "registryStatus": "hidden"
-      },
-      {
-        "id": "send-sms",
-        "name": "Send SMS",
-        "verified": true,
-        "confirmGate": "RED",
-        "priceDisplay": "$0.020",
-        "networks": [
-          "Base",
-          "Solana"
-        ],
-        "registryStatus": "active"
-      },
-      {
-        "id": "agentphone-number",
-        "name": "AgentPhone Number",
-        "verified": true,
-        "confirmGate": "RED",
-        "priceDisplay": "$0.010",
-        "networks": [
-          "Base",
-          "Solana"
-        ],
-        "registryStatus": "active"
-      },
-      {
-        "id": "agentphone-messaging-calls",
-        "name": "AgentPhone Messaging & Calls",
-        "verified": false,
-        "confirmGate": "RED",
-        "priceDisplay": "$0.020",
-        "networks": [
-          "Base",
-          "Solana"
         ],
         "registryStatus": "hidden"
       },

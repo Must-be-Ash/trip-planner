@@ -87,8 +87,17 @@ Pipeline: **autocomplete/list → offers-search → offer-detail → book**.
 
 ## §6. Social / real-traveler intel (`social-sentiment.json` + Apify)
 
-- **Where locals actually go (beats listicles):** `reddit-search-stableenrich` ($0.02) + `-post-comments-` (the
-  gold is in comments); `twit-sh-tweet-search` ($0.005). Then the model synthesizes — no paid "sentiment" step.
+- **Where locals actually go (beats listicles):** use **Apify hashtag/location scrapers** — one paid call returns
+  *many* posts for a hashtag or place (`clockworks~tiktok-hashtag-scraper`, `apidojo~tiktok-location-scraper`,
+  `apify~instagram-hashtag-scraper`; see the Apify note below + `apify.json`). That's **aggregated** signal — what
+  a lot of people are posting about a place — and the model synthesizes it (no paid "sentiment" step).
+- **Aggregated only, never one-by-one:** do NOT search video-by-video or profile-by-profile (e.g. StableSocial
+  `/video-search`, `/creator-search`, `/brand-mentions`) — that spends per item hunting for a single hit and isn't
+  the aggregated chatter we want. `twit-sh-tweet-search` (raw X) and Reddit are **removed/dropped**.
+- **Reddit is DROPPED (2026-07-13):** `reddit-search-stableenrich` / `-post-comments-` returned low-signal
+  **generic viral posts** (not Tokyo/destination content) on travel-intent keyword queries — wasted $0.04 with no
+  usable signal. Do **not** call the Reddit endpoints for trip intel; lean on aggregated ratings (`places-reviews`)
+  + X + Apify instead.
 - **TikTok/Instagram/YouTube discovery (by keyword/place, no known URL):** use **Apify** (`apify.json`) —
   `clockworks~tiktok-hashtag-scraper`, `apidojo~tiktok-location-scraper`, `apify~instagram-hashtag-scraper`,
   `streamers~youtube-scraper` + `pintostudio~youtube-transcript-scraper`. Always set `maxTotalChargeUsd`.
@@ -144,8 +153,15 @@ Open-in-Maps, gradient weather cards, phrasebook audio players, receipt) hosted 
 static **PDF companion**. Embed EVERYTHING you generated (hero map, phrasebook audio, directions, weather) —
 nothing dropped. Authoring the HTML/CSS/JS is free; you pay only to host + for the map image. Endpoint specifics:
 
-- **Illustrated map + day-by-day calendar:** `gpt-image-2-generate` ($0.01, cheapest; ⏳ async — poll
-  `/api/jobs/{id}`) or `nano-banana-2` ($0.05, sync) for speed. It's *illustrative*, not a navigable map (gaps).
+- **Illustrated map + day-by-day calendar — primary = `gpt-image-2` on StableStudio** (verified 2026-07-13 with a
+  full 7-marker prompt that BlockRun timed out on): `POST https://stablestudio.dev/api/generate/gpt-image-2/generate`
+  `{prompt, size:"1536x1024", quality:"high"}` (x402; high≈$0.17, medium/low cheaper) → `{jobId, pollUrl}` → poll
+  `GET /api/jobs/{jobId}` until `status:"complete"` → `result.imageUrl` (~2–3 min). **Poll is SIWX-gated with a
+  single-use nonce** — sign-per-poll dance in `pitfalls.md`. **Fallback → `gpt-image-2` on BlockRun**
+  (`POST blockrun.ai/api/v1/images/generations` `{model:"openai/gpt-image-2", prompt, size, n}`; sync, returns a
+  URL, ≈$0.06, no SIWX — but times out on long/dense prompts). Further fallback → **`nano-banana-pro-generate`**
+  (StableStudio). It's *illustrative*, not a navigable map (gaps). If all fail, degrade to a **themed CSS hero**
+  (don't spray paid retries).
 - **PDF itinerary:** `makespdf-markdown-to-pdf` ($0.01, from Markdown — cheapest) or `html-to-pdf-raw-html`
   ($0.005, full CSS). Output is binary (base64 via paid_fetch — strip prefix, decode).
 - **Shareable link:** `stableupload-file-upload` ($0.005–2.00) — host the PDF/image, hand over `publicUrl`.
@@ -167,10 +183,12 @@ nothing dropped. Authoring the HTML/CSS/JS is free; you pay only to host + for t
      run planned but never delivered.)
 - **Email the plan (🔴):** `agentmail-send-email` ($0.01, supports attachments — attach the PDF) — reuse the
   **owned inbox** (`wallet-payment.md`); `stableemail-send` ($0.02, keyless, no attach). Don't mint a new inbox.
-- **Reminders (🔴):** **AgentPhone** is the unified channel — `agentphone-number` (provision once) then SMS via
-  `agentphone-messaging-calls` (`/x402/v1/messages`, wrapped body) + AI wake-up call (`/x402/v1/calls`). Setup
-  chain + wrapped-body trap in `pitfalls.md`. No-setup fallbacks: `send-sms` (Textbelt, US), `ai-phone-call`
-  (StablePhone, US/CA, brings its own number). Timing is the agent's job (no scheduler primitive).
+  **Always tell the user to check spam/junk if it's not in their inbox** — AgentMail/SES mail can land there.
+- **Reminders (🔴):** **AI wake-up call → StablePhone** (`ai-phone-call`, US/CA; endpoints in
+  `stable-family/stablephone.md`) + the emailed itinerary. Timing is the agent's job (no scheduler primitive).
+  **No SMS/text reminders — SMS is intentionally unsupported** (no reliable keyless sender: Textbelt's shared
+  quota depletes to `quotaRemaining:0` + no non-US delivery; AgentPhone needs US 10DLC; StablePhone has no
+  SMS-send; the Bazaar's only sender is a sandbox mock). See `pitfalls.md`.
 
 ## §12. Cheapest-verified-first & fallback ladder
 
