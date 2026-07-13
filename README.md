@@ -62,6 +62,7 @@ reference/
   wallet-payment.md          how the wallet pays + owned assets + card-funds-booking
   pitfalls.md                per-endpoint gotchas & charge-then-fail traps
   gaps.md                    what it can't do yet + fallbacks
+  DESIGN.md                  the FIXED visual design system (tokens, rules, guardrails)
   deliverable-design.md      how to build the good-looking interactive HTML + PDF deliverable
   endpoints/*.json           the pre-baked x402 catalog (url/method/accepts/usage/confirmGate)
 examples/

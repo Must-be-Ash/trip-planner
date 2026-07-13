@@ -1,5 +1,11 @@
 # deliverable-design.md — build a great-looking deliverable, and put EVERYTHING in it
 
+> **The visual system is fixed — read `reference/DESIGN.md` and DO NOT restyle the template.** One accent
+> (`#C8442A`) + tints only, off-white canvas, serif display + Inter + mono, inline **line icons (never emoji)**,
+> **no gradients except the header's single subtle radial**, number-badge cards (no side/color bars). Your job
+> is to **fill the `TRIP` data + set the native-script name** — not to invent colors, fonts, or layout. The two
+> ugly early drafts came from per-trip theming and improvised styling; that freedom is now removed.
+
 The free competitor packages its plan beautifully: day-switcher tabs, an interactive pinned map with an
 "Open route" button, per-spot cards with ratings, and a gradient weather card with icons. We provide *more*
 (live prices, real reviews, forecasts, purchases) — so our presentation must match or beat theirs. Authoring a
@@ -20,7 +26,9 @@ link, weather ✅ as cards, flights ✅, budget ✅. If something can't be embed
 Use **`examples/itinerary-template.html`** — a self-contained, themeable, data-driven page. You only do two things:
 1. **Fill the `TRIP` object** with real data (title, hero image URL, flight verdict, weather, facts, days →
    spots with `lat`/`lng`/rating/category/blurb, phrasebook rows with hosted `audio` URLs, receipt lines).
-2. **Theme `:root`** to the destination, echoing your generated hero-map's art (see Theming below).
+2. **Set `TRIP.nativeName`** to the destination's native script (東京 / Roma / Αθήνα). **Do NOT change the CSS,
+   colors, fonts, or layout** — the design is fixed for every trip (see `DESIGN.md`); the theme shows only in the
+   native name, the illustrated map art, and the words.
 It renders (safely, via DOM text nodes — no innerHTML) the tabs, the Leaflet pinned map per day, weather strip,
 spot cards, phrasebook table with `<audio>` players, and the receipt. Empty sections auto-hide.
 
@@ -49,12 +57,13 @@ the bytes, hand the user the `publicUrl`.
 - **Just show a place:** `https://www.google.com/maps/search/?api=1&query=<name>`
 The template builds these for you from each spot's `lat`/`lng` (preferred) or `name`.
 
-## Theming (destination-adaptive)
-Set the CSS variables in `:root` to echo the place and your hero-map art. Examples:
-- **Tokyo:** `--accent:#d64545` (vermilion) · `--accent-2:#1f3a5f` (indigo) · `--bg:#f7f2ea` (washi) · serif display.
-- **Beach/tropical:** teal `--accent:#0ea5a4` · coral `--accent-2:#ff7059` · sand `--bg:#fff7ec`.
-- **Europe/classic:** deep green/gold, warm ivory bg, an elegant serif.
-Pick a display + body font pair that fits. Keep contrast high (text on the hero uses the scrim already).
+## Theming — DON'T (the system is fixed)
+There is **no per-destination theming**. The palette (one accent `#C8442A` + tints, off-white bg, white surface,
+one border), the fonts (Fraunces / Inter / JetBrains Mono), spacing, radii, and every component are locked in
+`DESIGN.md` + the template. The trip's personality is expressed **only** through: (1) `TRIP.nativeName` in the
+header, (2) the illustrated map image, (3) the copy. Do not swap the accent, add a second hue, add gradients
+(other than the header's built-in radial), or change fonts/layout. If a review flags a color/gradient/emoji/side
+-bar, it's a bug — fix it back to the system.
 
 ## PDF companion (make it reliably non-blank)
 The interactive template is JS-rendered, so **do not** count on a headless renderer to reproduce it. Instead

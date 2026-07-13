@@ -14,8 +14,9 @@
     "how the agent actually pays + owned assets to reuse": "reference/wallet-payment.md",
     "per-endpoint gotchas / charge-then-fail traps (check before calling)": "reference/pitfalls.md",
     "what the registry still can't do (graceful fallbacks)": "reference/gaps.md",
+    "the FIXED visual design system (tokens, rules, guardrails) — read before any deliverable": "reference/DESIGN.md",
     "how to build the good-looking deliverable (interactive HTML + PDF)": "reference/deliverable-design.md",
-    "the ready-to-fill interactive itinerary page (theme + fill TRIP object)": "examples/itinerary-template.html"
+    "the ready-to-fill interactive itinerary page (fill TRIP + native name; do NOT restyle)": "examples/itinerary-template.html"
   },
 
   "capabilities": {

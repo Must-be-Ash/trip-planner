@@ -5,307 +5,361 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Trip Itinerary</title>
 <!--
-  trip-planner interactive itinerary template (self-contained, online-OK).
-  HOW TO USE (agent):
-   1. Fill the TRIP object at the bottom with your real data (this is the ONLY thing you edit for content).
-   2. Theme it: set the CSS variables in :root to match the destination + your generated hero-map art
-      (e.g. Tokyo -> vermilion/indigo/sumi; a beach trip -> teal/sun/sand). Pick display + body fonts.
-   3. Host the finished .html on StableUpload (contentType text/html) and give the user the publicUrl.
-   4. For the PDF companion, render a print view (see reference/deliverable-design.md) — the @media print
-      block already hides the interactive map/tabs, expands all days, and shows the hero + map links.
-  All data is rendered via safe DOM text nodes (no innerHTML) so API text can't inject markup.
-  Leaflet (interactive pinned map) + OpenStreetMap tiles load from CDN at open time (needs internet).
+  trip-planner itinerary — FIXED design system (see reference/DESIGN.md). Do NOT restyle.
+  You only: (1) fill the TRIP object at the bottom, (2) set TRIP.nativeName (東京 / Roma / …).
+  One accent (#C8442A) + tints only · off-white canvas · serif display + Inter + mono · line icons (no emoji)
+  · no gradients except the header's single subtle radial · number-badge cards (no side bars).
+  Rendered via safe DOM text nodes (no innerHTML). Leaflet + fonts load from CDN (online-OK).
 -->
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
-  :root {
-    /* THEME — adapt these per destination (echo the hero-map art). Example = Tokyo. */
-    --accent:  #d64545;         /* primary (vermilion) */
-    --accent-2:#1f3a5f;         /* secondary (indigo)  */
-    --bg:      #f7f2ea;         /* page background     */
-    --card:    #ffffff;
-    --ink:     #1c1a17;
-    --muted:   #6d675e;
-    --line:    #e7ded1;
-    --display: "Georgia", "Times New Roman", serif;   /* headings */
-    --body:    system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    --radius:  16px;
-    --shadow:  0 6px 24px rgba(0,0,0,.09);
+  :root{
+    --accent:#C8442A; --accent-600:#A8371F; --accent-100:#F6E3DD; --accent-050:#FBF1EE;
+    --ink:#1A1815; --ink-70:#5B564E; --ink-40:#655F55;
+    --bg:#F4F1EA; --surface:#FFFFFF; --border:#E7E1D6;
+    --display:"Fraunces","Georgia",serif; --body:"Inter",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+    --r-card:14px; --r-ctl:9px; --pad:22px; --max:880px;
+    --sh:0 1px 2px rgba(26,24,21,.04); --sh-float:0 10px 30px rgba(26,24,21,.08);
   }
-  * { box-sizing: border-box; }
-  body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--body); line-height:1.5; }
-  a { color:var(--accent-2); }
-  h1,h2,h3 { font-family:var(--display); line-height:1.15; margin:0 0 .3em; }
-  .wrap { max-width: 920px; margin: 0 auto; padding: 0 18px; }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 20px;}
+  h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.1;margin:0;}
+  a{color:var(--accent-600);text-decoration:none;}
+  .pin-badge{background:var(--accent);color:#fff;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:600 13px var(--mono);box-shadow:0 1px 3px rgba(0,0,0,.35);}
+  .label{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-40);}
+  .ic{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto;vertical-align:middle;}
+  .ic.star{fill:currentColor;stroke:none;width:14px;height:14px;}
 
-  header.hero { position:relative; color:#fff; }
-  header.hero .img { height: 300px; background-size:cover; background-position:center; background-color:#333; }
-  header.hero .scrim { position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.72)); }
-  header.hero .cap { position:absolute; left:0; right:0; bottom:0; }
-  header.hero h1 { font-size: clamp(28px, 5vw, 46px); margin-bottom:.1em; text-shadow:0 2px 12px rgba(0,0,0,.5); }
-  header.hero .meta { opacity:.95; font-size:15px; }
-  .tagline { display:inline-block; margin-top:8px; font-size:12.5px; background:var(--accent); color:#fff;
-             padding:4px 10px; border-radius:999px; }
+  /* Header — the ONE allowed subtle radial (single ink hue + faint accent glow) */
+  header.hero{color:#F4EDE4;
+    background:
+      radial-gradient(70% 90% at 82% 6%, rgba(200,68,42,.20), transparent 60%),
+      radial-gradient(120% 140% at 15% 0%, #2a2620, var(--ink) 58%);}
+  header.hero .wrap{padding:46px 20px 34px;}
+  .native{font-family:var(--display);font-weight:600;font-size:clamp(40px,8vw,76px);line-height:.98;color:#F4EDE4;overflow-wrap:anywhere;}
+  .title{font-size:clamp(26px,4vw,36px);line-height:1.08;margin-top:9px;color:#fff;}
+  .hmeta{font-family:var(--mono);font-size:12.5px;letter-spacing:.04em;color:#C9BEB0;margin-top:14px;}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
+  .chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11.5px;letter-spacing:.03em;
+    color:#F4EDE4;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);padding:5px 10px;border-radius:9999px;}
+  .chip .ic{width:14px;height:14px;stroke-width:2;}
 
-  nav.tabs { position:sticky; top:0; z-index:500; background:var(--bg); border-bottom:1px solid var(--line);
-             overflow-x:auto; white-space:nowrap; -webkit-overflow-scrolling:touch; }
-  nav.tabs .wrap { display:flex; gap:6px; padding:10px 18px; }
-  nav.tabs button { font:600 14px var(--body); border:0; background:transparent; color:var(--muted);
-             padding:8px 14px; border-radius:999px; cursor:pointer; flex:0 0 auto; }
-  nav.tabs button.active { background:var(--accent); color:#fff; }
+  /* Framed hero map image */
+  .heromap{margin:22px 0 6px;border:1px solid var(--border);border-radius:var(--r-card);overflow:hidden;box-shadow:var(--sh-float);}
+  .heromap img{display:block;width:100%;height:auto;}
 
-  section.panel { display:none; padding: 22px 0 8px; }
-  section.panel.active { display:block; }
-  .panel h2 { font-size: 24px; color:var(--accent-2); }
-  .sub { color:var(--muted); margin:-.2em 0 1em; }
+  /* Day tabs */
+  nav.tabs{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border);overflow-x:auto;white-space:nowrap;scrollbar-width:thin;}
+  nav.tabs .wrap{display:flex;gap:6px;padding:12px 20px;}
+  nav.tabs button{font:600 13.5px var(--body);border:1px solid var(--border);background:var(--surface);color:var(--ink-70);
+    padding:8px 15px;border-radius:9999px;cursor:pointer;flex:0 0 auto;transition:.15s;}
+  nav.tabs button:hover{border-color:var(--ink-40);}
+  nav.tabs button.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+  nav.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
 
-  .card { background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); }
+  section.panel{display:none;padding:clamp(40px,7vw,64px) 0 8px;}
+  section.panel.active{display:block;}
+  section.panel > :first-child{margin-top:0;}
+  .eyebrow{display:flex;align-items:center;gap:8px;color:var(--accent-600);margin:clamp(28px,5vw,44px) 0 10px;}
+  .eyebrow .label{color:var(--accent-600);}
+  h2.sec{font-size:clamp(24px,3.5vw,30px);margin-bottom:20px;}
 
-  .weather { border-radius:var(--radius); overflow:hidden; color:#fff; box-shadow:var(--shadow); }
-  .weather .now { padding:18px 20px; display:flex; justify-content:space-between; align-items:flex-end;
-     background:linear-gradient(135deg, var(--accent-2), #4a80c0); }
-  .weather .now .t { font-size:42px; font-family:var(--display); }
-  .weather .days { display:flex; background:#2b3a53; }
-  .weather .days div.day { flex:1; text-align:center; padding:12px 6px; border-left:1px solid rgba(255,255,255,.12); font-size:13px; }
-  .weather .days .ic { font-size:20px; }
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-card);box-shadow:var(--sh);}
+  .grid{display:grid;gap:14px;}
 
-  .facts { display:flex; flex-wrap:wrap; gap:10px; }
-  .fact { flex:1 1 150px; padding:12px 14px; }
-  .fact .k { font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
-  .fact .v { font-size:16px; font-weight:600; }
+  /* Flight verdict — icon + heading, NO side bar */
+  .verdict{padding:var(--pad);margin-bottom:22px;}
+  .verdict h3{font-size:19px;margin:2px 0 6px;}
+  .verdict p{margin:0;color:var(--ink-70);font-size:15px;}
 
-  .map { height: 300px; border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow); margin:8px 0 12px; }
-  .maprow { display:flex; gap:10px; align-items:center; margin-bottom:6px; flex-wrap:wrap; }
+  /* Weather — equal white cards, line icon, serif temp, mono caption. No gradient/color fills. */
+  .weather{grid-template-columns:repeat(auto-fit,minmax(104px,1fr));margin-bottom:8px;}
+  .wcard{padding:16px;text-align:left;}
+  .wcard .d{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-40);}
+  .wcard .ic{width:26px;height:26px;color:var(--accent);margin:8px 0 4px;stroke-width:1.6;}
+  .wcard .t{font-family:var(--display);font-size:26px;font-weight:600;}
+  .wcard .c{font-size:12.5px;color:var(--ink-70);}
+  .wcard .pop{display:inline-block;margin-top:6px;font-family:var(--mono);font-size:11.5px;color:var(--accent-600);background:var(--accent-100);padding:2px 8px;border-radius:9999px;}
+  @media(max-width:520px){ .weather{grid-template-columns:repeat(auto-fit,minmax(88px,1fr));} .wcard{padding:12px;text-align:center;} }
 
-  .spot { display:flex; gap:12px; padding:14px; margin:10px 0; align-items:flex-start; }
-  .spot .num { flex:0 0 30px; height:30px; width:30px; border-radius:50%; background:var(--accent); color:#fff;
-     display:grid; place-items:center; font-weight:700; }
-  .spot .body { flex:1; }
-  .spot .when { font-size:12px; color:var(--accent); font-weight:700; text-transform:uppercase; letter-spacing:.04em; }
-  .spot h3 { font-family:var(--body); font-size:17px; margin:.1em 0; }
-  .spot .rate { color:#b8860b; font-weight:600; font-size:13px; }
-  .spot .cat { color:var(--muted); font-size:13px; }
-  .spot .addr { color:var(--muted); font-size:12.5px; margin-top:2px; }
-  .spot p { margin:.4em 0 .5em; font-size:14px; }
-  .btn { display:inline-block; text-decoration:none; font-weight:600; font-size:13px; padding:7px 12px;
-     border-radius:999px; background:var(--accent-2); color:#fff; }
-  .btn.ghost { background:transparent; color:var(--accent-2); border:1.5px solid var(--accent-2); }
+  /* Facts */
+  .facts{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:8px;}
+  .fact{padding:14px 16px;display:flex;gap:10px;align-items:flex-start;}
+  .fact .ic{color:var(--accent);margin-top:2px;}
+  .fact .k{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-40);}
+  .fact .v{font-size:15px;font-weight:500;}
 
-  table.phrase { width:100%; border-collapse:collapse; background:var(--card); border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow); }
-  table.phrase th, table.phrase td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); font-size:14px; vertical-align:middle; }
-  table.phrase th { background:var(--accent-2); color:#fff; font-family:var(--body); }
-  table.phrase audio { height:32px; }
+  /* Map */
+  .map{height:320px;border:1px solid var(--border);border-radius:var(--r-card);overflow:hidden;box-shadow:var(--sh);margin:6px 0 14px;}
+  .leaflet-container{font-family:var(--body);}
 
-  table.receipt { width:100%; border-collapse:collapse; padding:8px 12px; }
-  table.receipt td { padding:6px 10px; font-size:13.5px; border-bottom:1px solid var(--line); }
-  table.receipt .tot { font-weight:700; }
-  footer { color:var(--muted); font-size:13px; padding:24px 0 40px; text-align:center; }
+  /* Spot cards — number badge, NO left color bar */
+  .spot{display:flex;gap:14px;padding:16px 18px;margin:12px 0;align-items:flex-start;}
+  .spot .num{flex:0 0 30px;height:30px;width:30px;border-radius:9999px;background:var(--accent);color:#fff;
+    display:grid;place-items:center;font-family:var(--mono);font-weight:600;font-size:13px;}
+  .spot .body{flex:1;min-width:0;}
+  .spot .when{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-40);}
+  .spot h3{font-family:var(--display);font-size:17px;margin:3px 0 6px;}
+  .spot .meta{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-70);margin-bottom:6px;}
+  .spot .meta .star{color:var(--accent);}
+  .spot .addr{display:flex;gap:6px;align-items:flex-start;color:var(--ink-40);font-size:12.5px;margin-bottom:10px;}
+  .spot .addr .ic{width:15px;height:15px;margin-top:1px;color:var(--ink-40);}
+  .spot p{margin:4px 0 14px;font-size:15px;color:var(--ink-70);}
 
-  @media print {
-    nav.tabs, .map { display:none !important; }
-    section.panel { display:block !important; page-break-inside:avoid; }
-    header.hero .img { height:220px; }
-    .btn { border:1px solid #888; color:#000 !important; background:#fff !important; }
-    a[href]:after { content:" (" attr(href) ")"; font-size:10px; color:#555; word-break:break-all; }
+  .btn{display:inline-flex;align-items:center;gap:7px;font:600 13px var(--body);padding:8px 14px;border-radius:var(--r-ctl);
+    cursor:pointer;transition:.15s;text-decoration:none;}
+  .btn.primary{background:var(--accent);color:#fff;border:1px solid var(--accent);}
+  .btn.primary:hover{background:var(--accent-600);border-color:var(--accent-600);}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--border);}
+  .btn.ghost:hover{border-color:var(--ink-40);}
+  .btn .ic{width:16px;height:16px;}
+  .maprow{margin-bottom:6px;}
+
+  /* Phrasebook */
+  table.phrase{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-card);overflow:hidden;box-shadow:var(--sh);}
+  table.phrase th{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;text-align:left;
+    color:var(--ink-70);background:var(--surface);padding:12px 14px;border-bottom:1px solid var(--border);}
+  .tbl-scroll{overflow-x:auto;}
+  table.phrase td{padding:12px 14px;border-bottom:1px solid var(--border);font-size:14.5px;vertical-align:middle;}
+  table.phrase tr:nth-child(even) td{background:var(--accent-050);}
+  table.phrase tr:last-child td{border-bottom:0;}
+  table.phrase .native{font-family:var(--display);font-size:17px;color:var(--ink);}
+  table.phrase .rom{color:var(--ink-70);font-style:italic;}
+  table.phrase audio{height:30px;}
+
+  /* Receipt */
+  table.receipt{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-card);overflow:hidden;box-shadow:var(--sh);}
+  table.receipt td{padding:11px 16px;border-bottom:1px solid var(--border);font-size:14px;color:var(--ink-70);}
+  table.receipt td:last-child{text-align:right;font-family:var(--mono);color:var(--ink);}
+  table.receipt tr:last-child td{border-bottom:0;font-weight:600;color:var(--ink);}
+  .rnote{color:var(--ink-40);font-size:12.5px;margin-top:10px;}
+
+  footer{border-top:1px solid var(--border);margin-top:36px;}
+  footer .wrap{padding:26px 20px 44px;display:flex;flex-direction:column;gap:12px;align-items:flex-start;}
+  footer .tag{font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;color:var(--ink-40);}
+
+  @media print{
+    nav.tabs,.map,.maprow{display:none!important;}
+    section.panel{display:block!important;padding:18px 0 0;}
+    .card{page-break-inside:avoid;}
+    header.hero,.spot .num,.pin-badge,.wcard .pop,nav.tabs button.active{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    header.hero{background:var(--ink)!important;}
+    .btn{border:1px solid #999;color:#000!important;background:#fff!important;}
+    a[href^="http"]:after{content:" (" attr(href) ")";font-size:9.5px;color:#666;word-break:break-all;}
   }
 </style>
 </head>
 <body>
-  <header class="hero">
-    <div class="img" id="heroImg"></div>
-    <div class="scrim"></div>
-    <div class="cap"><div class="wrap" style="padding-bottom:18px">
-      <h1 id="title"></h1>
-      <div class="meta" id="meta"></div>
-      <span class="tagline" id="tagline"></span>
-    </div></div>
-  </header>
+  <!-- Inline line-icon sprite (Lucide-style). Add symbols here; reference with icon('name'). No emoji anywhere. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/></symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M17.5 19a4.5 4.5 0 0 0 0-9 6 6 0 0 0-11.6 1.6A3.5 3.5 0 0 0 6.5 19z"/></symbol>
+    <symbol id="i-cloud-rain" viewBox="0 0 24 24"><path d="M16 14.5a4 4 0 0 0 .5-8 6 6 0 0 0-11.6 1.6A3.5 3.5 0 0 0 6 14.5"/><path d="M8 17v3M12 17v4M16 17v3"/></symbol>
+    <symbol id="i-snow" viewBox="0 0 24 24"><line x1="12" y1="3" x2="12" y2="21"/><line x1="4" y1="7.5" x2="20" y2="16.5"/><line x1="20" y1="7.5" x2="4" y2="16.5"/></symbol>
+    <symbol id="i-wind" viewBox="0 0 24 24"><path d="M2 8h11a2.5 2.5 0 1 0-2.5-2.5M2 16h15a3 3 0 1 1-3 3M2 12h18"/></symbol>
+    <symbol id="i-thermo" viewBox="0 0 24 24"><path d="M14 14.8V5a2 2 0 0 0-4 0v9.8a4 4 0 1 0 4 0Z"/></symbol>
+    <symbol id="i-plane" viewBox="0 0 24 24"><path d="M17.8 19.2 16 11l4-4a2 2 0 0 0-3-3l-4 4-8.2-1.8a1 1 0 0 0-.9 1.7l6 3.7-2 3.4-2.5-.6a.8.8 0 0 0-.8 1.3L4 20l2.1 2.1a.8.8 0 0 0 1.3-.8l-.6-2.5 3.4-2 3.7 6a1 1 0 0 0 1.7-.9z"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
+    <symbol id="i-route" viewBox="0 0 24 24"><path d="M3 11 22 2l-9 19-2-8-8-2z"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-utensils" viewBox="0 0 24 24"><path d="M4 3v6a2 2 0 0 0 2 2v10M6 3v8M9 3v8M17 3c-1.4 0-2.5 2-2.5 5 0 2 .9 3.4 2.5 3.4V21"/></symbol>
+    <symbol id="i-ticket" viewBox="0 0 24 24"><path d="M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2 2 2 0 0 0 0 4 2 2 0 0 1-2 2H5a2 2 0 0 1-2-2 2 2 0 0 0 0-4Z"/><path d="M13 6v12"/></symbol>
+    <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V6a2 2 0 0 0-2-2H5a2 2 0 0 0 0 4h14a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6"/><circle cx="16.5" cy="12.5" r="1.2"/></symbol>
+    <symbol id="i-audio" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18Z"/></symbol>
+    <symbol id="i-plug" viewBox="0 0 24 24"><path d="M9 2v6M15 2v6M6 8h12v2a6 6 0 0 1-12 0zM12 16v6"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2.5"/><line x1="11" y1="18" x2="13" y2="18"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3.2l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.4 9.3l5.8-.8z"/></symbol>
+    <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M5 3v18l2-1.3 2 1.3 2-1.3 2 1.3 2-1.3 2 1.3V3l-2 1.3-2-1.3-2 1.3-2-1.3-2 1.3z"/><path d="M8 8h8M8 12h8M8 16h5"/></symbol>
+    <symbol id="i-map" viewBox="0 0 24 24"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></symbol>
+    <symbol id="i-arrow-ur" viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></symbol>
+  </defs></svg>
 
+  <header class="hero"><div class="wrap">
+    <div class="native" id="native"></div>
+    <div class="title" id="title"></div>
+    <div class="hmeta" id="meta"></div>
+    <div class="chips" id="chips"></div>
+  </div></header>
+
+  <div class="wrap" id="heromapWrap"></div>
   <nav class="tabs"><div class="wrap" id="tabbar"></div></nav>
   <main class="wrap" id="main"></main>
-  <footer class="wrap" id="footer"></footer>
+  <footer><div class="wrap" id="footer"></div></footer>
 
 <script>
 /* ============================================================================
-   FILL THIS with your real trip data. Coordinates make the map + directions
-   accurate — use lat/lng from geocoding / Tripadvisor / Google Maps when you have them.
-   Any section you leave empty ([] / omitted) is hidden automatically.
+   FILL THIS with real data (the ONLY thing you edit for content). Set nativeName
+   to the destination's native script. Coordinates make the map + directions accurate.
+   Empty sections auto-hide. Do NOT change the CSS/structure — see reference/DESIGN.md.
    ========================================================================== */
 const TRIP = {
+  nativeName: "東京",
   title: "Tokyo — 7-Day Solo Adventure",
-  meta: "Sep 14–21, 2026 · Solo · from San Francisco",
-  tagline: "Grounded in live x402 data — prices, reviews & forecasts a free assistant can't pull",
-  heroImageUrl: "https://f.stableupload.dev/REPLACE/tokyo-map.png",   // your generated pamphlet map (hosted)
-  pdfUrl: "https://f.stableupload.dev/REPLACE/tokyo-itinerary.pdf",   // PDF companion (fill after you render it)
+  meta: "Sep 14–21, 2026  ·  Solo  ·  from San Francisco",
+  heroImageUrl: "https://f.stableupload.dev/REPLACE/tokyo-map.png",  // generated illustrated map (hosted). Omit to hide.
+  pdfUrl: "https://f.stableupload.dev/REPLACE/tokyo-itinerary.pdf",   // fill after rendering the PDF. Omit to hide.
 
-  flight: { headline: "Book September — $284 nonstop (ZIPAIR)",
-            detail: "60-day price history shows Sep is the floor ($280–490 typical); Oct/Nov flat ~$460–484." },
+  chips: [ {icon:"plane", text:"Nonstop JAL from SFO"}, {icon:"pin", text:"Base: Shinjuku"},
+           {icon:"wallet", text:"¥162 / $1"} ],
 
-  weather: { place: "Tokyo", nowTemp: "29°C", nowDesc: "Partly cloudy",
-             days: [ {d:"Mon", ic:"⛅", hi:"30°", lo:"22°"}, {d:"Tue", ic:"☀️", hi:"31°", lo:"23°"},
-                     {d:"Wed", ic:"🌧️", hi:"27°", lo:"23°", pop:"60%"}, {d:"Thu", ic:"⛅", hi:"29°", lo:"22°"},
-                     {d:"Fri", ic:"☀️", hi:"32°", lo:"24°"} ] },
+  flight: { headline:"Book September — $284 nonstop (ZIPAIR)",
+            detail:"60-day price history shows Sep is the floor ($280–490 typical); Oct/Nov sit flat ~$460–484." },
 
-  facts: [ {k:"Currency", v:"¥ JPY · ~150/USD"}, {k:"Plug", v:"Type A (same as US)"},
-           {k:"eSIM", v:"Bought ✓ Japan 8-day"}, {k:"Phrasebook", v:"10 phrases + audio ↓"} ],
+  weather: { // condition -> icon: sun | cloud | rain | snow | wind (defaults to cloud)
+    days:[ {d:"Mon", cond:"cloud", t:"30°", c:"Partly cloudy"}, {d:"Tue", cond:"sun", t:"31°", c:"Clear"},
+           {d:"Wed", cond:"rain", t:"27°", c:"Showers", pop:"60%"}, {d:"Thu", cond:"cloud", t:"29°", c:"Cloudy"},
+           {d:"Fri", cond:"sun", t:"32°", c:"Hot & clear"} ] },
 
-  // One entry per day. Each spot: name, when, rating, category, blurb, and lat/lng (or the map falls back to a name search).
-  days: [
+  facts:[ {icon:"wallet", k:"Currency", v:"¥ JPY · ~150/USD"}, {icon:"plug", k:"Plug", v:"Type A (same as US)"},
+          {icon:"phone", k:"eSIM", v:"Japan 8-day — bought"}, {icon:"globe", k:"Phrasebook", v:"10 phrases + audio"} ],
+
+  days:[
     { n:1, title:"Asakusa — old Tokyo", spots:[
-        {name:"Sensō-ji Temple", when:"Morning", rating:"4.6", cat:"Landmark", address:"2-3-1 Asakusa, Taitō, Tokyo 111-0032", blurb:"Tokyo's oldest temple; go early to beat crowds.", lat:35.7148, lng:139.7967},
-        {name:"Nakamise-dōri", when:"Midday", rating:"4.4", cat:"Street / snacks", address:"1 Asakusa, Taitō, Tokyo 111-0032", blurb:"Souvenir & street-food lane up to the temple.", lat:35.7118, lng:139.7966},
-        {name:"Hoppy Street", when:"Evening", rating:"4.3", cat:"Izakaya alley", address:"2 Asakusa, Taitō, Tokyo 111-0032", blurb:"Retro drinking street — cheap beer & motsu.", lat:35.7112, lng:139.7935},
+        {name:"Sensō-ji Temple", when:"Morning", icon:"pin", rating:"4.6", cat:"Landmark", address:"2-3-1 Asakusa, Taitō, Tokyo", blurb:"Tokyo's oldest temple; go early to beat the crowds.", lat:35.7148, lng:139.7967},
+        {name:"Nakamise-dōri", when:"Midday", icon:"utensils", rating:"4.4", cat:"Street food", address:"1 Asakusa, Taitō, Tokyo", blurb:"Souvenir & snack lane up to the temple.", lat:35.7118, lng:139.7966},
+        {name:"Hoppy Street", when:"Evening", icon:"utensils", rating:"4.3", cat:"Izakaya alley", address:"2 Asakusa, Taitō, Tokyo", blurb:"Retro drinking street — cheap beer & motsu.", lat:35.7112, lng:139.7935},
     ]},
     { n:2, title:"Shinjuku & ramen", spots:[
-        {name:"Fuunji", when:"Lunch", rating:"4.5", cat:"Ramen (tsukemen)", address:"2-14-3 Yoyogi, Shibuya, Tokyo 151-0053", blurb:"Arrive before 11am; famous dipping ramen.", lat:35.6899, lng:139.6917},
-        {name:"Shinjuku Gyoen", when:"Afternoon", rating:"4.6", cat:"Garden", address:"11 Naitōmachi, Shinjuku, Tokyo 160-0014", blurb:"Calm garden escape (¥500).", lat:35.6852, lng:139.7100},
-        {name:"Golden Gai", when:"Night", rating:"4.4", cat:"Tiny bars", address:"1-1-6 Kabukichō, Shinjuku, Tokyo 160-0021", blurb:"200+ closet-sized bars; some cover charges.", lat:35.6939, lng:139.7047},
+        {name:"Fuunji", when:"Lunch", icon:"utensils", rating:"4.5", cat:"Ramen (tsukemen)", address:"2-14-3 Yoyogi, Shibuya, Tokyo", blurb:"Arrive before 11am; famous dipping ramen.", lat:35.6899, lng:139.6917},
+        {name:"Shinjuku Gyoen", when:"Afternoon", icon:"pin", rating:"4.6", cat:"Garden", address:"11 Naitōmachi, Shinjuku, Tokyo", blurb:"Calm garden escape (¥500).", lat:35.6852, lng:139.7100},
+        {name:"Golden Gai", when:"Night", icon:"ticket", rating:"4.4", cat:"Tiny bars", address:"1-1-6 Kabukichō, Shinjuku, Tokyo", blurb:"200+ closet-sized bars; some cover charges.", lat:35.6939, lng:139.7047},
     ]},
   ],
 
-  phrasebook: [
+  phrasebook:[
     {en:"Excuse me / sorry", native:"すみません", romaji:"sumimasen", use:"get attention / apologize", audio:"https://f.stableupload.dev/REPLACE/p1.mp3"},
     {en:"Thank you", native:"ありがとう", romaji:"arigatō", use:"anywhere", audio:"https://f.stableupload.dev/REPLACE/p2.mp3"},
     {en:"Check, please", native:"お会計お願いします", romaji:"o-kaikei onegai shimasu", use:"restaurants", audio:"https://f.stableupload.dev/REPLACE/p3.mp3"},
   ],
 
-  receipt: { lines:[ {svc:"Google Flights (3 windows)", cost:"$0.06"}, {svc:"JMA weather", cost:"$0.005"},
-                     {svc:"Reddit + Maps + Tripadvisor", cost:"$0.13"}, {svc:"GPT Image map", cost:"$0.01"},
-                     {svc:"Phrasebook TTS + hosting", cost:"$0.06"}, {svc:"PDF + HTML hosting", cost:"$0.02"} ],
-             total:"~$0.30 in data/generation", note:"Apify calls (if any) refund ~97% within ~1h — shown net." },
+  receipt:{ lines:[ {svc:"Google Flights (3 windows)", cost:"$0.06"}, {svc:"JMA weather", cost:"$0.005"},
+                    {svc:"Maps + Tripadvisor + Apify social", cost:"$0.15"}, {svc:"Illustrated map (GPT Image)", cost:"$0.01"},
+                    {svc:"Phrasebook TTS + hosting", cost:"$0.06"}, {svc:"PDF + HTML hosting", cost:"$0.02"} ],
+            total:"~$0.31", note:"Apify calls refund ~97% within ~1h — shown net-after-refund." },
 };
 
-/* ---- safe DOM builder (no innerHTML; all data goes in as text nodes) ---- */
+/* ---- safe builders (no innerHTML) ---- */
+const NS="http://www.w3.org/2000/svg", XL="http://www.w3.org/1999/xlink";
 function el(tag, attrs, ...kids){
-  const n = document.createElement(tag);
-  if (attrs) for (const k in attrs){
-    const v = attrs[k];
-    if (v == null || v === false) continue;
-    if (k === 'class') n.className = v;
-    else if (k === 'style') n.style.cssText = v;
-    else if (k.slice(0,2) === 'on' && typeof v === 'function') n[k] = v;
-    else n.setAttribute(k, v);
-  }
-  for (const kid of kids.flat()){
-    if (kid == null || kid === false) continue;
-    n.appendChild(typeof kid === 'object' ? kid : document.createTextNode(String(kid)));
-  }
+  const n=document.createElement(tag);
+  if(attrs) for(const k in attrs){ const v=attrs[k]; if(v==null||v===false) continue;
+    if(k==="class") n.className=v; else if(k==="style") n.style.cssText=v;
+    else if(k.slice(0,2)==="on"&&typeof v==="function") n[k]=v; else n.setAttribute(k,v); }
+  for(const kid of kids.flat()){ if(kid==null||kid===false) continue;
+    n.appendChild(typeof kid==="object"?kid:document.createTextNode(String(kid))); }
   return n;
 }
-const pt   = (s) => (s.lat != null ? `${s.lat},${s.lng}` : encodeURIComponent(s.name));
-const dirUrl = (s) => `https://www.google.com/maps/dir/?api=1&destination=${pt(s)}`;
-const routeUrl = (spots) => { const p = spots.map(pt); const dest = p[p.length-1]; const way = p.slice(0,-1).join('|');
-  return `https://www.google.com/maps/dir/?api=1&destination=${dest}${way ? `&waypoints=${way}` : ''}`; };
-
-document.getElementById('heroImg').style.backgroundImage = `url("${TRIP.heroImageUrl}")`;
-document.getElementById('title').textContent   = TRIP.title;
-document.getElementById('meta').textContent     = TRIP.meta;
-document.getElementById('tagline').textContent  = TRIP.tagline;
-
-const tabbar = document.getElementById('tabbar'), main = document.getElementById('main');
-const panels = [], MAPS = {};
-function addTab(id, label){ const b = el('button', {'data-t': id, onclick: () => show(id)}, label); tabbar.appendChild(b); }
-function show(id){
-  panels.forEach(p => p.classList.toggle('active', p.id === id));
-  [...tabbar.children].forEach(b => b.classList.toggle('active', b.dataset.t === id));
-  if (MAPS[id]) setTimeout(() => MAPS[id].invalidateSize(), 60);
-  window.scrollTo({top:0, behavior:'smooth'});
+function icon(name, cls){
+  const s=document.createElementNS(NS,"svg"); s.setAttribute("class","ic"+(cls?" "+cls:"")); s.setAttribute("viewBox","0 0 24 24"); s.setAttribute("aria-hidden","true");
+  const u=document.createElementNS(NS,"use"); u.setAttributeNS(XL,"href","#i-"+name); u.setAttribute("href","#i-"+name);
+  s.appendChild(u); return s;
 }
+const WEATHER_ICON={sun:"sun",clear:"sun",cloud:"cloud",clouds:"cloud",rain:"cloud-rain",showers:"cloud-rain",snow:"snow",wind:"wind"};
+const pt=(s)=> s.lat!=null ? `${s.lat},${s.lng}` : encodeURIComponent(s.name||"");
+const dirUrl=(s)=>`https://www.google.com/maps/dir/?api=1&destination=${pt(s)}`;
+const routeUrl=(spots)=>{const p=spots.map(pt);const dest=p[p.length-1];const way=p.slice(0,-1).join('|');
+  return `https://www.google.com/maps/dir/?api=1&destination=${dest}${way?`&waypoints=${way}`:''}`;};
+
+document.getElementById("native").textContent=TRIP.nativeName||"";
+document.getElementById("title").textContent=TRIP.title||"";
+document.getElementById("meta").textContent=TRIP.meta||"";
+const chips=document.getElementById("chips");
+(TRIP.chips||[]).forEach(c=> chips.appendChild(el("span",{class:"chip"}, c.icon&&icon(c.icon), c.text)));
+
+if(TRIP.heroImageUrl && !/REPLACE/.test(TRIP.heroImageUrl)){
+  const fig=el("div",{class:"heromap"});
+  fig.appendChild(el("img",{src:TRIP.heroImageUrl, alt:(TRIP.title||"")+" map", loading:"lazy", onerror:function(){fig.remove();}}));
+  document.getElementById("heromapWrap").appendChild(fig);
+}
+
+const tabbar=document.getElementById("tabbar"), main=document.getElementById("main"), panels=[], MAPS={};
+function addTab(id,label){ tabbar.appendChild(el("button",{"data-t":id, onclick:()=>show(id)}, label)); }
+function show(id){ panels.forEach(p=>p.classList.toggle("active",p.id===id));
+  [...tabbar.children].forEach(b=>{const on=b.dataset.t===id; b.classList.toggle("active",on); on?b.setAttribute("aria-current","true"):b.removeAttribute("aria-current");});
+  const act=tabbar.querySelector("button.active"); if(act) act.scrollIntoView({inline:"center",block:"nearest"});
+  if(MAPS[id]) setTimeout(()=>MAPS[id].invalidateSize(),60); window.scrollTo({top:0,behavior:"smooth"}); }
+function eyebrow(name,text){ return el("div",{class:"eyebrow"}, icon(name), el("span",{class:"label"}, text)); }
 
 /* Overview */
-addTab('overview', 'Overview');
-const ov = el('section', {class:'panel', id:'overview'});
-if (TRIP.flight) ov.appendChild(el('div', {class:'card', style:'padding:16px;margin-bottom:14px'},
-  el('h2', null, '✈ Flight verdict'),
-  el('div', {style:'font-weight:700;font-size:17px'}, TRIP.flight.headline),
-  el('p', {class:'sub'}, TRIP.flight.detail)));
-if (TRIP.weather){
-  const w = TRIP.weather;
-  const days = w.days.map(d => el('div', {class:'day'},
-    el('div', null, d.d), el('div', {class:'ic'}, d.ic), el('div', null, d.hi),
-    el('div', {style:'opacity:.7'}, (d.lo||'') + (d.pop ? ` · 💧${d.pop}` : ''))));
-  ov.appendChild(el('div', {class:'weather', style:'margin-bottom:14px'},
-    el('div', {class:'now'},
-      el('div', null, el('div', {style:'opacity:.85'}, w.place), el('div', {class:'t'}, w.nowTemp)),
-      el('div', null, w.nowDesc)),
-    el('div', {class:'days'}, days)));
-}
-if (TRIP.facts && TRIP.facts.length)
-  ov.appendChild(el('div', {class:'facts', style:'margin-bottom:6px'},
-    TRIP.facts.map(x => el('div', {class:'fact card'}, el('div', {class:'k'}, x.k), el('div', {class:'v'}, x.v)))));
+addTab("overview","Overview");
+const ov=el("section",{class:"panel",id:"overview"});
+if(TRIP.flight){ ov.appendChild(el("div",{class:"card verdict"},
+  eyebrow("plane","Flight verdict"), el("h3",null,TRIP.flight.headline), el("p",null,TRIP.flight.detail))); }
+if(TRIP.weather&&TRIP.weather.days){ ov.appendChild(eyebrow("thermo","Weather for your dates"));
+  const w=el("div",{class:"grid weather"});
+  TRIP.weather.days.forEach(d=> w.appendChild(el("div",{class:"card wcard"},
+    el("div",{class:"d"},d.d), icon(WEATHER_ICON[(d.cond||"cloud")]||"cloud"), el("div",{class:"t"},d.t),
+    el("div",{class:"c"},d.c||""), d.pop&&/rain|shower|snow/i.test(d.cond||"")&&el("span",{class:"pop"}, (/snow/i.test(d.cond||"")?"snow ":"rain ")+d.pop))));
+  ov.appendChild(w); }
+if(TRIP.facts&&TRIP.facts.length){ const f=el("div",{class:"grid facts"});
+  TRIP.facts.forEach(x=> f.appendChild(el("div",{class:"card fact"}, icon(x.icon||"pin"),
+    el("div",null, el("div",{class:"k"},x.k), el("div",{class:"v"},x.v))))); ov.appendChild(f); }
 main.appendChild(ov); panels.push(ov);
 
 /* Days */
-TRIP.days.forEach(day => {
-  const id = `day${day.n}`; addTab(id, `Day ${day.n}`);
-  const p = el('section', {class:'panel', id});
-  p.appendChild(el('h2', null, `Day ${day.n} — ${day.title}`));
-  p.appendChild(el('div', {class:'maprow'},
-    el('a', {class:'btn', target:'_blank', rel:'noopener', href: routeUrl(day.spots)}, "🗺️ Open the day's route in Maps →")));
-  p.appendChild(el('div', {class:'map', id:`map-${id}`}));
-  day.spots.forEach((s, i) => {
-    p.appendChild(el('div', {class:'spot card'},
-      el('div', {class:'num'}, i+1),
-      el('div', {class:'body'},
-        s.when && el('div', {class:'when'}, s.when),
-        el('h3', null, s.name),
-        el('div', null,
-          s.rating && el('span', {class:'rate'}, `★ ${s.rating}`),
-          s.rating && document.createTextNode(' · '),
-          el('span', {class:'cat'}, s.cat || '')),
-        s.address && el('div', {class:'addr'}, `📍 ${s.address}`),
-        s.blurb && el('p', null, s.blurb),
-        el('a', {class:'btn ghost', target:'_blank', rel:'noopener', href: dirUrl(s)}, 'Open in Maps →'))));
-  });
+(TRIP.days||[]).forEach(day=>{ const id=`day${day.n}`; addTab(id,`Day ${day.n}`);
+  const p=el("section",{class:"panel",id});
+  p.appendChild(eyebrow("map",`Day ${day.n}`));
+  p.appendChild(el("h2",{class:"sec"},day.title));
+  const spots=day.spots||[];
+  const hasPts=spots.some(s=>s.lat!=null);
+  if(hasPts){
+    p.appendChild(el("div",{class:"maprow"}, el("a",{class:"btn ghost",target:"_blank",rel:"noopener",href:routeUrl(spots)}, icon("route"), "Open the day's route")));
+    p.appendChild(el("div",{class:"map",id:`map-${id}`}));
+  }
+  spots.forEach((s,i)=> p.appendChild(el("div",{class:"card spot"},
+    el("div",{class:"num"}, i+1),
+    el("div",{class:"body"},
+      s.when&&el("div",{class:"when"},s.when),
+      el("h3",null,s.name),
+      (s.rating||s.cat)&&el("div",{class:"meta"}, s.rating&&icon("star","star"), s.rating&&el("span",null,s.rating), s.rating&&s.cat&&el("span",null,"·"), s.cat&&el("span",null,s.cat)),
+      s.address&&el("div",{class:"addr"}, icon("pin"), el("span",null,s.address)),
+      s.blurb&&el("p",null,s.blurb),
+      el("a",{class:"btn ghost",target:"_blank",rel:"noopener",href:dirUrl(s)}, icon("arrow-ur"), "Directions")))));
   main.appendChild(p); panels.push(p);
-  // Leaflet pinned map
-  const map = L.map(`map-${id}`, {scrollWheelZoom:false});
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'© OpenStreetMap'}).addTo(map);
-  const pts = [];
-  day.spots.forEach((s, i) => {
-    if (s.lat == null) return;
-    const badge = el('div', {style:'background:var(--accent);color:#fff;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:700 13px sans-serif;box-shadow:0 1px 4px rgba(0,0,0,.4)'}, i+1);
-    const icon = L.divIcon({className:'', html: badge.outerHTML, iconSize:[26,26], iconAnchor:[13,13]});
-    const popup = el('div', null, el('b', null, `${i+1}. ${s.name}`), el('br'), s.address || s.cat || '');
-    L.marker([s.lat, s.lng], {icon}).addTo(map).bindPopup(popup);
-    pts.push([s.lat, s.lng]);
-  });
-  if (pts.length) map.fitBounds(pts, {padding:[40,40], maxZoom:15}); else map.setView([20,0], 2);
-  MAPS[id] = map;
+  if(hasPts && typeof L!=="undefined"){ try{
+    const map=L.map(`map-${id}`,{scrollWheelZoom:false}); L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"}).addTo(map);
+    const pts=[];
+    spots.forEach((s,i)=>{ if(s.lat==null) return;
+      const wrap=el("div"); wrap.appendChild(el("div",{class:"pin-badge"}, i+1));
+      L.marker([s.lat,s.lng],{icon:L.divIcon({className:"",html:wrap.innerHTML,iconSize:[26,26],iconAnchor:[13,13]})}).addTo(map).bindPopup(el("div",null,el("b",null,`${i+1}. ${s.name}`),el("br"),s.address||s.cat||""));
+      pts.push([s.lat,s.lng]); });
+    if(pts.length) map.fitBounds(pts,{padding:[40,40],maxZoom:15});
+    MAPS[id]=map;
+  }catch(e){ const m=document.getElementById(`map-${id}`); if(m) m.style.display="none"; } }
 });
 
 /* Phrasebook */
-if (TRIP.phrasebook && TRIP.phrasebook.length){
-  addTab('phrasebook', 'Phrasebook');
-  const p = el('section', {class:'panel', id:'phrasebook'},
-    el('h2', null, '🔊 Essential phrases'), el('p', {class:'sub'}, 'Tap ▶ to hear the pronunciation.'));
-  const table = el('table', {class:'phrase'},
-    el('tr', null, ...['English','Local','Romaji','When','Listen'].map(h => el('th', null, h))));
-  TRIP.phrasebook.forEach(x => table.appendChild(el('tr', null,
-    el('td', null, x.en), el('td', null, el('b', null, x.native)), el('td', null, el('i', null, x.romaji)),
-    el('td', null, x.use || ''),
-    el('td', null, x.audio ? el('audio', {controls:'', preload:'none', src:x.audio}) : ''))));
-  p.appendChild(table); main.appendChild(p); panels.push(p);
+if(TRIP.phrasebook&&TRIP.phrasebook.length){ addTab("phrasebook","Phrasebook");
+  const p=el("section",{class:"panel",id:"phrasebook"}, eyebrow("audio","Phrasebook"),
+    el("h2",{class:"sec"},"Essential phrases"),
+    el("p",{style:"color:var(--ink-70);margin:-8px 0 16px;font-size:15px"},"Tap play to hear the pronunciation."));
+  const table=el("table",{class:"phrase"}, el("tr",null,...["English","Local","Romaji","When","Listen"].map(h=>el("th",null,h))));
+  TRIP.phrasebook.forEach(x=> table.appendChild(el("tr",null,
+    el("td",null,x.en), el("td",null,el("span",{class:"native"},x.native)), el("td",null,el("span",{class:"rom"},x.romaji)),
+    el("td",null,x.use||""), el("td",null, x.audio?el("audio",{controls:"",preload:"none",src:x.audio}):""))));
+  p.appendChild(el("div",{class:"tbl-scroll"}, table)); main.appendChild(p); panels.push(p);
 }
 
 /* Receipt */
-if (TRIP.receipt){
-  addTab('receipt', 'Cost');
-  const r = TRIP.receipt;
-  const table = el('table', {class:'receipt card'});
-  r.lines.forEach(l => table.appendChild(el('tr', null, el('td', null, l.svc), el('td', {style:'text-align:right'}, l.cost))));
-  table.appendChild(el('tr', null, el('td', {class:'tot'}, 'Total'), el('td', {class:'tot', style:'text-align:right'}, r.total)));
-  const p = el('section', {class:'panel', id:'receipt'}, el('h2', null, '🧾 What this cost'), table,
-    r.note && el('p', {class:'sub', style:'margin-top:10px'}, r.note));
-  main.appendChild(p); panels.push(p);
+if(TRIP.receipt){ addTab("receipt","Cost");
+  const r=TRIP.receipt; const table=el("table",{class:"receipt"});
+  r.lines.forEach(l=> table.appendChild(el("tr",null, el("td",null,l.svc), el("td",null,l.cost))));
+  table.appendChild(el("tr",null, el("td",null,"Total"), el("td",null,r.total)));
+  main.appendChild(el("section",{class:"panel",id:"receipt"}, eyebrow("receipt","What this cost"), table,
+    r.note&&el("p",{class:"rnote"},r.note))); panels.push(main.lastChild);
 }
 
-/* Footer + default tab */
-const footer = document.getElementById('footer');
-if (TRIP.pdfUrl){ footer.appendChild(el('a', {class:'btn', href:TRIP.pdfUrl, target:'_blank', rel:'noopener'}, '📄 Download the PDF itinerary')); footer.appendChild(el('br')); footer.appendChild(el('br')); }
-footer.appendChild(el('span', null, 'Built by the trip-planner skill · paid per call over x402'));
-show('overview');
+/* Footer */
+const footer=document.getElementById("footer");
+if(TRIP.pdfUrl && !/REPLACE/.test(TRIP.pdfUrl)) footer.appendChild(el("a",{class:"btn primary",href:TRIP.pdfUrl,target:"_blank",rel:"noopener"}, icon("receipt"), "Download the PDF itinerary"));
+footer.appendChild(el("span",{class:"tag"},"Built by trip-planner · grounded in live data, paid per call over x402"));
+show("overview");
 </script>
 </body>
 </html>

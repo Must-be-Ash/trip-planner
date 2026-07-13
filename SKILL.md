@@ -128,7 +128,11 @@ booking paid via the **Laso card-funds-the-booking** pattern (`wallet-payment.md
 (what / exact USDC / network / refundability) and wait for "yes" before each call. Never put the user's real card
 in a payload without explicit consent.
 
-### 5. Deliver — presentation matters (read `reference/deliverable-design.md`)
+### 5. Deliver — presentation matters (read `reference/DESIGN.md` + `reference/deliverable-design.md`)
+> **The visual system is FIXED (`reference/DESIGN.md`): one accent `#C8442A` + tints, off-white, serif+Inter+mono,
+> inline line icons (no emoji), no gradients except the header's subtle radial, number-badge cards (no side bars).
+> FILL the template's `TRIP` data + set the native-script name — do NOT restyle or re-theme per destination.**
+
 Package the plan as well as the free competitor does. **This package is the DEFAULT — always produce all of it
 without being asked** (hero map + interactive HTML page + PDF); the user only chooses where to email it. **Embed
 EVERYTHING you generated** (the hero map, phrasebook audio, per-spot directions + **addresses**, weather —
