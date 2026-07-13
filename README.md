@@ -62,7 +62,10 @@ reference/
   wallet-payment.md          how the wallet pays + owned assets + card-funds-booking
   pitfalls.md                per-endpoint gotchas & charge-then-fail traps
   gaps.md                    what it can't do yet + fallbacks
+  deliverable-design.md      how to build the good-looking interactive HTML + PDF deliverable
   endpoints/*.json           the pre-baked x402 catalog (url/method/accepts/usage/confirmGate)
+examples/
+  itinerary-template.html    ready-to-fill interactive itinerary page (day tabs, pinned map, weather cards, audio)
 scripts/
   build-catalog.mjs          regenerate the catalog from the MasterKey registry (+ Bazaar/Apify)
   validate-endpoints.mjs     dry-run, no-spend check that every endpoint is callable (402)

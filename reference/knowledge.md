@@ -137,7 +137,12 @@ Pipeline: **autocomplete/list → offers-search → offer-detail → book**.
   buy-link-only alternates.
 - **Custom merch:** `stablemerch-custom-merch` (🔴, ships a real product).
 
-## §11. Deliverables (`deliverables.json`)
+## §11. Deliverables (`deliverables.json`) — see `reference/deliverable-design.md` for the full build
+**Package it as well as the free competitor.** Deliver **two artifacts**: an **interactive HTML page** (built
+from `examples/itinerary-template.html` — day tabs, hero map image, interactive Leaflet pinned map, per-spot
+Open-in-Maps, gradient weather cards, phrasebook audio players, receipt) hosted via StableUpload, **plus** a
+static **PDF companion**. Embed EVERYTHING you generated (hero map, phrasebook audio, directions, weather) —
+nothing dropped. Authoring the HTML/CSS/JS is free; you pay only to host + for the map image. Endpoint specifics:
 
 - **Illustrated map + day-by-day calendar:** `gpt-image-2-generate` ($0.01, cheapest; ⏳ async — poll
   `/api/jobs/{id}`) or `nano-banana-2` ($0.05, sync) for speed. It's *illustrative*, not a navigable map (gaps).

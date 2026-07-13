@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Trip Itinerary</title>
+<!--
+  trip-planner interactive itinerary template (self-contained, online-OK).
+  HOW TO USE (agent):
+   1. Fill the TRIP object at the bottom with your real data (this is the ONLY thing you edit for content).
+   2. Theme it: set the CSS variables in :root to match the destination + your generated hero-map art
+      (e.g. Tokyo -> vermilion/indigo/sumi; a beach trip -> teal/sun/sand). Pick display + body fonts.
+   3. Host the finished .html on StableUpload (contentType text/html) and give the user the publicUrl.
+   4. For the PDF companion, render a print view (see reference/deliverable-design.md) — the @media print
+      block already hides the interactive map/tabs, expands all days, and shows the hero + map links.
+  All data is rendered via safe DOM text nodes (no innerHTML) so API text can't inject markup.
+  Leaflet (interactive pinned map) + OpenStreetMap tiles load from CDN at open time (needs internet).
+-->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root {
+    /* THEME — adapt these per destination (echo the hero-map art). Example = Tokyo. */
+    --accent:  #d64545;         /* primary (vermilion) */
+    --accent-2:#1f3a5f;         /* secondary (indigo)  */
+    --bg:      #f7f2ea;         /* page background     */
+    --card:    #ffffff;
+    --ink:     #1c1a17;
+    --muted:   #6d675e;
+    --line:    #e7ded1;
+    --display: "Georgia", "Times New Roman", serif;   /* headings */
+    --body:    system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --radius:  16px;
+    --shadow:  0 6px 24px rgba(0,0,0,.09);
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--body); line-height:1.5; }
+  a { color:var(--accent-2); }
+  h1,h2,h3 { font-family:var(--display); line-height:1.15; margin:0 0 .3em; }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 0 18px; }
+
+  header.hero { position:relative; color:#fff; }
+  header.hero .img { height: 300px; background-size:cover; background-position:center; background-color:#333; }
+  header.hero .scrim { position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.72)); }
+  header.hero .cap { position:absolute; left:0; right:0; bottom:0; }
+  header.hero h1 { font-size: clamp(28px, 5vw, 46px); margin-bottom:.1em; text-shadow:0 2px 12px rgba(0,0,0,.5); }
+  header.hero .meta { opacity:.95; font-size:15px; }
+  .tagline { display:inline-block; margin-top:8px; font-size:12.5px; background:var(--accent); color:#fff;
+             padding:4px 10px; border-radius:999px; }
+
+  nav.tabs { position:sticky; top:0; z-index:500; background:var(--bg); border-bottom:1px solid var(--line);
+             overflow-x:auto; white-space:nowrap; -webkit-overflow-scrolling:touch; }
+  nav.tabs .wrap { display:flex; gap:6px; padding:10px 18px; }
+  nav.tabs button { font:600 14px var(--body); border:0; background:transparent; color:var(--muted);
+             padding:8px 14px; border-radius:999px; cursor:pointer; flex:0 0 auto; }
+  nav.tabs button.active { background:var(--accent); color:#fff; }
+
+  section.panel { display:none; padding: 22px 0 8px; }
+  section.panel.active { display:block; }
+  .panel h2 { font-size: 24px; color:var(--accent-2); }
+  .sub { color:var(--muted); margin:-.2em 0 1em; }
+
+  .card { background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); }
+
+  .weather { border-radius:var(--radius); overflow:hidden; color:#fff; box-shadow:var(--shadow); }
+  .weather .now { padding:18px 20px; display:flex; justify-content:space-between; align-items:flex-end;
+     background:linear-gradient(135deg, var(--accent-2), #4a80c0); }
+  .weather .now .t { font-size:42px; font-family:var(--display); }
+  .weather .days { display:flex; background:#2b3a53; }
+  .weather .days div.day { flex:1; text-align:center; padding:12px 6px; border-left:1px solid rgba(255,255,255,.12); font-size:13px; }
+  .weather .days .ic { font-size:20px; }
+
+  .facts { display:flex; flex-wrap:wrap; gap:10px; }
+  .fact { flex:1 1 150px; padding:12px 14px; }
+  .fact .k { font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+  .fact .v { font-size:16px; font-weight:600; }
+
+  .map { height: 300px; border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow); margin:8px 0 12px; }
+  .maprow { display:flex; gap:10px; align-items:center; margin-bottom:6px; flex-wrap:wrap; }
+
+  .spot { display:flex; gap:12px; padding:14px; margin:10px 0; align-items:flex-start; }
+  .spot .num { flex:0 0 30px; height:30px; width:30px; border-radius:50%; background:var(--accent); color:#fff;
+     display:grid; place-items:center; font-weight:700; }
+  .spot .body { flex:1; }
+  .spot .when { font-size:12px; color:var(--accent); font-weight:700; text-transform:uppercase; letter-spacing:.04em; }
+  .spot h3 { font-family:var(--body); font-size:17px; margin:.1em 0; }
+  .spot .rate { color:#b8860b; font-weight:600; font-size:13px; }
+  .spot .cat { color:var(--muted); font-size:13px; }
+  .spot p { margin:.4em 0 .5em; font-size:14px; }
+  .btn { display:inline-block; text-decoration:none; font-weight:600; font-size:13px; padding:7px 12px;
+     border-radius:999px; background:var(--accent-2); color:#fff; }
+  .btn.ghost { background:transparent; color:var(--accent-2); border:1.5px solid var(--accent-2); }
+
+  table.phrase { width:100%; border-collapse:collapse; background:var(--card); border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow); }
+  table.phrase th, table.phrase td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); font-size:14px; vertical-align:middle; }
+  table.phrase th { background:var(--accent-2); color:#fff; font-family:var(--body); }
+  table.phrase audio { height:32px; }
+
+  table.receipt { width:100%; border-collapse:collapse; padding:8px 12px; }
+  table.receipt td { padding:6px 10px; font-size:13.5px; border-bottom:1px solid var(--line); }
+  table.receipt .tot { font-weight:700; }
+  footer { color:var(--muted); font-size:13px; padding:24px 0 40px; text-align:center; }
+
+  @media print {
+    nav.tabs, .map { display:none !important; }
+    section.panel { display:block !important; page-break-inside:avoid; }
+    header.hero .img { height:220px; }
+    .btn { border:1px solid #888; color:#000 !important; background:#fff !important; }
+    a[href]:after { content:" (" attr(href) ")"; font-size:10px; color:#555; word-break:break-all; }
+  }
+</style>
+</head>
+<body>
+  <header class="hero">
+    <div class="img" id="heroImg"></div>
+    <div class="scrim"></div>
+    <div class="cap"><div class="wrap" style="padding-bottom:18px">
+      <h1 id="title"></h1>
+      <div class="meta" id="meta"></div>
+      <span class="tagline" id="tagline"></span>
+    </div></div>
+  </header>
+
+  <nav class="tabs"><div class="wrap" id="tabbar"></div></nav>
+  <main class="wrap" id="main"></main>
+  <footer class="wrap" id="footer"></footer>
+
+<script>
+/* ============================================================================
+   FILL THIS with your real trip data. Coordinates make the map + directions
+   accurate — use lat/lng from geocoding / Tripadvisor / Google Maps when you have them.
+   Any section you leave empty ([] / omitted) is hidden automatically.
+   ========================================================================== */
+const TRIP = {
+  title: "Tokyo — 7-Day Solo Adventure",
+  meta: "Sep 14–21, 2026 · Solo · from San Francisco",
+  tagline: "Grounded in live x402 data — prices, reviews & forecasts a free assistant can't pull",
+  heroImageUrl: "https://f.stableupload.dev/REPLACE/tokyo-map.png",   // your generated pamphlet map (hosted)
+  pdfUrl: "https://f.stableupload.dev/REPLACE/tokyo-itinerary.pdf",   // PDF companion (fill after you render it)
+
+  flight: { headline: "Book September — $284 nonstop (ZIPAIR)",
+            detail: "60-day price history shows Sep is the floor ($280–490 typical); Oct/Nov flat ~$460–484." },
+
+  weather: { place: "Tokyo", nowTemp: "29°C", nowDesc: "Partly cloudy",
+             days: [ {d:"Mon", ic:"⛅", hi:"30°", lo:"22°"}, {d:"Tue", ic:"☀️", hi:"31°", lo:"23°"},
+                     {d:"Wed", ic:"🌧️", hi:"27°", lo:"23°", pop:"60%"}, {d:"Thu", ic:"⛅", hi:"29°", lo:"22°"},
+                     {d:"Fri", ic:"☀️", hi:"32°", lo:"24°"} ] },
+
+  facts: [ {k:"Currency", v:"¥ JPY · ~150/USD"}, {k:"Plug", v:"Type A (same as US)"},
+           {k:"eSIM", v:"Bought ✓ Japan 8-day"}, {k:"Phrasebook", v:"10 phrases + audio ↓"} ],
+
+  // One entry per day. Each spot: name, when, rating, category, blurb, and lat/lng (or the map falls back to a name search).
+  days: [
+    { n:1, title:"Asakusa — old Tokyo", spots:[
+        {name:"Sensō-ji Temple", when:"Morning", rating:"4.6", cat:"Landmark", blurb:"Tokyo's oldest temple; go early to beat crowds.", lat:35.7148, lng:139.7967},
+        {name:"Nakamise-dōri", when:"Midday", rating:"4.4", cat:"Street / snacks", blurb:"Souvenir & street-food lane up to the temple.", lat:35.7118, lng:139.7966},
+        {name:"Hoppy Street", when:"Evening", rating:"4.3", cat:"Izakaya alley", blurb:"Retro drinking street — cheap beer & motsu.", lat:35.7112, lng:139.7935},
+    ]},
+    { n:2, title:"Shinjuku & ramen", spots:[
+        {name:"Fuunji", when:"Lunch", rating:"4.5", cat:"Ramen (tsukemen)", blurb:"Arrive before 11am; famous dipping ramen.", lat:35.6899, lng:139.6917},
+        {name:"Shinjuku Gyoen", when:"Afternoon", rating:"4.6", cat:"Garden", blurb:"Calm garden escape (¥500).", lat:35.6852, lng:139.7100},
+        {name:"Golden Gai", when:"Night", rating:"4.4", cat:"Tiny bars", blurb:"200+ closet-sized bars; some cover charges.", lat:35.6939, lng:139.7047},
+    ]},
+  ],
+
+  phrasebook: [
+    {en:"Excuse me / sorry", native:"すみません", romaji:"sumimasen", use:"get attention / apologize", audio:"https://f.stableupload.dev/REPLACE/p1.mp3"},
+    {en:"Thank you", native:"ありがとう", romaji:"arigatō", use:"anywhere", audio:"https://f.stableupload.dev/REPLACE/p2.mp3"},
+    {en:"Check, please", native:"お会計お願いします", romaji:"o-kaikei onegai shimasu", use:"restaurants", audio:"https://f.stableupload.dev/REPLACE/p3.mp3"},
+  ],
+
+  receipt: { lines:[ {svc:"Google Flights (3 windows)", cost:"$0.06"}, {svc:"JMA weather", cost:"$0.005"},
+                     {svc:"Reddit + Maps + Tripadvisor", cost:"$0.13"}, {svc:"GPT Image map", cost:"$0.01"},
+                     {svc:"Phrasebook TTS + hosting", cost:"$0.06"}, {svc:"PDF + HTML hosting", cost:"$0.02"} ],
+             total:"~$0.30 in data/generation", note:"Apify calls (if any) refund ~97% within ~1h — shown net." },
+};
+
+/* ---- safe DOM builder (no innerHTML; all data goes in as text nodes) ---- */
+function el(tag, attrs, ...kids){
+  const n = document.createElement(tag);
+  if (attrs) for (const k in attrs){
+    const v = attrs[k];
+    if (v == null || v === false) continue;
+    if (k === 'class') n.className = v;
+    else if (k === 'style') n.style.cssText = v;
+    else if (k.slice(0,2) === 'on' && typeof v === 'function') n[k] = v;
+    else n.setAttribute(k, v);
+  }
+  for (const kid of kids.flat()){
+    if (kid == null || kid === false) continue;
+    n.appendChild(typeof kid === 'object' ? kid : document.createTextNode(String(kid)));
+  }
+  return n;
+}
+const pt   = (s) => (s.lat != null ? `${s.lat},${s.lng}` : encodeURIComponent(s.name));
+const dirUrl = (s) => `https://www.google.com/maps/dir/?api=1&destination=${pt(s)}`;
+const routeUrl = (spots) => { const p = spots.map(pt); const dest = p[p.length-1]; const way = p.slice(0,-1).join('|');
+  return `https://www.google.com/maps/dir/?api=1&destination=${dest}${way ? `&waypoints=${way}` : ''}`; };
+
+document.getElementById('heroImg').style.backgroundImage = `url("${TRIP.heroImageUrl}")`;
+document.getElementById('title').textContent   = TRIP.title;
+document.getElementById('meta').textContent     = TRIP.meta;
+document.getElementById('tagline').textContent  = TRIP.tagline;
+
+const tabbar = document.getElementById('tabbar'), main = document.getElementById('main');
+const panels = [], MAPS = {};
+function addTab(id, label){ const b = el('button', {'data-t': id, onclick: () => show(id)}, label); tabbar.appendChild(b); }
+function show(id){
+  panels.forEach(p => p.classList.toggle('active', p.id === id));
+  [...tabbar.children].forEach(b => b.classList.toggle('active', b.dataset.t === id));
+  if (MAPS[id]) setTimeout(() => MAPS[id].invalidateSize(), 60);
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* Overview */
+addTab('overview', 'Overview');
+const ov = el('section', {class:'panel', id:'overview'});
+if (TRIP.flight) ov.appendChild(el('div', {class:'card', style:'padding:16px;margin-bottom:14px'},
+  el('h2', null, '✈ Flight verdict'),
+  el('div', {style:'font-weight:700;font-size:17px'}, TRIP.flight.headline),
+  el('p', {class:'sub'}, TRIP.flight.detail)));
+if (TRIP.weather){
+  const w = TRIP.weather;
+  const days = w.days.map(d => el('div', {class:'day'},
+    el('div', null, d.d), el('div', {class:'ic'}, d.ic), el('div', null, d.hi),
+    el('div', {style:'opacity:.7'}, (d.lo||'') + (d.pop ? ` · 💧${d.pop}` : ''))));
+  ov.appendChild(el('div', {class:'weather', style:'margin-bottom:14px'},
+    el('div', {class:'now'},
+      el('div', null, el('div', {style:'opacity:.85'}, w.place), el('div', {class:'t'}, w.nowTemp)),
+      el('div', null, w.nowDesc)),
+    el('div', {class:'days'}, days)));
+}
+if (TRIP.facts && TRIP.facts.length)
+  ov.appendChild(el('div', {class:'facts', style:'margin-bottom:6px'},
+    TRIP.facts.map(x => el('div', {class:'fact card'}, el('div', {class:'k'}, x.k), el('div', {class:'v'}, x.v)))));
+main.appendChild(ov); panels.push(ov);
+
+/* Days */
+TRIP.days.forEach(day => {
+  const id = `day${day.n}`; addTab(id, `Day ${day.n}`);
+  const p = el('section', {class:'panel', id});
+  p.appendChild(el('h2', null, `Day ${day.n} — ${day.title}`));
+  p.appendChild(el('div', {class:'maprow'},
+    el('a', {class:'btn', target:'_blank', rel:'noopener', href: routeUrl(day.spots)}, "🗺️ Open the day's route in Maps →")));
+  p.appendChild(el('div', {class:'map', id:`map-${id}`}));
+  day.spots.forEach((s, i) => {
+    p.appendChild(el('div', {class:'spot card'},
+      el('div', {class:'num'}, i+1),
+      el('div', {class:'body'},
+        s.when && el('div', {class:'when'}, s.when),
+        el('h3', null, s.name),
+        el('div', null,
+          s.rating && el('span', {class:'rate'}, `★ ${s.rating}`),
+          s.rating && document.createTextNode(' · '),
+          el('span', {class:'cat'}, s.cat || '')),
+        s.blurb && el('p', null, s.blurb),
+        el('a', {class:'btn ghost', target:'_blank', rel:'noopener', href: dirUrl(s)}, 'Open in Maps →'))));
+  });
+  main.appendChild(p); panels.push(p);
+  // Leaflet pinned map
+  const map = L.map(`map-${id}`, {scrollWheelZoom:false});
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'© OpenStreetMap'}).addTo(map);
+  const pts = [];
+  day.spots.forEach((s, i) => {
+    if (s.lat == null) return;
+    const badge = el('div', {style:'background:var(--accent);color:#fff;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:700 13px sans-serif;box-shadow:0 1px 4px rgba(0,0,0,.4)'}, i+1);
+    const icon = L.divIcon({className:'', html: badge.outerHTML, iconSize:[26,26], iconAnchor:[13,13]});
+    const popup = el('div', null, el('b', null, `${i+1}. ${s.name}`), el('br'), s.cat || '');
+    L.marker([s.lat, s.lng], {icon}).addTo(map).bindPopup(popup);
+    pts.push([s.lat, s.lng]);
+  });
+  if (pts.length) map.fitBounds(pts, {padding:[40,40], maxZoom:15}); else map.setView([20,0], 2);
+  MAPS[id] = map;
+});
+
+/* Phrasebook */
+if (TRIP.phrasebook && TRIP.phrasebook.length){
+  addTab('phrasebook', 'Phrasebook');
+  const p = el('section', {class:'panel', id:'phrasebook'},
+    el('h2', null, '🔊 Essential phrases'), el('p', {class:'sub'}, 'Tap ▶ to hear the pronunciation.'));
+  const table = el('table', {class:'phrase'},
+    el('tr', null, ...['English','Local','Romaji','When','Listen'].map(h => el('th', null, h))));
+  TRIP.phrasebook.forEach(x => table.appendChild(el('tr', null,
+    el('td', null, x.en), el('td', null, el('b', null, x.native)), el('td', null, el('i', null, x.romaji)),
+    el('td', null, x.use || ''),
+    el('td', null, x.audio ? el('audio', {controls:'', preload:'none', src:x.audio}) : ''))));
+  p.appendChild(table); main.appendChild(p); panels.push(p);
+}
+
+/* Receipt */
+if (TRIP.receipt){
+  addTab('receipt', 'Cost');
+  const r = TRIP.receipt;
+  const table = el('table', {class:'receipt card'});
+  r.lines.forEach(l => table.appendChild(el('tr', null, el('td', null, l.svc), el('td', {style:'text-align:right'}, l.cost))));
+  table.appendChild(el('tr', null, el('td', {class:'tot'}, 'Total'), el('td', {class:'tot', style:'text-align:right'}, r.total)));
+  const p = el('section', {class:'panel', id:'receipt'}, el('h2', null, '🧾 What this cost'), table,
+    r.note && el('p', {class:'sub', style:'margin-top:10px'}, r.note));
+  main.appendChild(p); panels.push(p);
+}
+
+/* Footer + default tab */
+const footer = document.getElementById('footer');
+if (TRIP.pdfUrl){ footer.appendChild(el('a', {class:'btn', href:TRIP.pdfUrl, target:'_blank', rel:'noopener'}, '📄 Download the PDF itinerary')); footer.appendChild(el('br')); footer.appendChild(el('br')); }
+footer.appendChild(el('span', null, 'Built by the trip-planner skill · paid per call over x402'));
+show('overview');
+</script>
+</body>
+</html>

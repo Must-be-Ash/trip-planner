@@ -72,15 +72,16 @@ Example (adapt to what the user actually requested):
 ```
 Deliverables checklist
 [ ] 1. Flights — 3-window price comparison (🟢)
-[ ] 2. Weather forecast for the dates (🟢)
-[ ] 3. Google Maps + Tripadvisor reviews (🟢)
+[ ] 2. Weather forecast for the dates (🟢) → styled cards in the page (icons, not numbers)
+[ ] 3. Google Maps + Tripadvisor reviews + coords for every spot (🟢)
 [ ] 4. Reddit/social signal (🟢)
 [ ] 5. Gear the user asked to buy (🔴 Purch — confirm each)
-[ ] 6. Illustrated tourism map image (🟢) → MUST upload to StableUpload
-[ ] 7. Spoken phrasebook — 8-12 phrases, native-script TTS, each MP3 hosted, table in PDF (🟢)
+[ ] 6. Illustrated hero map image (🟢) → hosted + embedded at top of the page
+[ ] 7. Spoken phrasebook — 8-12 phrases, native-script TTS, each MP3 hosted → audio players in the page
 [ ] 8. Reminders: flight SMS / AI wake-up call (🔴, if requested)
-[ ] 9. PDF itinerary incl. phrase table → MUST upload to StableUpload
-[ ] 10. Email to user (🔴 — with the hosted links)
+[ ] 9. Interactive HTML page (day tabs · pinned map · per-spot Open-in-Maps · weather cards · phrasebook audio · receipt) → hosted (text/html)
+[ ] 10. PDF companion (static: hero + all days + map links + phrase table) → hosted
+[ ] 11. Email to user (🔴 — both hosted links)
 ```
 
 ### 2. Plan (🟢 GREEN — auto, cheapest-first)
@@ -120,11 +121,20 @@ booking paid via the **Laso card-funds-the-booking** pattern (`wallet-payment.md
 (what / exact USDC / network / refundability) and wait for "yes" before each call. Never put the user's real card
 in a payload without explicit consent.
 
-### 5. Deliver
-Generate an illustrated **map + day-by-day calendar** (`gpt-image-2-generate` / `nano-banana-2`), render a **PDF
-itinerary** (`makespdf-markdown-to-pdf`), **host** it (`stableupload-file-upload`, hand over the link). Then
-(🔴, confirm): **email** the plan (reuse the owned AgentMail inbox), and schedule an **AgentPhone** flight-reminder
-SMS + AI **wake-up call** (you fire it at the right time).
+### 5. Deliver — presentation matters (read `reference/deliverable-design.md`)
+Package the plan as well as the free competitor does. **Two artifacts, and embed EVERYTHING you generated**
+(the hero map, phrasebook audio, per-spot directions, weather — nothing dropped):
+- **Interactive HTML page (the star):** build from `examples/itinerary-template.html` — fill the `TRIP` object
+  (days→spots with lat/lng + rating + blurb, weather, phrasebook audio URLs, flight verdict, receipt) and theme
+  `:root` to the destination (echo the hero-map art). It renders day tabs, an interactive Leaflet pinned map +
+  per-day "Open route", per-spot **Open-in-Maps**, gradient **weather cards** (icons, not numbers), a phrasebook
+  table with inline **audio players**, and the x402 receipt. Generate the hero **map image** (`gpt-image-2-generate`
+  / `nano-banana-2`) and put it at the top. Host the `.html` (`stableupload-file-upload`, `contentType:text/html`).
+- **PDF companion (offline):** render a *static* version of the same content (Markdown → `makespdf-markdown-to-pdf`,
+  or static HTML → `html-to-pdf-raw-html`) — hero image + all days (with Open-in-Maps URLs as text) + phrasebook
+  table + receipt. Host it and link it from the HTML page.
+Then (🔴, confirm): **email** both links (reuse the owned AgentMail inbox) and schedule an **AgentPhone**
+flight-reminder SMS + AI **wake-up call**. Reconcile against the Step-1.5 checklist before closing.
 
 ### 6. Close — resolve the checklist + itemized receipt
 **Resolve the Step-1.5 checklist**: every item must be ✅ (with its hosted link/result) or ⚠️ (with the reason) —
