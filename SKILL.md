@@ -155,7 +155,10 @@ nothing dropped):
   file bytes.)
 - **PDF companion (offline):** render a *static* version of the same content (Markdown → `makespdf-markdown-to-pdf`,
   or static HTML → `html-to-pdf-raw-html`) — hero image + all days (with Open-in-Maps URLs as text) + phrasebook
-  table + receipt. Host it and link it from the HTML page.
+  table + receipt. **It's STATIC: drop the interactive Leaflet map + route buttons, drop the phrasebook
+  audio/"Listen" column (audio lives only in the web page), and reveal ALL day sections (don't inherit the tabbed
+  `display:none`).** If you derive it from the interactive HTML via headless Chrome, strip those elements first —
+  never print the interactive page as-is. Host it and link it from the HTML page.
 Then (🔴, confirm): **email** both links (reuse the owned AgentMail inbox) and, if requested, schedule an AI
 **wake-up call** (StablePhone). **No SMS reminders** (not supported). **After sending the email, always tell the
 user to check their spam/junk folder if it isn't in their inbox** (AgentMail/SES sometimes lands there). Reconcile

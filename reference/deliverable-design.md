@@ -58,12 +58,21 @@ Pick a display + body font pair that fits. Keep contrast high (text on the hero 
 
 ## PDF companion (make it reliably non-blank)
 The interactive template is JS-rendered, so **do not** count on a headless renderer to reproduce it. Instead
-render a **static** version of the same content:
+render a **static** version of the same content.
+- **The PDF is STATIC — it must NOT contain interactive-only elements (learned 2026-07-13):** (a) **omit the
+  Leaflet map + "Open day route" buttons** entirely — in a PDF they're a dead tile with useless +/- zoom; rely on
+  the hero image + each spot's **Open-in-Maps URL as text**; (b) the phrasebook must have **NO audio players /
+  "Listen" column** (say "audio is in the interactive web version"); (c) **reveal ALL day sections** — the
+  interactive template hides days behind tabs (`.day{display:none}`), so a naive render shows only Day 1. If you
+  produce the PDF by rendering the interactive HTML with headless Chrome, first derive a static copy that strips
+  the map section + the audio column and un-hides every `.day` — never print the interactive page as-is (that's
+  exactly how a live map, dead audio players, and a Day-1-only PDF slipped in once).
 - Easiest + reliable: author **Markdown** and render with `makespdf-markdown-to-pdf` ($0.01) — include: the hero
   image (Markdown image; use the numbered version if you generated one), a one-line flight verdict, the weather
   summary, then per-day sections (each spot with **name + street address**, ★rating, category, blurb, and the
   **full Open-in-Maps URL** as text so it's tappable in the PDF), the **phrasebook table** (English / native /
-  romaji / audio link), and the itemized x402 receipt. **Do not overlay pin numbers on the map for the PDF** —
+  romaji / when — **no audio/Listen column**; the tap-to-hear players live only in the interactive page), and the
+  itemized x402 receipt. **Do not overlay pin numbers on the map for the PDF** —
   rely on the names + addresses (and, if generated, the numbers already baked into the hero image).
 - Or author a static (no-JS) HTML and use `html-to-pdf-raw-html` ($0.005) for finer layout control.
 Host the PDF (`stableupload-file-upload`, `contentType:"application/pdf"`) and put its `publicUrl` in
