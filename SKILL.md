@@ -122,14 +122,18 @@ booking paid via the **Laso card-funds-the-booking** pattern (`wallet-payment.md
 in a payload without explicit consent.
 
 ### 5. Deliver — presentation matters (read `reference/deliverable-design.md`)
-Package the plan as well as the free competitor does. **Two artifacts, and embed EVERYTHING you generated**
-(the hero map, phrasebook audio, per-spot directions, weather — nothing dropped):
+Package the plan as well as the free competitor does. **This package is the DEFAULT — always produce all of it
+without being asked** (hero map + interactive HTML page + PDF); the user only chooses where to email it. **Embed
+EVERYTHING you generated** (the hero map, phrasebook audio, per-spot directions + **addresses**, weather —
+nothing dropped):
 - **Interactive HTML page (the star):** build from `examples/itinerary-template.html` — fill the `TRIP` object
   (days→spots with lat/lng + rating + blurb, weather, phrasebook audio URLs, flight verdict, receipt) and theme
   `:root` to the destination (echo the hero-map art). It renders day tabs, an interactive Leaflet pinned map +
   per-day "Open route", per-spot **Open-in-Maps**, gradient **weather cards** (icons, not numbers), a phrasebook
-  table with inline **audio players**, and the x402 receipt. Generate the hero **map image** (`gpt-image-2-generate`
-  / `nano-banana-2`) and put it at the top. Host the `.html` (`stableupload-file-upload`, `contentType:text/html`).
+  table with inline **audio players**, per-spot **addresses**, and the x402 receipt. Generate the hero **map
+  image** (`gpt-image-2-generate` / `nano-banana-2`) and put it at the top — if you want numbers on it, prompt
+  the image model to **draw numbered markers matching the itinerary order** (bake them into the art; never
+  overlay numbers afterward). Host the `.html` (`stableupload-file-upload`, `contentType:text/html`).
 - **PDF companion (offline):** render a *static* version of the same content (Markdown → `makespdf-markdown-to-pdf`,
   or static HTML → `html-to-pdf-raw-html`) — hero image + all days (with Open-in-Maps URLs as text) + phrasebook
   table + receipt. Host it and link it from the HTML page.

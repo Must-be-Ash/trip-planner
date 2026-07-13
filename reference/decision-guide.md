@@ -37,8 +37,11 @@ authoring. Each answer **unlocks a specific set of paid calls** — so you only 
 3. **Reminders before you fly?** *(multi-select)* — **flight-reminder SMS** · an **AI wake-up call** before
    departure · none
 4. **Book, or just plan?** (plan only / book hotel+transfers when I approve / book everything bookable with my approval)
-5. **How do you want the final plan?** *(multi-select)* — hosted PDF itinerary · illustrated map + day-by-day
-   calendar image · emailed to me
+5. **Delivery — where should I send it?** The full package is produced **by default** and you do NOT ask whether
+   to make it: an **illustrated hero map**, an **interactive itinerary page** (day tabs, pinned map + Open-in-Maps,
+   weather cards, phrasebook audio), **and a PDF companion**. Only ask: *"What email should I send it to?"* (to
+   deliver it) and offer to *remove* a piece if they don't want it. Don't make the user request the map/page/PDF —
+   they're standard.
 
 > Note on gear: even when **no adaptor is needed** (e.g. US↔Japan are both Type A), still offer *other* useful
 > gear — don't skip the question. If the user says yes, use Purch (search → confirm exact item + total +
@@ -61,9 +64,8 @@ authoring. Each answer **unlocks a specific set of paid calls** — so you only 
 | **Prep → phrasebook** | TTS 🟢 (8–12 phrases, **native-script input**, not romaji) → upload each MP3 to StableUpload short-10mb → deliver playable-link table in chat **and in the PDF** (`deliverables`; translation is free) |
 | **Reminders → SMS / wake-up call** | AgentPhone SMS + AI call 🔴 (`deliverables`); StablePhone/Textbelt fallback |
 | **Book → hotel/transfers** | `lodging` booking 🔴 (Travala or StableTravel + Laso card) |
-| **Deliver → PDF** | Markdown/HTML→PDF + StableUpload host (`deliverables`) |
-| **Deliver → map/calendar** | GPT Image 2 / Nano Banana (`deliverables`) |
-| **Deliver → email** | AgentMail/StableEmail 🔴 (`deliverables`; reuse owned inbox) |
+| **Deliver (ALWAYS, by default)** | hero map image + interactive HTML page + PDF companion — `deliverables` + `deliverable-design.md` (never make the user ask for these) |
+| **Deliver → email** | AgentMail/StableEmail 🔴 (`deliverables`; reuse owned inbox) — ask only for the address |
 
 ## Worked example
 > *"Can you plan a trip to Tokyo for me, I'm based in San Francisco."*

@@ -31,12 +31,16 @@ the bytes, hand the user the `publicUrl`.
 - **Coordinates** (`lat`/`lng`) for every spot — from `x402node-geocoding-forward`, Tripadvisor
   `location.latitude/longitude`, or Google Maps place details. Coords make both the **pins** and the
   **Open-in-Maps directions** accurate; without them the map falls back to a name search (less precise).
-- **Rating / category / blurb** — from Tripadvisor reviews or Google Maps place details (you already fetch these).
+- **Rating / category / blurb / ADDRESS** — from Tripadvisor `location` / Google Maps place details (you already
+  fetch these). **Always capture the street address** for each spot and show it on the card (`📍`) and in the PDF.
 - **Weather** — from the weather endpoints; map the condition/WMO code to an emoji for the cards:
   `0 ☀️ · 1–2 🌤️ · 3 ☁️ · 45/48 🌫️ · 51–67 🌦️ · 71–77 ❄️ · 80–82 🌧️ · 95–99 ⛈️`. Put the current temp + a
   5-day row with icons + hi/lo (+ precip%) — **never a raw number dump**.
 - **Hero image** — your generated pamphlet map (`gpt-image-2-generate` / `nano-banana`), hosted; put its
-  `publicUrl` in `TRIP.heroImageUrl`.
+  `publicUrl` in `TRIP.heroImageUrl`. **If you want the map to show numbered stops, bake the numbers into the
+  image at generation time** — prompt the model to draw numbered markers/pins in itinerary order (e.g. "a
+  tourism-pamphlet illustrated map of Tokyo with numbered markers 1–8 at these neighborhoods…"). **Never overlay
+  numbers on the image afterward** — it looks bad. The interactive Leaflet map already has real numbered pins.
 - **Phrasebook audio** — host each MP3 (`stableupload-file-upload`); put each `publicUrl` in the row's `audio`.
 
 ## Open-in-Maps links (free — just URLs)
@@ -56,9 +60,11 @@ Pick a display + body font pair that fits. Keep contrast high (text on the hero 
 The interactive template is JS-rendered, so **do not** count on a headless renderer to reproduce it. Instead
 render a **static** version of the same content:
 - Easiest + reliable: author **Markdown** and render with `makespdf-markdown-to-pdf` ($0.01) — include: the hero
-  image (Markdown image), a one-line flight verdict, the weather summary, then per-day sections (each spot with
-  ★rating, category, blurb, and the **full Open-in-Maps URL** as text so it's tappable in the PDF), the
-  **phrasebook table** (English / native / romaji / audio link), and the itemized x402 receipt.
+  image (Markdown image; use the numbered version if you generated one), a one-line flight verdict, the weather
+  summary, then per-day sections (each spot with **name + street address**, ★rating, category, blurb, and the
+  **full Open-in-Maps URL** as text so it's tappable in the PDF), the **phrasebook table** (English / native /
+  romaji / audio link), and the itemized x402 receipt. **Do not overlay pin numbers on the map for the PDF** —
+  rely on the names + addresses (and, if generated, the numbers already baked into the hero image).
 - Or author a static (no-JS) HTML and use `html-to-pdf-raw-html` ($0.005) for finer layout control.
 Host the PDF (`stableupload-file-upload`, `contentType:"application/pdf"`) and put its `publicUrl` in
 `TRIP.pdfUrl` so the HTML page links to it. (The template's `@media print` block also lets the user Print-to-PDF

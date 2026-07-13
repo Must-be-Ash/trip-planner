@@ -86,6 +86,7 @@
   .spot h3 { font-family:var(--body); font-size:17px; margin:.1em 0; }
   .spot .rate { color:#b8860b; font-weight:600; font-size:13px; }
   .spot .cat { color:var(--muted); font-size:13px; }
+  .spot .addr { color:var(--muted); font-size:12.5px; margin-top:2px; }
   .spot p { margin:.4em 0 .5em; font-size:14px; }
   .btn { display:inline-block; text-decoration:none; font-weight:600; font-size:13px; padding:7px 12px;
      border-radius:999px; background:var(--accent-2); color:#fff; }
@@ -152,14 +153,14 @@ const TRIP = {
   // One entry per day. Each spot: name, when, rating, category, blurb, and lat/lng (or the map falls back to a name search).
   days: [
     { n:1, title:"Asakusa — old Tokyo", spots:[
-        {name:"Sensō-ji Temple", when:"Morning", rating:"4.6", cat:"Landmark", blurb:"Tokyo's oldest temple; go early to beat crowds.", lat:35.7148, lng:139.7967},
-        {name:"Nakamise-dōri", when:"Midday", rating:"4.4", cat:"Street / snacks", blurb:"Souvenir & street-food lane up to the temple.", lat:35.7118, lng:139.7966},
-        {name:"Hoppy Street", when:"Evening", rating:"4.3", cat:"Izakaya alley", blurb:"Retro drinking street — cheap beer & motsu.", lat:35.7112, lng:139.7935},
+        {name:"Sensō-ji Temple", when:"Morning", rating:"4.6", cat:"Landmark", address:"2-3-1 Asakusa, Taitō, Tokyo 111-0032", blurb:"Tokyo's oldest temple; go early to beat crowds.", lat:35.7148, lng:139.7967},
+        {name:"Nakamise-dōri", when:"Midday", rating:"4.4", cat:"Street / snacks", address:"1 Asakusa, Taitō, Tokyo 111-0032", blurb:"Souvenir & street-food lane up to the temple.", lat:35.7118, lng:139.7966},
+        {name:"Hoppy Street", when:"Evening", rating:"4.3", cat:"Izakaya alley", address:"2 Asakusa, Taitō, Tokyo 111-0032", blurb:"Retro drinking street — cheap beer & motsu.", lat:35.7112, lng:139.7935},
     ]},
     { n:2, title:"Shinjuku & ramen", spots:[
-        {name:"Fuunji", when:"Lunch", rating:"4.5", cat:"Ramen (tsukemen)", blurb:"Arrive before 11am; famous dipping ramen.", lat:35.6899, lng:139.6917},
-        {name:"Shinjuku Gyoen", when:"Afternoon", rating:"4.6", cat:"Garden", blurb:"Calm garden escape (¥500).", lat:35.6852, lng:139.7100},
-        {name:"Golden Gai", when:"Night", rating:"4.4", cat:"Tiny bars", blurb:"200+ closet-sized bars; some cover charges.", lat:35.6939, lng:139.7047},
+        {name:"Fuunji", when:"Lunch", rating:"4.5", cat:"Ramen (tsukemen)", address:"2-14-3 Yoyogi, Shibuya, Tokyo 151-0053", blurb:"Arrive before 11am; famous dipping ramen.", lat:35.6899, lng:139.6917},
+        {name:"Shinjuku Gyoen", when:"Afternoon", rating:"4.6", cat:"Garden", address:"11 Naitōmachi, Shinjuku, Tokyo 160-0014", blurb:"Calm garden escape (¥500).", lat:35.6852, lng:139.7100},
+        {name:"Golden Gai", when:"Night", rating:"4.4", cat:"Tiny bars", address:"1-1-6 Kabukichō, Shinjuku, Tokyo 160-0021", blurb:"200+ closet-sized bars; some cover charges.", lat:35.6939, lng:139.7047},
     ]},
   ],
 
@@ -253,6 +254,7 @@ TRIP.days.forEach(day => {
           s.rating && el('span', {class:'rate'}, `★ ${s.rating}`),
           s.rating && document.createTextNode(' · '),
           el('span', {class:'cat'}, s.cat || '')),
+        s.address && el('div', {class:'addr'}, `📍 ${s.address}`),
         s.blurb && el('p', null, s.blurb),
         el('a', {class:'btn ghost', target:'_blank', rel:'noopener', href: dirUrl(s)}, 'Open in Maps →'))));
   });
@@ -265,7 +267,7 @@ TRIP.days.forEach(day => {
     if (s.lat == null) return;
     const badge = el('div', {style:'background:var(--accent);color:#fff;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:700 13px sans-serif;box-shadow:0 1px 4px rgba(0,0,0,.4)'}, i+1);
     const icon = L.divIcon({className:'', html: badge.outerHTML, iconSize:[26,26], iconAnchor:[13,13]});
-    const popup = el('div', null, el('b', null, `${i+1}. ${s.name}`), el('br'), s.cat || '');
+    const popup = el('div', null, el('b', null, `${i+1}. ${s.name}`), el('br'), s.address || s.cat || '');
     L.marker([s.lat, s.lng], {icon}).addTo(map).bindPopup(popup);
     pts.push([s.lat, s.lng]);
   });
