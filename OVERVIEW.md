@@ -76,7 +76,7 @@ itself. It shows you an itemized receipt at the end.
 
 ## See it in action
 
-<video src="media/demo.mp4" controls muted width="100%"></video>
+[![Watch the demo](https://img.youtube.com/vi/-zLEcHXmbPw/maxresdefault.jpg)](https://www.youtube.com/watch?v=-zLEcHXmbPw)
 
 <!-- Captions are a starting guess — reorder/relabel to match what each screenshot actually shows. -->
 
