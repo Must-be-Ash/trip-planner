@@ -35,13 +35,15 @@
   .ic.star{fill:currentColor;stroke:none;width:14px;height:14px;}
 
   /* Header — the ONE allowed subtle radial (single ink hue + faint accent glow) */
-  header.hero{color:#F4EDE4;
+  header.hero{position:relative;overflow:hidden;color:#F4EDE4;
     background:
       radial-gradient(70% 90% at 82% 6%, rgba(200,68,42,.20), transparent 60%),
       radial-gradient(120% 140% at 15% 0%, #2a2620, var(--ink) 58%);}
-  header.hero .wrap{padding:46px 20px 34px;}
-  .native{font-family:var(--display);font-weight:600;font-size:clamp(40px,8vw,76px);line-height:.98;color:#F4EDE4;overflow-wrap:anywhere;}
-  .title{font-size:clamp(26px,4vw,36px);line-height:1.08;margin-top:9px;color:#fff;}
+  header.hero .wrap{position:relative;z-index:1;padding:52px 20px 42px;}
+  .native-wm{position:absolute;z-index:0;right:-1%;bottom:-12%;font-family:var(--display);font-weight:600;
+    font-size:clamp(150px,32vw,360px);line-height:.72;letter-spacing:-.02em;color:rgba(244,237,228,.10);
+    white-space:nowrap;pointer-events:none;user-select:none;}
+  .title{font-size:clamp(26px,4vw,36px);line-height:1.1;color:#fff;}
   .hmeta{font-family:var(--mono);font-size:12.5px;letter-spacing:.04em;color:#C9BEB0;margin-top:14px;}
   .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
   .chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11.5px;letter-spacing:.03em;
@@ -92,6 +94,16 @@
   .fact .ic{color:var(--accent);margin-top:2px;}
   .fact .k{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-40);}
   .fact .v{font-size:15px;font-weight:500;}
+
+  /* Before you go (prep / gear / bought) */
+  .prep{grid-template-columns:repeat(auto-fit,minmax(230px,1fr));margin-bottom:8px;}
+  .prep .item{padding:16px 18px;display:flex;gap:12px;align-items:flex-start;}
+  .prep .item .ic{color:var(--accent);margin-top:2px;}
+  .prep .pl{font-weight:600;font-size:15px;}
+  .prep .pd{font-size:13.5px;color:var(--ink-70);margin-top:3px;}
+  .prep .pa{display:inline-flex;align-items:center;gap:5px;margin-top:9px;font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;color:var(--accent-600);}
+  .prep .pa .ic{width:14px;height:14px;color:var(--accent-600);}
+  .prep .badge{display:inline-block;margin-top:8px;font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--accent-600);background:var(--accent-100);padding:3px 8px;border-radius:9999px;}
 
   /* Map */
   .map{height:320px;border:1px solid var(--border);border-radius:var(--r-card);overflow:hidden;box-shadow:var(--sh);margin:6px 0 14px;}
@@ -179,12 +191,14 @@
     <symbol id="i-arrow-ur" viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></symbol>
   </defs></svg>
 
-  <header class="hero"><div class="wrap">
-    <div class="native" id="native"></div>
-    <div class="title" id="title"></div>
-    <div class="hmeta" id="meta"></div>
-    <div class="chips" id="chips"></div>
-  </div></header>
+  <header class="hero">
+    <div class="native-wm" id="native" aria-hidden="true"></div>
+    <div class="wrap">
+      <div class="title" id="title"></div>
+      <div class="hmeta" id="meta"></div>
+      <div class="chips" id="chips"></div>
+    </div>
+  </header>
 
   <div class="wrap" id="heromapWrap"></div>
   <nav class="tabs"><div class="wrap" id="tabbar"></div></nav>
@@ -193,12 +207,14 @@
 
 <script>
 /* ============================================================================
-   FILL THIS with real data (the ONLY thing you edit for content). Set nativeName
-   to the destination's native script. Coordinates make the map + directions accurate.
-   Empty sections auto-hide. Do NOT change the CSS/structure — see reference/DESIGN.md.
+   ⚠️ EXAMPLE DATA ONLY — this placeholder is trimmed for readability (2 days, a few
+   phrases). A REAL run MUST fill the COMPLETE plan: EVERY day of the trip, ALL ~8–12
+   phrasebook rows, every recommended spot, and every prep item you actually did/bought.
+   NEVER ship these placeholder counts. You ONLY edit this TRIP object + nativeName;
+   do NOT touch the CSS/structure (fixed system — see reference/DESIGN.md). Empty sections auto-hide.
    ========================================================================== */
 const TRIP = {
-  nativeName: "東京",
+  nativeName: "東京",                                                  // native-script name → shown as the header watermark
   title: "Tokyo — 7-Day Solo Adventure",
   meta: "Sep 14–21, 2026  ·  Solo  ·  from San Francisco",
   heroImageUrl: "https://f.stableupload.dev/REPLACE/tokyo-map.png",  // generated illustrated map (hosted). Omit to hide.
@@ -215,8 +231,18 @@ const TRIP = {
            {d:"Wed", cond:"rain", t:"27°", c:"Showers", pop:"60%"}, {d:"Thu", cond:"cloud", t:"29°", c:"Cloudy"},
            {d:"Fri", cond:"sun", t:"32°", c:"Hot & clear"} ] },
 
-  facts:[ {icon:"wallet", k:"Currency", v:"¥ JPY · ~150/USD"}, {icon:"plug", k:"Plug", v:"Type A (same as US)"},
-          {icon:"phone", k:"eSIM", v:"Japan 8-day — bought"}, {icon:"globe", k:"Phrasebook", v:"10 phrases + audio"} ],
+  // Quick at-a-glance references ONLY (not purchases). Keep to ~3–4.
+  facts:[ {icon:"wallet", k:"Currency", v:"¥ JPY · ~150/USD"}, {icon:"plug", k:"Plug", v:"Type A · 100V"},
+          {icon:"clock", k:"Time zone", v:"JST · +16h vs SF"}, {icon:"phone", k:"Emergency", v:"110 police · 119 fire/amb"} ],
+
+  // "Before you go" — gear you bought/should grab, eSIM, prepaid card, phrasebook pointer.
+  // status = a short accent chip (e.g. "Bought", "Ordered", "To buy"). link = optional (buy link, activation, "#phrasebook").
+  prep:[
+    {icon:"phone",  label:"Japan eSIM — 8-day, 5GB", detail:"Bitrefill · activate the QR when you land.", status:"Bought", link:"https://f.stableupload.dev/REPLACE/esim.png", linkText:"eSIM QR"},
+    {icon:"plug",   label:"Power adaptor", detail:"Japan is Type A, same as the US — no adaptor needed. A 2-port USB-C charger is handy.", status:"Not needed"},
+    {icon:"wallet", label:"Travel-money", detail:"Cash-heavy country; withdraw ¥ at 7-Eleven ATMs. Cards OK in cities."},
+    {icon:"audio",  label:"Spoken phrasebook", detail:"10 key phrases with native audio — tap play on the Phrasebook tab.", link:"#phrasebook", linkText:"Open phrasebook"},
+  ],
 
   days:[
     { n:1, title:"Asakusa — old Tokyo", spots:[
@@ -231,16 +257,20 @@ const TRIP = {
     ]},
   ],
 
+  // Aim for ~8–12 real rows in a live run (this list is trimmed as an example).
   phrasebook:[
     {en:"Excuse me / sorry", native:"すみません", romaji:"sumimasen", use:"get attention / apologize", audio:"https://f.stableupload.dev/REPLACE/p1.mp3"},
     {en:"Thank you", native:"ありがとう", romaji:"arigatō", use:"anywhere", audio:"https://f.stableupload.dev/REPLACE/p2.mp3"},
+    {en:"Please", native:"お願いします", romaji:"onegai shimasu", use:"requests", audio:"https://f.stableupload.dev/REPLACE/p4.mp3"},
+    {en:"How much is it?", native:"いくらですか", romaji:"ikura desu ka", use:"shops", audio:"https://f.stableupload.dev/REPLACE/p5.mp3"},
+    {en:"Where is …?", native:"…はどこですか", romaji:"… wa doko desu ka", use:"directions", audio:"https://f.stableupload.dev/REPLACE/p6.mp3"},
     {en:"Check, please", native:"お会計お願いします", romaji:"o-kaikei onegai shimasu", use:"restaurants", audio:"https://f.stableupload.dev/REPLACE/p3.mp3"},
   ],
 
   receipt:{ lines:[ {svc:"Google Flights (3 windows)", cost:"$0.06"}, {svc:"JMA weather", cost:"$0.005"},
                     {svc:"Maps + Tripadvisor + Apify social", cost:"$0.15"}, {svc:"Illustrated map (GPT Image)", cost:"$0.01"},
                     {svc:"Phrasebook TTS + hosting", cost:"$0.06"}, {svc:"PDF + HTML hosting", cost:"$0.02"} ],
-            total:"~$0.31", note:"Apify calls refund ~97% within ~1h — shown net-after-refund." },
+            total:"~$0.31", note:"" },   // leave note empty — the Apify hold/refund is explained by the agent in chat, NOT in the artifact
 };
 
 /* ---- safe builders (no innerHTML) ---- */
@@ -296,9 +326,19 @@ if(TRIP.weather&&TRIP.weather.days){ ov.appendChild(eyebrow("thermo","Weather fo
     el("div",{class:"d"},d.d), icon(WEATHER_ICON[(d.cond||"cloud")]||"cloud"), el("div",{class:"t"},d.t),
     el("div",{class:"c"},d.c||""), d.pop&&/rain|shower|snow/i.test(d.cond||"")&&el("span",{class:"pop"}, (/snow/i.test(d.cond||"")?"snow ":"rain ")+d.pop))));
   ov.appendChild(w); }
-if(TRIP.facts&&TRIP.facts.length){ const f=el("div",{class:"grid facts"});
+if(TRIP.facts&&TRIP.facts.length){ ov.appendChild(eyebrow("clock","Good to know"));
+  const f=el("div",{class:"grid facts"});
   TRIP.facts.forEach(x=> f.appendChild(el("div",{class:"card fact"}, icon(x.icon||"pin"),
     el("div",null, el("div",{class:"k"},x.k), el("div",{class:"v"},x.v))))); ov.appendChild(f); }
+if(TRIP.prep&&TRIP.prep.length){ ov.appendChild(eyebrow("wallet","Before you go"));
+  const g=el("div",{class:"grid prep"});
+  TRIP.prep.forEach(x=> g.appendChild(el("div",{class:"card item"}, icon(x.icon||"pin"),
+    el("div",null, el("div",{class:"pl"},x.label), x.detail&&el("div",{class:"pd"},x.detail),
+      x.status&&el("span",{class:"badge"},x.status),
+      x.link&&(x.link[0]==="#"
+        ? el("a",{class:"pa",href:x.link, onclick:(e)=>{e.preventDefault(); show(x.link.slice(1));}}, x.linkText||"Open", icon("arrow-ur"))
+        : el("a",{class:"pa",href:x.link,target:"_blank",rel:"noopener"}, x.linkText||"Open", icon("arrow-ur")))))));
+  ov.appendChild(g); }
 main.appendChild(ov); panels.push(ov);
 
 /* Days */
@@ -323,7 +363,7 @@ main.appendChild(ov); panels.push(ov);
       el("a",{class:"btn ghost",target:"_blank",rel:"noopener",href:dirUrl(s)}, icon("arrow-ur"), "Directions")))));
   main.appendChild(p); panels.push(p);
   if(hasPts && typeof L!=="undefined"){ try{
-    const map=L.map(`map-${id}`,{scrollWheelZoom:false}); L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"}).addTo(map);
+    const map=L.map(`map-${id}`,{scrollWheelZoom:false}); L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",{maxZoom:20,subdomains:"abcd",attribution:"© OpenStreetMap © CARTO"}).addTo(map);
     const pts=[];
     spots.forEach((s,i)=>{ if(s.lat==null) return;
       const wrap=el("div"); wrap.appendChild(el("div",{class:"pin-badge"}, i+1));

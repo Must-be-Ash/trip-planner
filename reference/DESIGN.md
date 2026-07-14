@@ -86,7 +86,17 @@ train, ticket, phone, wallet, clock). **Never use an emoji** — no ☀️🍜�
 - **Weather:** a row of equal cards on `surface` with a hairline border, a line weather-icon, the temp in the
   display serif, and a small mono caption. **No gradient fills, no 4 different colors** — identical card styling;
   emphasis (e.g. a rain day) via an `accent-100` chip, not a colored card.
-- **Map:** framed (border + radius); Leaflet pins are the accent circle with a white number. One color.
+- **Header native name:** render the native-script name (東京) as a **large translucent background watermark**
+  inside the dark header (low opacity ~.10, clipped) — the English title is the readable foreground. Not a solid
+  foreground heading.
+- **Map:** framed (border + radius). Use **CARTO Positron** minimal light tiles
+  (`https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png`) — a calm light-grey street map, NOT the busy
+  default OSM tiles and NOT satellite. Leaflet pins are the accent circle with a white number. One color.
+- **"Good to know" vs "Before you go":** `facts` = at-a-glance *references* only (currency, plug, timezone,
+  emergency) — never purchases. Everything you *did/bought/should grab* (eSIM, adaptor/gear, prepaid card,
+  phrasebook pointer) goes in the **"Before you go"** prep section as items with a short status chip + optional link.
+- **Receipt:** plain table; **do not** put the Apify hold/refund disclaimer in the artifact — the agent explains
+  that in chat, not on the page.
 - **Phrasebook:** clean table, mono header row in ink, zebra via `accent-050`, an audio control per row.
 - **Receipt:** plain table, right-aligned amounts, total in bold; a mono caption for the Apify-refund note.
 - **Buttons:** primary = accent fill / white text / `control` radius; secondary = ink outline, transparent.

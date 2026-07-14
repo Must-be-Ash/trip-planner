@@ -16,11 +16,20 @@ hero image. **Two artifacts, always:**
    per-spot "Open in Maps", phrasebook audio players, flight verdict, x402 receipt.
 2. **PDF companion (offline)** — a static render of the same content.
 
-## The golden rule: nothing generated gets left out
+## The golden rule: nothing generated gets left out — and fill it COMPLETELY
 Every asset you produced or paid for **must appear in the deliverable** — this is what got missed before (the
 map image and phrasebook were generated but never embedded). Before you finish, reconcile against the Step-1.5
 checklist: hero map image ✅ embedded, phrasebook ✅ with audio, each recommended spot ✅ has an Open-in-Maps
 link, weather ✅ as cards, flights ✅, budget ✅. If something can't be embedded, say so (⚠️) — don't drop it.
+
+**Fill the COMPLETE plan, not the template's example counts.** The template ships trimmed placeholders (2 days,
+a few phrases) for readability — a real run includes **EVERY day of the trip**, **ALL ~8–12 phrasebook rows**,
+every recommended spot, and a full **"Before you go"** section. Never ship the 2-day / 3-phrase placeholder.
+
+**Two distinct sections (don't merge them):** `facts` ("Good to know") = at-a-glance *references* only —
+currency, plug, timezone, emergency numbers. `prep` ("Before you go") = what you *did/bought/should grab* — the
+eSIM (with its QR link + a "Bought" chip), adaptor/gear (or "Not needed"), prepaid card, and a phrasebook pointer
+(`link:"#phrasebook"`). Putting "eSIM bought" or "phrasebook" in the facts row is wrong — they go in prep.
 
 ## Build the interactive HTML from the template
 Use **`examples/itinerary-template.html`** — a self-contained, themeable, data-driven page. You only do two things:
