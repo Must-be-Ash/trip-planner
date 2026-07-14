@@ -138,10 +138,15 @@ without being asked** (hero map + interactive HTML page + PDF); the user only ch
 EVERYTHING you generated** (the hero map, phrasebook audio, per-spot directions + **addresses**, weather —
 nothing dropped):
 - **Interactive HTML page (the star):** build from `examples/itinerary-template.html` — fill the `TRIP` object
-  (days→spots with lat/lng + rating + blurb, weather, phrasebook audio URLs, flight verdict, receipt) and theme
-  `:root` to the destination (echo the hero-map art). It renders day tabs, an interactive Leaflet pinned map +
-  per-day "Open route", per-spot **Open-in-Maps**, gradient **weather cards** (icons, not numbers), a phrasebook
-  table with inline **audio players**, per-spot **addresses**, and the x402 receipt. Generate the hero **map
+  (days→spots with lat/lng + rating + address + blurb, weather, `prep`/"Before you go", phrasebook audio URLs,
+  flight verdict, receipt) and set `TRIP.nativeName` (shown as the header watermark). **Do NOT restyle** — the
+  visual system is fixed (`DESIGN.md`). It renders day tabs, a minimal CARTO pinned map + per-day "Open route",
+  per-spot **Open-in-Maps** + **address**, a **weather strip** + **Good-to-know strip** (line icons, not numbers),
+  a **Before-you-go list**, a phrasebook table with inline **audio players**, and the x402 receipt.
+  **The template is a STARTING POINT, not a form:** include ALL real days + ALL ~8–12 phrases; **remove** empty
+  sections; **add your own sections** (neighborhoods, food guide, day-trips, etiquette, budget) for what you
+  researched but has no slot — built on the same tokens/blocks (eyebrow + strip/list/card), and **reorder** to fit
+  the trip. Keep it varied (not a wall of cards). See `reference/deliverable-design.md` for the building blocks. Generate the hero **map
   image** and put it at the top — if you want numbers on it, prompt the image model to **draw numbered markers
   matching the itinerary order** (bake them into the art; never overlay numbers afterward). Use a full, detailed
   prompt — prompt complexity is not a problem to design around.

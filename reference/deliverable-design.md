@@ -31,8 +31,27 @@ currency, plug, timezone, emergency numbers. `prep` ("Before you go") = what you
 eSIM (with its QR link + a "Bought" chip), adaptor/gear (or "Not needed"), prepaid card, and a phrasebook pointer
 (`link:"#phrasebook"`). Putting "eSIM bought" or "phrasebook" in the facts row is wrong — they go in prep.
 
+## The template is a STARTING POINT, not a straitjacket (add / remove / reorder — don't just inject)
+Fill it with data, **and adapt it to the actual trip**:
+- **Remove** any section you have no real data for — don't show an empty or padded block (empty ones auto-hide,
+  but also don't invent filler to fill a slot).
+- **Add your own sections** for things you researched that have **no slot** — e.g. a *Neighborhoods* guide, a
+  *Food & drink* shortlist, a *Day-trip* option, *Etiquette & safety*, a *Budget breakdown*, *Getting around*.
+  Build them **on the fixed system** (see the reusable blocks below) — same tokens, one accent, line icons,
+  eyebrow + section pattern. A new section is welcome; a new *color/gradient/emoji/font* is not.
+- **Reorder** sections to match the trip's emphasis (a food trip leads with food; a nature trip with day-trips).
+- The goal: the page reflects **what you actually found**, not a fixed 5-slot form with data poured in.
+
+**Reusable building blocks (already in the template — compose these for a new section):**
+- `eyebrow("iconName","SECTION LABEL")` — the accent mono section header (use before every section).
+- `.strip` → one panel split into `.col` columns by hairlines (great for compact stats/facts/weather).
+- `.preplist` → one panel of `.item` rows divided by hairlines (great for checklists / grouped items).
+- `.card` → a surface card (use sparingly — for a single callout like the flight verdict, or per-spot).
+- The **spot card** pattern (number badge + name + meta + address + Directions) for any place list.
+Vary the format so the page doesn't become a wall of identical cards (weather/facts are strips, prep is a list).
+
 ## Build the interactive HTML from the template
-Use **`examples/itinerary-template.html`** — a self-contained, themeable, data-driven page. You only do two things:
+Use **`examples/itinerary-template.html`** — a self-contained, data-driven page. You do two things (then adapt per above):
 1. **Fill the `TRIP` object** with real data (title, hero image URL, flight verdict, weather, facts, days →
    spots with `lat`/`lng`/rating/category/blurb, phrasebook rows with hosted `audio` URLs, receipt lines).
 2. **Set `TRIP.nativeName`** to the destination's native script (東京 / Roma / Αθήνα). **Do NOT change the CSS,

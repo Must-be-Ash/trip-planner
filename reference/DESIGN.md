@@ -73,6 +73,14 @@ Inline **line icons** (Lucide/Feather), stroke `currentColor`, ~18–20px, 1.75 
 as inline `<svg>` (offline-safe). Map each concept to a line icon (sun/cloud/rain, plane, map-pin, utensils,
 train, ticket, phone, wallet, clock). **Never use an emoji** — no ☀️🍜✈️🔊📍.
 
+## The template is a starting point (add / remove / reorder)
+Fill the template, but **adapt it to the real trip**: drop sections with no data, **add new sections** for things
+you researched that have no slot (neighborhoods, food guide, day-trips, etiquette, budget) built with the same
+tokens + the reusable blocks (eyebrow + strip/list/card), and reorder to fit the trip's emphasis. Adding a
+*section* is encouraged; adding a *new color / gradient / emoji / font* is not. **Vary the format** — don't make
+every section a card (weather + facts are divided **strips**; prep is a **list**; cards are for the flight
+callout + spots). See `deliverable-design.md` for the building blocks.
+
 ## Layout & components (all in the template)
 - **Single column**, `max-width 880px`, centered, generous `section` rhythm. Hairline borders over heavy shadows.
 - **Header:** distinguished dark-ink band with the one subtle radial; the native name (display-xl) + trip title

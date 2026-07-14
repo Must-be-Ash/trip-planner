@@ -39,11 +39,12 @@
     background:
       radial-gradient(70% 90% at 82% 6%, rgba(200,68,42,.20), transparent 60%),
       radial-gradient(120% 140% at 15% 0%, #2a2620, var(--ink) 58%);}
-  header.hero .wrap{position:relative;z-index:1;padding:52px 20px 42px;}
-  .native-wm{position:absolute;z-index:0;right:-1%;bottom:-12%;font-family:var(--display);font-weight:600;
-    font-size:clamp(150px,32vw,360px);line-height:.72;letter-spacing:-.02em;color:rgba(244,237,228,.10);
+  header.hero .wrap{position:relative;z-index:1;padding:62px 20px 56px;}
+  .native-wm{position:absolute;z-index:0;top:50%;right:4%;transform:translateY(-50%);font-family:var(--display);font-weight:600;
+    font-size:clamp(84px,17vw,188px);line-height:1;color:rgba(244,237,228,.13);
     white-space:nowrap;pointer-events:none;user-select:none;}
-  .title{font-size:clamp(26px,4vw,36px);line-height:1.1;color:#fff;}
+  @media(max-width:640px){ .native-wm{font-size:clamp(64px,22vw,120px);right:3%;} header.hero .wrap{padding:44px 20px 40px;} }
+  .title{font-size:clamp(26px,4vw,36px);line-height:1.1;color:#fff;max-width:70%;}
   .hmeta{font-family:var(--mono);font-size:12.5px;letter-spacing:.04em;color:#C9BEB0;margin-top:14px;}
   .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
   .chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11.5px;letter-spacing:.03em;
@@ -78,32 +79,33 @@
   .verdict h3{font-size:19px;margin:2px 0 6px;}
   .verdict p{margin:0;color:var(--ink-70);font-size:15px;}
 
-  /* Weather — equal white cards, line icon, serif temp, mono caption. No gradient/color fills. */
-  .weather{grid-template-columns:repeat(auto-fit,minmax(104px,1fr));margin-bottom:8px;}
-  .wcard{padding:16px;text-align:left;}
-  .wcard .d{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-40);}
-  .wcard .ic{width:26px;height:26px;color:var(--accent);margin:8px 0 4px;stroke-width:1.6;}
-  .wcard .t{font-family:var(--display);font-size:26px;font-weight:600;}
-  .wcard .c{font-size:12.5px;color:var(--ink-70);}
-  .wcard .pop{display:inline-block;margin-top:6px;font-family:var(--mono);font-size:11.5px;color:var(--accent-600);background:var(--accent-100);padding:2px 8px;border-radius:9999px;}
-  @media(max-width:520px){ .weather{grid-template-columns:repeat(auto-fit,minmax(88px,1fr));} .wcard{padding:12px;text-align:center;} }
+  /* A "strip" = ONE panel split into columns by hairlines (used for weather + facts, so they don't look like more cards) */
+  .strip{display:flex;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-card);box-shadow:var(--sh);overflow:hidden;margin-bottom:8px;}
+  .strip > .col{flex:1 1 0;min-width:110px;padding:16px 18px;border-left:1px solid var(--border);}
+  .strip > .col:first-child{border-left:0;}
 
-  /* Facts */
-  .facts{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:8px;}
-  .fact{padding:14px 16px;display:flex;gap:10px;align-items:flex-start;}
-  .fact .ic{color:var(--accent);margin-top:2px;}
-  .fact .k{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-40);}
-  .fact .v{font-size:15px;font-weight:500;}
+  /* Weather strip */
+  .wx .d{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-40);}
+  .wx .ic{width:24px;height:24px;color:var(--accent);margin:8px 0 4px;stroke-width:1.6;}
+  .wx .t{font-family:var(--display);font-size:25px;font-weight:600;}
+  .wx .c{font-size:12.5px;color:var(--ink-70);}
+  .wx .pop{display:inline-block;margin-top:6px;font-family:var(--mono);font-size:11px;color:var(--accent-600);background:var(--accent-100);padding:2px 8px;border-radius:9999px;}
 
-  /* Before you go (prep / gear / bought) */
-  .prep{grid-template-columns:repeat(auto-fit,minmax(230px,1fr));margin-bottom:8px;}
-  .prep .item{padding:16px 18px;display:flex;gap:12px;align-items:flex-start;}
-  .prep .item .ic{color:var(--accent);margin-top:2px;}
-  .prep .pl{font-weight:600;font-size:15px;}
-  .prep .pd{font-size:13.5px;color:var(--ink-70);margin-top:3px;}
-  .prep .pa{display:inline-flex;align-items:center;gap:5px;margin-top:9px;font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;color:var(--accent-600);}
-  .prep .pa .ic{width:14px;height:14px;color:var(--accent-600);}
-  .prep .badge{display:inline-block;margin-top:8px;font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--accent-600);background:var(--accent-100);padding:3px 8px;border-radius:9999px;}
+  /* Facts strip */
+  .factcol .k{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-40);}
+  .factcol .k .ic{width:15px;height:15px;color:var(--accent);}
+  .factcol .v{font-size:15px;font-weight:500;margin-top:6px;}
+
+  /* Before you go — a LIST with dividers (not cards) */
+  .preplist{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-card);box-shadow:var(--sh);overflow:hidden;margin-bottom:8px;}
+  .preplist .item{display:flex;gap:14px;padding:16px 18px;border-top:1px solid var(--border);align-items:flex-start;}
+  .preplist .item:first-child{border-top:0;}
+  .preplist .item > .ic{color:var(--accent);margin-top:2px;}
+  .preplist .pl{font-weight:600;font-size:15px;}
+  .preplist .pd{font-size:13.5px;color:var(--ink-70);margin-top:3px;}
+  .preplist .pa{display:inline-flex;align-items:center;gap:5px;margin-top:9px;font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;color:var(--accent-600);}
+  .preplist .pa .ic{width:14px;height:14px;color:var(--accent-600);}
+  .preplist .badge{display:inline-block;margin-left:10px;font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--accent-600);background:var(--accent-100);padding:3px 8px;border-radius:9999px;vertical-align:middle;}
 
   /* Map */
   .map{height:320px;border:1px solid var(--border);border-radius:var(--r-card);overflow:hidden;box-shadow:var(--sh);margin:6px 0 14px;}
@@ -315,26 +317,36 @@ function show(id){ panels.forEach(p=>p.classList.toggle("active",p.id===id));
   if(MAPS[id]) setTimeout(()=>MAPS[id].invalidateSize(),60); window.scrollTo({top:0,behavior:"smooth"}); }
 function eyebrow(name,text){ return el("div",{class:"eyebrow"}, icon(name), el("span",{class:"label"}, text)); }
 
+/* ADD YOUR OWN SECTIONS (this template is a starting point, not a fixed form).
+   For anything you researched with no slot here — Neighborhoods, Food & drink, Day-trips, Etiquette, Budget —
+   append a section built from the SAME blocks (no new colors/gradients/emoji/fonts):
+     ov.appendChild(eyebrow("map","NEIGHBORHOODS"));
+     const strip = el("div",{class:"strip"});  strip.appendChild(el("div",{class:"col"}, ... ));  ov.appendChild(strip);   // divided columns
+     const list  = el("div",{class:"preplist"}); list.appendChild(el("div",{class:"item"}, icon("utensils"), el("div",null, el("div",{class:"pl"},"…"), el("div",{class:"pd"},"…")))); ov.appendChild(list);   // divided rows
+   Or add a whole new tab: addTab("food","Food"); const p=el("section",{class:"panel",id:"food"}, eyebrow("utensils","Food & drink"), …); main.appendChild(p); panels.push(p);
+   Keep the format varied — don't make every section a card. Remove sections you have no data for. */
+
 /* Overview */
 addTab("overview","Overview");
 const ov=el("section",{class:"panel",id:"overview"});
 if(TRIP.flight){ ov.appendChild(el("div",{class:"card verdict"},
   eyebrow("plane","Flight verdict"), el("h3",null,TRIP.flight.headline), el("p",null,TRIP.flight.detail))); }
 if(TRIP.weather&&TRIP.weather.days){ ov.appendChild(eyebrow("thermo","Weather for your dates"));
-  const w=el("div",{class:"grid weather"});
-  TRIP.weather.days.forEach(d=> w.appendChild(el("div",{class:"card wcard"},
+  const w=el("div",{class:"strip"});
+  TRIP.weather.days.forEach(d=> w.appendChild(el("div",{class:"col wx"},
     el("div",{class:"d"},d.d), icon(WEATHER_ICON[(d.cond||"cloud")]||"cloud"), el("div",{class:"t"},d.t),
     el("div",{class:"c"},d.c||""), d.pop&&/rain|shower|snow/i.test(d.cond||"")&&el("span",{class:"pop"}, (/snow/i.test(d.cond||"")?"snow ":"rain ")+d.pop))));
   ov.appendChild(w); }
 if(TRIP.facts&&TRIP.facts.length){ ov.appendChild(eyebrow("clock","Good to know"));
-  const f=el("div",{class:"grid facts"});
-  TRIP.facts.forEach(x=> f.appendChild(el("div",{class:"card fact"}, icon(x.icon||"pin"),
-    el("div",null, el("div",{class:"k"},x.k), el("div",{class:"v"},x.v))))); ov.appendChild(f); }
+  const f=el("div",{class:"strip"});
+  TRIP.facts.forEach(x=> f.appendChild(el("div",{class:"col factcol"},
+    el("div",{class:"k"}, icon(x.icon||"pin"), el("span",null,x.k)), el("div",{class:"v"},x.v)))); ov.appendChild(f); }
 if(TRIP.prep&&TRIP.prep.length){ ov.appendChild(eyebrow("wallet","Before you go"));
-  const g=el("div",{class:"grid prep"});
-  TRIP.prep.forEach(x=> g.appendChild(el("div",{class:"card item"}, icon(x.icon||"pin"),
-    el("div",null, el("div",{class:"pl"},x.label), x.detail&&el("div",{class:"pd"},x.detail),
-      x.status&&el("span",{class:"badge"},x.status),
+  const g=el("div",{class:"preplist"});
+  TRIP.prep.forEach(x=> g.appendChild(el("div",{class:"item"}, icon(x.icon||"pin"),
+    el("div",null,
+      el("div",null, el("span",{class:"pl"},x.label), x.status&&el("span",{class:"badge"},x.status)),
+      x.detail&&el("div",{class:"pd"},x.detail),
       x.link&&(x.link[0]==="#"
         ? el("a",{class:"pa",href:x.link, onclick:(e)=>{e.preventDefault(); show(x.link.slice(1));}}, x.linkText||"Open", icon("arrow-ur"))
         : el("a",{class:"pa",href:x.link,target:"_blank",rel:"noopener"}, x.linkText||"Open", icon("arrow-ur")))))));
