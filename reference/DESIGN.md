@@ -13,7 +13,7 @@ colors:
   surface:       "#FFFFFF"   # cards / tables
   border:        "#E7E1D6"   # the ONE hairline border color
 typography:
-  display:  { fontFamily: "Fraunces, Georgia, serif",        role: "big headings + the native-script name" }
+  display:  { fontFamily: "Playfair Display, Georgia, serif", role: "big headings + the native-script name; title/watermark at weight 800, section headings 700 — a bold, high-character editorial serif" }
   body:     { fontFamily: "Inter, system-ui, sans-serif",    role: "all body copy, buttons, cards" }
   label:    { fontFamily: "JetBrains Mono, ui-monospace, monospace", role: "small labels/metadata, UPPERCASE, letter-spacing .06em" }
   scale:
@@ -63,7 +63,9 @@ Do **not** change colors, fonts, spacing, or layout per destination. No "Tokyo p
   no hard color stops, no multi-hue mixes. Nothing else on the page gets a gradient.
 
 ## Typography
-- **Display serif (Fraunces)** for the native name + trip title + section headings — this is the editorial voice.
+- **Display serif (Playfair Display)** for the native name + trip title + section headings — a bold, high-contrast
+  editorial serif. The trip **title** and the native-name **watermark** use **weight 800** for real character/impact
+  (never leave the title in the sans body font); section headings use 700.
 - **Inter** for all body, cards, buttons, tables.
 - **JetBrains Mono** for tiny labels/metadata only (e.g. "DAY 02", "★ 4.6", price tags), UPPERCASE, tracked.
 - One size scale (frontmatter). Big type + lots of leading; don't crowd.
