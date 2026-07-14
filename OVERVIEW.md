@@ -75,17 +75,17 @@ itself. It shows you an itemized receipt at the end.
 ---
 
 ## See it in action
-<!-- Captions are a starting guess — reorder/relabel to match your actual screenshots. -->
+<!-- Captions are a starting guess — reorder/relabel to match what each screenshot actually shows. -->
 
-![It interviews you to pin down dates, vibe, and budget](screenshots/Screenshot%202026-07-13%20at%202.25.58%20PM.png)
+![It interviews you to pin down dates, vibe, and budget](screenshots/01-interview.png)
 
-![Choosing what to prepare and buy — gear, eSIM, phrasebook, reminders](screenshots/Screenshot%202026-07-13%20at%202.27.18%20PM.png)
+![Choosing what to prepare and buy — gear, eSIM, phrasebook, reminders](screenshots/02-prep-and-buy.png)
 
-![Confirming the plan and what it will (and won't) spend](screenshots/Screenshot%202026-07-13%20at%202.27.34%20PM.png)
+![The plan, with the live-data edge (prices, reviews, weather)](screenshots/03-plan.png)
 
-![Approving a real purchase / booking before it happens](screenshots/Screenshot%202026-07-13%20at%202.28.06%20PM.png)
+![Confirming before anything real is bought or booked](screenshots/04-confirm.png)
 
-![The finished, shareable itinerary](screenshots/Screenshot%202026-07-13%20at%202.33.27%20PM.png)
+![The finished, shareable itinerary](screenshots/05-itinerary.png)
 
 ---
 
