@@ -80,15 +80,15 @@ itself. It shows you an itemized receipt at the end.
 
 <!-- Captions are a starting guess — reorder/relabel to match what each screenshot actually shows. -->
 
-![It interviews you to pin down dates, vibe, and budget](media/01-interview.png)
+![It interviews you to pin down dates, vibe, and budget](screenshots/01-interview.png)
 
-![Choosing what to prepare and buy — gear, eSIM, phrasebook, reminders](media/02-prep-and-buy.png)
+![Choosing what to prepare and buy — gear, eSIM, phrasebook, reminders](screenshots/02-prep-and-buy.png)
 
-![The plan, with the live-data edge (prices, reviews, weather)](media/03-plan.png)
+![The plan, with the live-data edge (prices, reviews, weather)](screenshots/03-plan.png)
 
-![Confirming before anything real is bought or booked](media/04-confirm.png)
+![Confirming before anything real is bought or booked](screenshots/04-confirm.png)
 
-![The finished, shareable itinerary](media/05-itinerary.png)
+![The finished, shareable itinerary](screenshots/05-itinerary.png)
 
 ---
 
